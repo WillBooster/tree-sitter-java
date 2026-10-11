@@ -1,0 +1,4 @@
+# `script/generate` writes these files. Kept here because the root .gitattributes is generated.
+*.json linguist-generated
+parser.c linguist-generated
+tree_sitter/* linguist-generated
