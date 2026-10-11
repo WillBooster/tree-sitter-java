@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Runs `tree-sitter fuzz`: it edits each corpus case at random, reparses it incrementally, undoes the edits, and reparses
+# again.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+mkdir -p .tmp/fuzz
+# Runs in the same checkout may overlap, so each builds the parser into a file of its own.
+parser=$(mktemp .tmp/fuzz/java.XXXXXX)
+trap 'rm -f "$parser"' EXIT
+script/tree-sitter build -o "$parser"
+# The excluded case reparses `int _` as an error followed by an unnamed pattern after an edit that broke the `switch`
+# keyword is undone, where a fresh parse reads `_` as an identifier. Upstream's own 0.23.5 parser does the same on
+# upstream's runtime, so the check would fail on every run without telling anything about this package's tables.
+script/tree-sitter fuzz --lib-path "$parser" --lang-name java \
+  --exclude 'switch with unnamed pattern variable'

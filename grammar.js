@@ -60,7 +60,6 @@ module.exports = grammar({
     $.primary_expression,
     $._literal,
     $._type,
-    $._simple_type,
     $._unannotated_type,
     $.module_directive,
   ],

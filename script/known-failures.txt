@@ -1,0 +1,14 @@
+examples/guava/android/guava-testlib/src/com/google/common/testing/EqualsTester.java
+examples/guava/android/guava/src/com/google/common/base/Objects.java
+examples/guava/android/guava/src/com/google/common/base/Platform.java
+examples/guava/android/guava/src/com/google/common/base/Preconditions.java
+examples/guava/android/guava/src/com/google/common/base/Strings.java
+examples/guava/android/guava/src/com/google/common/base/Verify.java
+examples/guava/guava-gwt/src-super/com/google/common/base/super/com/google/common/base/Platform.java
+examples/guava/guava-testlib/src/com/google/common/testing/EqualsTester.java
+examples/guava/guava/src/com/google/common/base/Objects.java
+examples/guava/guava/src/com/google/common/base/Platform.java
+examples/guava/guava/src/com/google/common/base/Preconditions.java
+examples/guava/guava/src/com/google/common/base/Strings.java
+examples/guava/guava/src/com/google/common/base/Verify.java
+examples/log4j2/log4j-core/src/main/java/org/apache/logging/log4j/core/filter/RegexFilter.java
