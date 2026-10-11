@@ -13,13 +13,14 @@ Java grammar for [tree-sitter](https://github.com/tree-sitter/tree-sitter), fork
 to its authors and contributors. This is not an official release of that project.
 
 This fork keeps the grammar rules, the queries, and the corpus of tree-sitter-java 0.23.5, so it parses the same
-language into the same node types. It ships the parser as the ABI 16 compact tables that the
-[WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter) generator emits, which only that runtime loads.
+language into the same node types. It ships the parser as the compact tables that the
+[WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter) generator emits under that fork's own ABI number
+(`0x57420001`), so the parser loads only with that runtime, version 2.0.0 or later, and not with upstream's tree-sitter.
 
 ## Usage
 
 The npm package ships `tree-sitter-java.wasm` for
-[@willbooster/web-tree-sitter](https://www.npmjs.com/package/@willbooster/web-tree-sitter) version 1.4.3 or later, which runs in Node.js, Bun, browsers, and Cloudflare Workers. In Node.js and Bun, load the grammar from its path:
+[@willbooster/web-tree-sitter](https://www.npmjs.com/package/@willbooster/web-tree-sitter) version 2.0.0 or later, which runs in Node.js, Bun, browsers, and Cloudflare Workers. In Node.js and Bun, load the grammar from its path:
 
 ```js
 import { fileURLToPath } from 'node:url';
@@ -65,8 +66,8 @@ fuzzed with:
 
 ```toml
 [dependencies]
-tree-sitter = { package = "willbooster-tree-sitter", version = "1.4.3" }
-tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "1" }
+tree-sitter = { package = "willbooster-tree-sitter", version = "2" }
+tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "2" }
 ```
 
 ```rust
@@ -95,7 +96,7 @@ well (e.g. `script/tree-sitter parse File.java`).
 `grammar.js` stays as upstream wrote and formatted it, apart from rule changes, so that it can be compared with
 upstream's grammar; the linter and the formatter skip it.
 
-`bun run generate` records a fresh ABI 16 generation profile from the applicable `test/corpus` cases and any Git-tracked
+`bun run generate` records a fresh generation profile from the applicable `test/corpus` cases and any Git-tracked
 files in `examples/`, then generates compact parser tables. The parser also embeds metadata from `tree-sitter.json`. After changing a grammar,
 `tree-sitter.json`, a corpus case, a tracked example, or the `willbooster-tree-sitter` version in `Cargo.lock` (whose
 CLI generates the parser),
