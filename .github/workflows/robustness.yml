@@ -11,7 +11,7 @@ concurrency:
 permissions:
   contents: read
 jobs:
-  # The Rust binding compiles the parser natively with each platform's C compiler, so the tests run on other
+  # The tree-sitter CLI compiles the parser natively with each platform's C compiler, so the tests run on other
   # common platforms too; the Test workflow covers ubuntu-latest.
   test:
     strategy:

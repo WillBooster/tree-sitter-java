@@ -124,5 +124,5 @@ The tests and `script/parse-examples` compile the parser into `.tmp/tree-sitter-
 by every checkout; `script/fuzz-corpus` builds a parser of its own in `.tmp/fuzz` for each run and deletes it
 afterwards.
 
-CI also runs these tests on Linux arm64 and macOS, where the Rust binding compiles the parser natively, and fuzzes the
-parser with libFuzzer and sanitizers (`.github/workflows/robustness.yml`).
+CI also runs these tests on Linux arm64 and macOS, where the CLI compiles the parser with each platform's C compiler,
+and fuzzes the parser with libFuzzer and sanitizers (`.github/workflows/robustness.yml`).
