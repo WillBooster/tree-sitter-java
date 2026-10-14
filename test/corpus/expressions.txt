@@ -1977,3 +1977,54 @@ void foo(int... @Foo x) {
         (variable_declarator
           (identifier))))
     (block)))
+
+================================================================================
+qualified record patterns in instanceof and nested switch patterns
+================================================================================
+
+if (value instanceof shapes.Point(int x, int y)) {}
+switch (value) { case shapes.Box(shapes.Point(int x, int y)) -> {} }
+
+--------------------------------------------------------------------------------
+
+(program
+  (if_statement
+    (parenthesized_expression
+      (instanceof_expression
+        (identifier)
+        (record_pattern
+          (scoped_type_identifier
+            (type_identifier)
+            (type_identifier))
+          (record_pattern_body
+            (record_pattern_component
+              (integral_type)
+              (identifier))
+            (record_pattern_component
+              (integral_type)
+              (identifier))))))
+    (block))
+  (switch_expression
+    (parenthesized_expression
+      (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label
+          (pattern
+            (record_pattern
+              (scoped_type_identifier
+                (type_identifier)
+                (type_identifier))
+              (record_pattern_body
+                (record_pattern
+                  (scoped_type_identifier
+                    (type_identifier)
+                    (type_identifier))
+                  (record_pattern_body
+                    (record_pattern_component
+                      (integral_type)
+                      (identifier))
+                    (record_pattern_component
+                      (integral_type)
+                      (identifier))))))))
+        (block)))))
