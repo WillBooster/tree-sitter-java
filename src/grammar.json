@@ -3766,6 +3766,10 @@
             {
               "type": "SYMBOL",
               "name": "generic_type"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "scoped_type_identifier"
             }
           ]
         },
