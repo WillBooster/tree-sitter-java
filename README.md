@@ -12,7 +12,8 @@ Java grammar for [tree-sitter](https://github.com/tree-sitter/tree-sitter), fork
 [tree-sitter/tree-sitter-java](https://github.com/tree-sitter/tree-sitter-java). We are grateful
 to its authors and contributors. This is not an official release of that project.
 
-This fork is based on tree-sitter-java 0.23.5 and accepts `final` modifiers on switch type patterns.
+This fork is based on tree-sitter-java 0.23.5 and accepts `final` modifiers on switch type patterns
+and typed record-pattern components.
 The extension preserves the existing node types. It ships the parser as the compact tables that the
 [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter) generator emits under that fork's own ABI number
 (`0x57420001`), so the parser loads only with that runtime, version 2.0.0 or later, and not with upstream's tree-sitter.
