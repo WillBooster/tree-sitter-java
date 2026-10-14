@@ -1796,6 +1796,32 @@ switch (c) {
         (block)))))
 
 ================================================================================
+switch with final complex type
+================================================================================
+
+switch (c) {
+    case final int[] a -> {
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (switch_expression
+    (parenthesized_expression
+      (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label
+          (pattern
+            (type_pattern
+              (array_type
+                (integral_type)
+                (dimensions))
+              (identifier))))
+        (block)))))
+
+================================================================================
 switch with unnamed pattern
 ================================================================================
 
