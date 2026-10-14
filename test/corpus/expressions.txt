@@ -2028,3 +2028,50 @@ switch (value) { case shapes.Box(shapes.Point(int x, int y)) -> {} }
                       (integral_type)
                       (identifier))))))))
         (block)))))
+
+================================================================================
+final variables in record patterns
+================================================================================
+
+if (value instanceof Point(final int x, final int y)) {}
+switch (value) { case Box(Point(final int x, final int y), _) -> {} }
+
+--------------------------------------------------------------------------------
+
+(program
+  (if_statement
+    (parenthesized_expression
+      (instanceof_expression
+        (identifier)
+        (record_pattern
+          (identifier)
+          (record_pattern_body
+            (record_pattern_component
+              (integral_type)
+              (identifier))
+            (record_pattern_component
+              (integral_type)
+              (identifier))))))
+    (block))
+  (switch_expression
+    (parenthesized_expression
+      (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label
+          (pattern
+            (record_pattern
+              (identifier)
+              (record_pattern_body
+                (record_pattern
+                  (identifier)
+                  (record_pattern_body
+                    (record_pattern_component
+                      (integral_type)
+                      (identifier))
+                    (record_pattern_component
+                      (integral_type)
+                      (identifier))))
+                (record_pattern_component
+                  (underscore_pattern))))))
+        (block)))))
