@@ -2386,6 +2386,10 @@
                             {
                               "type": "SYMBOL",
                               "name": "_reserved_identifier"
+                            },
+                            {
+                              "type": "SYMBOL",
+                              "name": "underscore_pattern"
                             }
                           ]
                         }
@@ -3744,6 +3748,10 @@
             {
               "type": "SYMBOL",
               "name": "_reserved_identifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "underscore_pattern"
             }
           ]
         }
