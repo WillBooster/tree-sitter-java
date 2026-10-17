@@ -22,7 +22,7 @@ testCommand('reparses the corpus consistently after random edits', ['script/fuzz
 testCommand('restores unnamed record patterns after undoing a switch-keyword edit', ['script/fuzz-corpus'], 900_000, {
   env: { TREE_SITTER_SEED: '37', TREE_SITTER_ITERATIONS: '1', TREE_SITTER_EDITS: '10' },
   check: (output) => {
-    expect(output).toContain('switch with unnamed pattern variable');
+    expect(output).toMatch(/^ +\d+\. java - corpus - expressions - switch with unnamed pattern variable$/m);
     expect(output).not.toContain('failed fuzzing');
   },
 });
