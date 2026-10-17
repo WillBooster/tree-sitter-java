@@ -527,7 +527,7 @@ module.exports = grammar({
       seq(
         optional('final'),
         $._unannotated_type,
-        choice($.identifier, $._reserved_identifier),
+        choice($.identifier, $._reserved_identifier, $.underscore_pattern),
       ),
     ),
 

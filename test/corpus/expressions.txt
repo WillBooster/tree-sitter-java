@@ -1877,7 +1877,7 @@ switch (c) {
                   (identifier))
                 (record_pattern_component
                   (integral_type)
-                  (identifier))))))
+                  (underscore_pattern))))))
         (block)))))
 
 ================================================================================
