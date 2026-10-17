@@ -2250,6 +2250,10 @@
           {
             "type": "identifier",
             "named": true
+          },
+          {
+            "type": "underscore_pattern",
+            "named": true
           }
         ]
       },
@@ -3895,6 +3899,10 @@
         },
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "underscore_pattern",
           "named": true
         }
       ]
