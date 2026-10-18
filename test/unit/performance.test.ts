@@ -61,11 +61,18 @@ test('parses repeated array dimensions in linear time', { timeout: 60_000 }, () 
 
 function parseCpuTime(source: string, expectedError = true): number {
   const start = process.threadCpuUsage();
-  const tree = parser.parse(source);
-  const { system, user } = process.threadCpuUsage(start);
-  if (!tree) throw new Error('The parser returned no tree');
-  const { hasError } = tree.rootNode;
-  tree.delete();
-  expect(hasError).toBe(expectedError);
-  return system + user;
+  let elapsed = 0;
+  let parses = 0;
+  // Individual parses can finish within one CPU timer tick on ARM runners.
+  do {
+    const tree = parser.parse(source);
+    if (!tree) throw new Error('The parser returned no tree');
+    const { hasError } = tree.rootNode;
+    tree.delete();
+    expect(hasError).toBe(expectedError);
+    parses++;
+    const { system, user } = process.threadCpuUsage(start);
+    elapsed = system + user;
+  } while (elapsed < 20_000);
+  return elapsed / parses;
 }
