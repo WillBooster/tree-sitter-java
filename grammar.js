@@ -217,7 +217,7 @@ module.exports = grammar({
       prec(1, $.escape_sequence),
     ),
     escape_sequence: _ => token.immediate(choice(
-      seq(/\\u+005[cC]/, /\\u+005[cC]/),
+      seq(/\\u+005[cC]/, /\\u+[0-9a-fA-F]{4}/),
       seq(
         choice('\\', /\\u+005[cC]/),
         choice(

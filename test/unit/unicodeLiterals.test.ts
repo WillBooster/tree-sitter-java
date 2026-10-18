@@ -34,7 +34,14 @@ for (const literal of [
   });
 }
 
-for (const escape of [String.raw`\u005c\u005c`, String.raw`\uu005C\uuu005c`, String.raw`\\`]) {
+for (const escape of [
+  String.raw`\u005c\u005c`,
+  String.raw`\uu005C\uuu005c`,
+  String.raw`\u005c\u006e`,
+  String.raw`\u005c\u0022`,
+  String.raw`\uu005C\uuu0074`,
+  String.raw`\\`,
+]) {
   test(`retains the complete string escape ${escape}`, () => {
     const source = `class C { String a = "${escape}"; int after; }`;
     const parser = new Parser().setLanguage(language);
