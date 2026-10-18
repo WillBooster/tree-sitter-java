@@ -102,7 +102,6 @@ module.exports = grammar({
       $.method_declaration,
     ),
 
-    // Literals
 
     _literal: $ => choice(
       $.decimal_integer_literal,
@@ -227,7 +226,6 @@ module.exports = grammar({
 
     null_literal: _ => 'null',
 
-    // Expressions
 
     expression: $ => choice(
       $.assignment_expression,
@@ -540,7 +538,6 @@ module.exports = grammar({
 
     guard: $ => seq('when', $.expression),
 
-    // Statements
 
     statement: $ => choice(
       $.declaration,
@@ -709,7 +706,6 @@ module.exports = grammar({
       field('body', $.statement),
     ),
 
-    // Annotations
 
     _annotation: $ => choice(
       $.marker_annotation,
@@ -755,7 +751,6 @@ module.exports = grammar({
       '}',
     ),
 
-    // Declarations
 
     declaration: $ => prec(PREC.DECL, choice(
       $.module_declaration,
@@ -1136,7 +1131,6 @@ module.exports = grammar({
       '}',
     ),
 
-    // Types
 
     _type: $ => choice(
       $._unannotated_type,
@@ -1238,12 +1232,12 @@ module.exports = grammar({
       $._variable_declarator_id,
     ),
 
-    receiver_parameter: $ => seq(
+    receiver_parameter: $ => prec.dynamic(1, seq(
       repeat($._annotation),
       $._unannotated_type,
       repeat(seq($.identifier, '.')),
       $.this,
-    ),
+    )),
 
     spread_parameter: $ => seq(
       optional($.modifiers),
@@ -1311,8 +1305,6 @@ module.exports = grammar({
 });
 
 /**
- * Creates a rule to match one or more of the rules separated by `separator`
- *
  * @param {RuleOrLiteral} rule
  *
  * @param {RuleOrLiteral} separator
@@ -1324,8 +1316,6 @@ function sep1(rule, separator) {
 }
 
 /**
- * Creates a rule to match one or more of the rules separated by a comma
- *
  * @param {RuleOrLiteral} rule
  *
  * @returns {SeqRule}
@@ -1335,8 +1325,6 @@ function commaSep1(rule) {
 }
 
 /**
- * Creates a rule to optionally match one or more of the rules separated by a comma
- *
  * @param {RuleOrLiteral} rule
  *
  * @returns {ChoiceRule}
