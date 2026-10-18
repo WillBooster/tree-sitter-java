@@ -1,8 +1,4 @@
-; Variables
-
-(identifier) @variable
-
-; Methods
+[(identifier) (underscore_pattern)] @variable
 
 (method_declaration
   name: (identifier) @function.method)
@@ -10,16 +6,12 @@
   name: (identifier) @function.method)
 (super) @function.builtin
 
-; Annotations
-
 (annotation
   name: (identifier) @attribute)
 (marker_annotation
   name: (identifier) @attribute)
 
 "@" @operator
-
-; Types
 
 (type_identifier) @type
 
@@ -54,16 +46,10 @@
   (void_type)
 ] @type.builtin
 
-; Constants
-
 ((identifier) @constant
  (#match? @constant "^_*[A-Z][A-Z\\d_]+$"))
 
-; Builtins
-
 (this) @variable.builtin
-
-; Literals
 
 [
   (hex_integer_literal)
@@ -89,8 +75,6 @@
   (line_comment)
   (block_comment)
 ] @comment
-
-; Keywords
 
 [
   "abstract"

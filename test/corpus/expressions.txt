@@ -1877,7 +1877,7 @@ switch (c) {
                   (identifier))
                 (record_pattern_component
                   (integral_type)
-                  (identifier))))))
+                  (underscore_pattern))))))
         (block)))))
 
 ================================================================================
@@ -2075,3 +2075,25 @@ switch (value) { case Box(Point(final int x, final int y), _) -> {} }
                 (record_pattern_component
                   (underscore_pattern))))))
         (block)))))
+
+================================================================================
+unnamed variables in top-level type patterns
+================================================================================
+
+switch (item) { case Integer _ -> {} }
+if (item instanceof Integer _) {}
+
+--------------------------------------------------------------------------------
+
+(program
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label
+          (pattern (type_pattern (type_identifier) (underscore_pattern))))
+        (block))))
+  (if_statement
+    (parenthesized_expression
+      (instanceof_expression (identifier) (type_identifier) (underscore_pattern)))
+    (block)))
