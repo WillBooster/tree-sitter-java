@@ -1,0 +1,23 @@
+================================================================================
+Module imports and contextual module identifiers
+================================================================================
+
+import module java.base;
+import module.Type;
+import static module.Type.FIELD;
+class C {}
+
+--------------------------------------------------------------------------------
+
+(program (import_declaration (scoped_identifier scope: (identifier) name: (identifier))) (import_declaration (scoped_identifier scope: (identifier) name: (identifier))) (import_declaration (scoped_identifier scope: (scoped_identifier scope: (identifier) name: (identifier)) name: (identifier))) (class_declaration name: (identifier) body: (class_body)))
+
+================================================================================
+Constructor prologue and epilogue
+================================================================================
+
+class C extends B { C(int x) { int y = x; super(y); after(); } }
+
+--------------------------------------------------------------------------------
+
+(program (class_declaration name: (identifier) superclass: (superclass (type_identifier)) body: (class_body (constructor_declaration name: (identifier) parameters: (formal_parameters (formal_parameter type: (integral_type) name: (identifier))) body: (constructor_body (local_variable_declaration type: (integral_type) declarator: (variable_declarator name: (identifier) value: (identifier))) (explicit_constructor_invocation constructor: (super) arguments: (argument_list (identifier))) (expression_statement (method_invocation name: (identifier) arguments: (argument_list))))))))
+
