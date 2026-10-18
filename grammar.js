@@ -217,15 +217,19 @@ module.exports = grammar({
       prec(2, token.immediate(seq('\\', /[^bfnrts'\"\\]/))),
       prec(1, $.escape_sequence),
     ),
-    escape_sequence: _ => token.immediate(seq(
-      choice('\\', /\\u+005[cC]/),
-      choice(
-        /[^xu0-7]/,
-        /[0-7]{1,3}/,
-        /x[0-9a-fA-F]{2}/,
-        /u+[0-9a-fA-F]{4}/,
-        /u\{[0-9a-fA-F]+\}/,
-      ))),
+    escape_sequence: _ => token.immediate(choice(
+      seq(/\\u+005[cC]/, /\\u+005[cC]/),
+      seq(
+        choice('\\', /\\u+005[cC]/),
+        choice(
+          /[^xu0-7]/,
+          /[0-7]{1,3}/,
+          /x[0-9a-fA-F]{2}/,
+          /u+[0-9a-fA-F]{4}/,
+          /u\{[0-9a-fA-F]+\}/,
+        ),
+      ),
+    )),
 
     null_literal: _ => 'null',
 
