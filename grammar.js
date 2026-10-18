@@ -1227,12 +1227,12 @@ module.exports = grammar({
       $._variable_declarator_id,
     ),
 
-    receiver_parameter: $ => seq(
+    receiver_parameter: $ => prec.dynamic(1, seq(
       repeat($._annotation),
       $._unannotated_type,
       repeat(seq($.identifier, '.')),
       $.this,
-    ),
+    )),
 
     spread_parameter: $ => seq(
       optional($.modifiers),
