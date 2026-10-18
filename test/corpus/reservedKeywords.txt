@@ -1,0 +1,132 @@
+=================================================
+Error detected at globally reserved keyword
+=================================================
+
+class Test {
+    void example() {
+        object.    // incomplete field access
+        if (condition) {  // keyword should be recognized as error here
+            doSomething();
+        }
+    }
+}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (method_declaration
+        (void_type)
+        (identifier)
+        (formal_parameters)
+        (block
+          (ERROR
+            (identifier))
+          (line_comment)
+          (if_statement
+            (parenthesized_expression
+              (identifier))
+            (block
+              (line_comment)
+              (expression_statement
+                (method_invocation
+                  (identifier)
+                  (argument_list))))))))))
+
+=================================================
+Contextual keywords remain variable names
+=================================================
+
+class C {
+  int module, open, record, with, yield, sealed, permits, var, when;
+  int exports, opens, provides, requires, to, transitive, uses;
+}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (integral_type)
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))
+        (variable_declarator (identifier))))))
+
+=================================================
+Unnamed inferred lambda parameters
+=================================================
+
+class C {
+  Object a = _ -> 1;
+  Object b = (_, value) -> value;
+}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (lambda_expression
+            (underscore_pattern)
+            (decimal_integer_literal))))
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (lambda_expression
+            (inferred_parameters (underscore_pattern) (identifier))
+            (identifier)))))))
+
+=================================================
+Qualified superclass method references
+=================================================
+
+class C {
+  Object a = Outer.super::method;
+  Object b = p.Outer.super::<String>method;
+}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (method_reference (identifier) (super) (identifier))))
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (method_reference
+            (scoped_identifier (identifier) (identifier))
+            (super)
+            (type_arguments (type_identifier))
+            (identifier)))))))

@@ -2471,6 +2471,10 @@
               {
                 "type": "SYMBOL",
                 "name": "_reserved_identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "underscore_pattern"
               }
             ]
           }
@@ -2518,6 +2522,10 @@
                 {
                   "type": "SYMBOL",
                   "name": "_reserved_identifier"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "underscore_pattern"
                 }
               ]
             },
@@ -2540,6 +2548,10 @@
                       {
                         "type": "SYMBOL",
                         "name": "_reserved_identifier"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "underscore_pattern"
                       }
                     ]
                   }
@@ -3356,47 +3368,89 @@
       ]
     },
     "method_reference": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "CHOICE",
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_type"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "primary_expression"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "super"
+                }
+              ]
+            },
+            {
+              "type": "STRING",
+              "value": "::"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "type_arguments"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "new"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
           "members": [
             {
               "type": "SYMBOL",
-              "name": "_type"
+              "name": "_name"
             },
             {
-              "type": "SYMBOL",
-              "name": "primary_expression"
+              "type": "STRING",
+              "value": "."
             },
             {
               "type": "SYMBOL",
               "name": "super"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "::"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "type_arguments"
             },
             {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
               "type": "STRING",
-              "value": "new"
+              "value": "::"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "type_arguments"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
             },
             {
               "type": "SYMBOL",
@@ -7851,6 +7905,14 @@
         }
       ]
     },
+    "_const": {
+      "type": "PATTERN",
+      "value": "const"
+    },
+    "_goto": {
+      "type": "PATTERN",
+      "value": "goto"
+    },
     "this": {
       "type": "STRING",
       "value": "this"
@@ -7960,11 +8022,6 @@
     ],
     [
       "_unannotated_type",
-      "primary_expression",
-      "scoped_type_identifier"
-    ],
-    [
-      "_unannotated_type",
       "scoped_type_identifier"
     ],
     [
@@ -7994,6 +8051,22 @@
     [
       "yield_statement",
       "_reserved_identifier"
+    ],
+    [
+      "scoped_identifier",
+      "scoped_type_identifier"
+    ],
+    [
+      "primary_expression",
+      "method_reference",
+      "scoped_identifier"
+    ],
+    [
+      "primary_expression",
+      "method_reference",
+      "scoped_identifier",
+      "_unannotated_type",
+      "scoped_type_identifier"
     ]
   ],
   "precedences": [],
@@ -8014,5 +8087,224 @@
     "_unannotated_type",
     "module_directive"
   ],
-  "reserved": {}
+  "reserved": {
+    "global": [
+      {
+        "type": "STRING",
+        "value": "abstract"
+      },
+      {
+        "type": "STRING",
+        "value": "assert"
+      },
+      {
+        "type": "STRING",
+        "value": "boolean"
+      },
+      {
+        "type": "STRING",
+        "value": "break"
+      },
+      {
+        "type": "STRING",
+        "value": "byte"
+      },
+      {
+        "type": "STRING",
+        "value": "case"
+      },
+      {
+        "type": "STRING",
+        "value": "catch"
+      },
+      {
+        "type": "STRING",
+        "value": "char"
+      },
+      {
+        "type": "STRING",
+        "value": "class"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "_const"
+      },
+      {
+        "type": "STRING",
+        "value": "continue"
+      },
+      {
+        "type": "STRING",
+        "value": "default"
+      },
+      {
+        "type": "STRING",
+        "value": "do"
+      },
+      {
+        "type": "STRING",
+        "value": "double"
+      },
+      {
+        "type": "STRING",
+        "value": "else"
+      },
+      {
+        "type": "STRING",
+        "value": "enum"
+      },
+      {
+        "type": "STRING",
+        "value": "extends"
+      },
+      {
+        "type": "STRING",
+        "value": "final"
+      },
+      {
+        "type": "STRING",
+        "value": "finally"
+      },
+      {
+        "type": "STRING",
+        "value": "float"
+      },
+      {
+        "type": "STRING",
+        "value": "for"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "_goto"
+      },
+      {
+        "type": "STRING",
+        "value": "if"
+      },
+      {
+        "type": "STRING",
+        "value": "implements"
+      },
+      {
+        "type": "STRING",
+        "value": "import"
+      },
+      {
+        "type": "STRING",
+        "value": "instanceof"
+      },
+      {
+        "type": "STRING",
+        "value": "int"
+      },
+      {
+        "type": "STRING",
+        "value": "interface"
+      },
+      {
+        "type": "STRING",
+        "value": "long"
+      },
+      {
+        "type": "STRING",
+        "value": "native"
+      },
+      {
+        "type": "STRING",
+        "value": "new"
+      },
+      {
+        "type": "STRING",
+        "value": "package"
+      },
+      {
+        "type": "STRING",
+        "value": "private"
+      },
+      {
+        "type": "STRING",
+        "value": "protected"
+      },
+      {
+        "type": "STRING",
+        "value": "public"
+      },
+      {
+        "type": "STRING",
+        "value": "return"
+      },
+      {
+        "type": "STRING",
+        "value": "short"
+      },
+      {
+        "type": "STRING",
+        "value": "static"
+      },
+      {
+        "type": "STRING",
+        "value": "strictfp"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "super"
+      },
+      {
+        "type": "STRING",
+        "value": "switch"
+      },
+      {
+        "type": "STRING",
+        "value": "synchronized"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "this"
+      },
+      {
+        "type": "STRING",
+        "value": "throw"
+      },
+      {
+        "type": "STRING",
+        "value": "throws"
+      },
+      {
+        "type": "STRING",
+        "value": "transient"
+      },
+      {
+        "type": "STRING",
+        "value": "try"
+      },
+      {
+        "type": "STRING",
+        "value": "void"
+      },
+      {
+        "type": "STRING",
+        "value": "volatile"
+      },
+      {
+        "type": "STRING",
+        "value": "while"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "underscore_pattern"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "true"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "false"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "null_literal"
+      }
+    ]
+  }
 }
