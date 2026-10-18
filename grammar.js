@@ -505,6 +505,7 @@ module.exports = grammar({
     ),
 
     switch_label: $ => choice(
+      prec(1, seq('case', $.null_literal, ',', 'default')),
       seq('case',
         choice(
           $.pattern,
