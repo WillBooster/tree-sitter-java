@@ -3388,30 +3388,26 @@
       ]
     },
     "dimensions": {
-      "type": "PREC_RIGHT",
-      "value": 0,
+      "type": "REPEAT1",
       "content": {
-        "type": "REPEAT1",
-        "content": {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "REPEAT",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_annotation"
-              }
-            },
-            {
-              "type": "STRING",
-              "value": "["
-            },
-            {
-              "type": "STRING",
-              "value": "]"
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_annotation"
             }
-          ]
-        }
+          },
+          {
+            "type": "STRING",
+            "value": "["
+          },
+          {
+            "type": "STRING",
+            "value": "]"
+          }
+        ]
       }
     },
     "switch_expression": {
@@ -4272,7 +4268,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_unannotated_type"
+                "name": "_type"
               }
             ]
           }
@@ -7101,7 +7097,7 @@
           "name": "element",
           "content": {
             "type": "SYMBOL",
-            "name": "_unannotated_type"
+            "name": "_simple_type"
           }
         },
         {
@@ -7447,15 +7443,15 @@
           "name": "_unannotated_type"
         },
         {
-          "type": "STRING",
-          "value": "..."
-        },
-        {
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",
             "name": "_annotation"
           }
+        },
+        {
+          "type": "STRING",
+          "value": "..."
         },
         {
           "type": "SYMBOL",
@@ -7721,6 +7717,17 @@
     }
   ],
   "conflicts": [
+    [
+      "dimensions"
+    ],
+    [
+      "array_type",
+      "_unannotated_type"
+    ],
+    [
+      "array_type",
+      "primary_expression"
+    ],
     [
       "modifiers",
       "annotated_type",

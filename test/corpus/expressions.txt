@@ -1960,7 +1960,7 @@ for (int i = 0, _ = sideEffect(); i < 10; i++) { }
 Annotations before a spread parameter's ellipsis
 ================================================================================
 
-void foo(int... @Foo x) {
+void foo(int @Foo ... x) {
 }
 
 ---
@@ -2096,4 +2096,73 @@ if (item instanceof Integer _) {}
   (if_statement
     (parenthesized_expression
       (instanceof_expression (identifier) (type_identifier) (underscore_pattern)))
+    (block)))
+
+
+================================================================================
+Annotations in a catch type
+================================================================================
+
+try {
+} catch (@A1 @A2 final @A3 @A4 T1 | @A5 @A6 T2 e) {
+}
+
+---
+
+(program
+  (try_statement
+    (block)
+    (catch_clause
+      (catch_formal_parameter
+        (modifiers
+          (marker_annotation
+            (identifier))
+          (marker_annotation
+            (identifier))
+          (marker_annotation
+            (identifier))
+          (marker_annotation
+            (identifier)))
+        (catch_type
+          (type_identifier)
+          (annotated_type
+            (marker_annotation
+              (identifier))
+            (marker_annotation
+              (identifier))
+            (type_identifier)))
+        (identifier))
+      (block))))
+
+================================================================================
+Annotations after a spread parameter's ellipsis are invalid
+:error
+================================================================================
+
+void foo(int... @Foo x) {}
+
+---
+
+(ERROR)
+
+================================================================================
+Annotations on array dimensions and a spread parameter's ellipsis
+================================================================================
+
+void foo(int @Array [] @Elements ... values) {}
+
+---
+
+(program
+  (method_declaration
+    (void_type)
+    (identifier)
+    (formal_parameters
+      (spread_parameter
+        (array_type
+          (integral_type)
+          (dimensions
+            (marker_annotation (identifier))))
+        (marker_annotation (identifier))
+        (variable_declarator (identifier))))
     (block)))
