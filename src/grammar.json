@@ -7097,7 +7097,7 @@
           "name": "element",
           "content": {
             "type": "SYMBOL",
-            "name": "_unannotated_type"
+            "name": "_simple_type"
           }
         },
         {
@@ -7719,6 +7719,14 @@
   "conflicts": [
     [
       "dimensions"
+    ],
+    [
+      "array_type",
+      "_unannotated_type"
+    ],
+    [
+      "array_type",
+      "primary_expression"
     ],
     [
       "modifiers",

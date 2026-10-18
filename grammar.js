@@ -73,6 +73,8 @@ module.exports = grammar({
 
   conflicts: $ => [
     [$.dimensions],
+    [$.array_type, $._unannotated_type],
+    [$.array_type, $.primary_expression],
     [$.modifiers, $.annotated_type, $.receiver_parameter],
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
     [$._unannotated_type, $.primary_expression, $.inferred_parameters],
@@ -1179,7 +1181,7 @@ module.exports = grammar({
     )),
 
     array_type: $ => seq(
-      field('element', $._unannotated_type),
+      field('element', $._simple_type),
       field('dimensions', $.dimensions),
     ),
 
