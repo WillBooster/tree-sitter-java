@@ -2249,6 +2249,10 @@
         {
           "type": "identifier",
           "named": true
+        },
+        {
+          "type": "underscore_pattern",
+          "named": true
         }
       ]
     }
@@ -2458,6 +2462,10 @@
           },
           {
             "type": "inferred_parameters",
+            "named": true
+          },
+          {
+            "type": "underscore_pattern",
             "named": true
           }
         ]
@@ -2682,6 +2690,10 @@
         },
         {
           "type": "primary_expression",
+          "named": true
+        },
+        {
+          "type": "scoped_identifier",
           "named": true
         },
         {

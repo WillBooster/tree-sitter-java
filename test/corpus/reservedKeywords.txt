@@ -70,3 +70,63 @@ class C {
         (variable_declarator (identifier))
         (variable_declarator (identifier))
         (variable_declarator (identifier))))))
+
+=================================================
+Unnamed inferred lambda parameters
+=================================================
+
+class C {
+  Object a = _ -> 1;
+  Object b = (_, value) -> value;
+}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (lambda_expression
+            (underscore_pattern)
+            (decimal_integer_literal))))
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (lambda_expression
+            (inferred_parameters (underscore_pattern) (identifier))
+            (identifier)))))))
+
+=================================================
+Qualified superclass method references
+=================================================
+
+class C {
+  Object a = Outer.super::method;
+  Object b = p.Outer.super::<String>method;
+}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (method_reference (identifier) (super) (identifier))))
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (method_reference
+            (scoped_identifier (identifier) (identifier))
+            (super)
+            (type_arguments (type_identifier))
+            (identifier)))))))

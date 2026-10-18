@@ -64,3 +64,55 @@ test('keeps contextual names, keyword prefixes, literals, and unnamed variables'
     parser.delete();
   }
 });
+
+for (const parameters of ['_', '(_)', '(_, _)', '(_, value)', '(var _, var value)', '(String _, String value)']) {
+  test(`preserves unnamed lambda parameters ${parameters}`, () => {
+    const parser = new Parser();
+    parser.setLanguage(language);
+    const tree = parser.parse(`class C { Object f = ${parameters} -> 1; }`)!;
+    try {
+      expect(tree.rootNode.hasError).toBe(false);
+      const lambda = tree.rootNode.descendantsOfType('lambda_expression');
+      expect(lambda).toHaveLength(1);
+      expect(lambda[0]?.childForFieldName('parameters')?.text).toBe(parameters);
+      expect(tree.rootNode.descendantsOfType('underscore_pattern')).toHaveLength(parameters === '(_, _)' ? 2 : 1);
+    } finally {
+      tree.delete();
+      parser.delete();
+    }
+  });
+}
+
+for (const reference of ['Outer.super::method', 'p.Outer.super::method', 'Outer.super::<String>method']) {
+  test(`preserves qualified superclass method reference ${reference}`, () => {
+    const parser = new Parser();
+    parser.setLanguage(language);
+    const tree = parser.parse(`class C { Object f = ${reference}; }`)!;
+    try {
+      expect(tree.rootNode.hasError).toBe(false);
+      expect(tree.rootNode.descendantsOfType('method_reference').map((node) => node.text)).toEqual([reference]);
+      expect(tree.rootNode.descendantsOfType('super')).toHaveLength(1);
+    } finally {
+      tree.delete();
+      parser.delete();
+    }
+  });
+}
+
+test('preserves unnamed bindings in local, loop, resource, catch, and pattern positions', () => {
+  const parser = new Parser();
+  parser.setLanguage(language);
+  const tree = parser.parse(`class C { void method(Object value) {
+    int _ = 1;
+    for (var _ : values) {}
+    try (var _ = open()) {} catch (Exception _) {}
+    if (value instanceof String _) {}
+  } }`)!;
+  try {
+    expect(tree.rootNode.hasError).toBe(false);
+    expect(tree.rootNode.descendantsOfType('underscore_pattern')).toHaveLength(5);
+  } finally {
+    tree.delete();
+    parser.delete();
+  }
+});

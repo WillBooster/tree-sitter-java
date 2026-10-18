@@ -2329,6 +2329,10 @@
               {
                 "type": "SYMBOL",
                 "name": "_reserved_identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "underscore_pattern"
               }
             ]
           }
@@ -2376,6 +2380,10 @@
                 {
                   "type": "SYMBOL",
                   "name": "_reserved_identifier"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "underscore_pattern"
                 }
               ]
             },
@@ -2398,6 +2406,10 @@
                       {
                         "type": "SYMBOL",
                         "name": "_reserved_identifier"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "underscore_pattern"
                       }
                     ]
                   }
@@ -3214,47 +3226,89 @@
       ]
     },
     "method_reference": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "CHOICE",
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_type"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "primary_expression"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "super"
+                }
+              ]
+            },
+            {
+              "type": "STRING",
+              "value": "::"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "type_arguments"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "new"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
           "members": [
             {
               "type": "SYMBOL",
-              "name": "_type"
+              "name": "_name"
             },
             {
-              "type": "SYMBOL",
-              "name": "primary_expression"
+              "type": "STRING",
+              "value": "."
             },
             {
               "type": "SYMBOL",
               "name": "super"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "::"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "type_arguments"
             },
             {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
               "type": "STRING",
-              "value": "new"
+              "value": "::"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "type_arguments"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
             },
             {
               "type": "SYMBOL",
@@ -7787,11 +7841,6 @@
     ],
     [
       "_unannotated_type",
-      "primary_expression",
-      "scoped_type_identifier"
-    ],
-    [
-      "_unannotated_type",
       "scoped_type_identifier"
     ],
     [
@@ -7821,6 +7870,22 @@
     [
       "yield_statement",
       "_reserved_identifier"
+    ],
+    [
+      "scoped_identifier",
+      "scoped_type_identifier"
+    ],
+    [
+      "primary_expression",
+      "method_reference",
+      "scoped_identifier"
+    ],
+    [
+      "primary_expression",
+      "method_reference",
+      "scoped_identifier",
+      "_unannotated_type",
+      "scoped_type_identifier"
     ]
   ],
   "precedences": [],
