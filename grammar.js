@@ -80,7 +80,6 @@ module.exports = grammar({
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
     [$._unannotated_type, $.primary_expression, $.inferred_parameters],
     [$._unannotated_type, $.primary_expression],
-    [$._unannotated_type, $.primary_expression, $.scoped_type_identifier],
     [$._unannotated_type, $.scoped_type_identifier],
     [$._unannotated_type, $.generic_type],
     [$.generic_type, $.primary_expression],
@@ -90,7 +89,69 @@ module.exports = grammar({
     [$.inferred_parameters, $.primary_expression],
     [$.argument_list, $.record_pattern_body],
     [$.yield_statement, $._reserved_identifier],
+    [$.scoped_identifier, $.scoped_type_identifier],
+    [$.primary_expression, $.method_reference, $.scoped_identifier],
+    [$.primary_expression, $.method_reference, $.scoped_identifier, $._unannotated_type, $.scoped_type_identifier],
   ],
+
+  reserved: {
+    global: $ => [
+      'abstract',
+      'assert',
+      'boolean',
+      'break',
+      'byte',
+      'case',
+      'catch',
+      'char',
+      'class',
+      $._const,
+      'continue',
+      'default',
+      'do',
+      'double',
+      'else',
+      'enum',
+      'extends',
+      'final',
+      'finally',
+      'float',
+      'for',
+      $._goto,
+      'if',
+      'implements',
+      'import',
+      'instanceof',
+      'int',
+      'interface',
+      'long',
+      'native',
+      'new',
+      'package',
+      'private',
+      'protected',
+      'public',
+      'return',
+      'short',
+      'static',
+      'strictfp',
+      $.super,
+      'switch',
+      'synchronized',
+      $.this,
+      'throw',
+      'throws',
+      'transient',
+      'try',
+      'void',
+      'volatile',
+      'while',
+      $.underscore_pattern,
+      $.true,
+      $.false,
+      $.null_literal,
+    ],
+  },
 
   word: $ => $.identifier,
 
@@ -309,7 +370,7 @@ module.exports = grammar({
 
     lambda_expression: $ => seq(
       field('parameters', choice(
-        $.identifier, $.formal_parameters, $.inferred_parameters, $._reserved_identifier,
+        $.identifier, $.formal_parameters, $.inferred_parameters, $._reserved_identifier, $.underscore_pattern,
       )),
       '->',
       field('body', choice($.expression, $.block)),
@@ -317,7 +378,7 @@ module.exports = grammar({
 
     inferred_parameters: $ => seq(
       '(',
-      commaSep1(choice($.identifier, $._reserved_identifier)),
+      commaSep1(choice($.identifier, $._reserved_identifier, $.underscore_pattern)),
       ')',
     ),
 
@@ -450,11 +511,19 @@ module.exports = grammar({
 
     argument_list: $ => seq('(', commaSep($.expression), ')'),
 
-    method_reference: $ => seq(
-      choice($._type, $.primary_expression, $.super),
-      '::',
-      optional($.type_arguments),
-      choice('new', $.identifier),
+    method_reference: $ => choice(
+      seq(
+        choice($._type, $.primary_expression, $.super),
+        '::',
+        optional($.type_arguments),
+        choice('new', $.identifier),
+      ),
+      seq(
+        $._name, '.', $.super,
+        '::',
+        optional($.type_arguments),
+        $.identifier,
+      ),
     ),
 
     type_arguments: $ => seq(
@@ -1278,6 +1347,9 @@ module.exports = grammar({
       )),
       alias('yield', $.identifier),
     ),
+
+    _const: _ => /const/,
+    _goto: _ => /goto/,
 
     this: _ => 'this',
 
