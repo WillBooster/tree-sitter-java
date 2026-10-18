@@ -97,3 +97,25 @@ class C {
         (integral_type)
         (variable_declarator
           (identifier))))))
+
+==================
+Paired Unicode backslashes preserve adjacent character declarations
+==================
+
+class C { char a = '\u005c\u005c'; char b = 'x'; int after; }
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (integral_type)
+        (variable_declarator (identifier) (character_literal)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator (identifier) (character_literal)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator (identifier))))))

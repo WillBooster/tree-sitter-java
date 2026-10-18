@@ -1125,7 +1125,7 @@
                 },
                 {
                   "type": "PATTERN",
-                  "value": "\\\\."
+                  "value": "\\\\[^u]"
                 },
                 {
                   "type": "PATTERN",
@@ -1133,7 +1133,33 @@
                 },
                 {
                   "type": "PATTERN",
-                  "value": "\\\\u+005[cC]."
+                  "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+005[cC]"
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "PATTERN",
+                          "value": "\\\\u+005[cC]"
+                        },
+                        {
+                          "type": "PATTERN",
+                          "value": "."
+                        },
+                        {
+                          "type": "PATTERN",
+                          "value": "\\n"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }

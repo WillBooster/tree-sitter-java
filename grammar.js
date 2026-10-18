@@ -170,9 +170,10 @@ module.exports = grammar({
       '\'',
       repeat1(choice(
         /[^\\'\n]/,
-        /\\./,
+        /\\[^u]/,
         /\\\n/,
-        /\\u+005[cC]./,
+        /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])/,
+        seq(/\\u+005[cC]/, choice(/\\u+005[cC]/, /./, /\n/)),
       )),
       '\'',
     )),
