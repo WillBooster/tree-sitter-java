@@ -62,3 +62,26 @@ switch (value) { case first, defaultValue -> 1; }
       (switch_rule
         (switch_label (identifier) (identifier))
         (expression_statement (decimal_integer_literal))))))
+
+========================
+Null and expression switch labels
+========================
+
+switch (value) { case null, defaultValue -> 1; }
+switch (value) { case null, X.Y: break; }
+
+---
+
+(program
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label (null_literal) (identifier))
+        (expression_statement (decimal_integer_literal)))))
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_block_statement_group
+        (switch_label (null_literal) (field_access (identifier) (identifier)))
+        (break_statement)))))

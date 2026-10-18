@@ -3537,7 +3537,7 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "PREC",
+          "type": "PREC_DYNAMIC",
           "value": 1,
           "content": {
             "type": "SEQ",
@@ -7746,6 +7746,10 @@
     }
   ],
   "conflicts": [
+    [
+      "_literal",
+      "switch_label"
+    ],
     [
       "modifiers",
       "annotated_type",
