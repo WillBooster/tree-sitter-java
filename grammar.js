@@ -102,7 +102,6 @@ module.exports = grammar({
       $.method_declaration,
     ),
 
-
     _literal: $ => choice(
       $.decimal_integer_literal,
       $.hex_integer_literal,
@@ -225,7 +224,6 @@ module.exports = grammar({
       ))),
 
     null_literal: _ => 'null',
-
 
     expression: $ => choice(
       $.assignment_expression,
@@ -538,7 +536,6 @@ module.exports = grammar({
 
     guard: $ => seq('when', $.expression),
 
-
     statement: $ => choice(
       $.declaration,
       $.expression_statement,
@@ -706,7 +703,6 @@ module.exports = grammar({
       field('body', $.statement),
     ),
 
-
     _annotation: $ => choice(
       $.marker_annotation,
       $.annotation,
@@ -750,7 +746,6 @@ module.exports = grammar({
       optional(','),
       '}',
     ),
-
 
     declaration: $ => prec(PREC.DECL, choice(
       $.module_declaration,
@@ -843,9 +838,10 @@ module.exports = grammar({
 
     import_declaration: $ => seq(
       'import',
-      optional('static'),
-      $._name,
-      optional(seq('.', $.asterisk)),
+      choice(
+        seq('module', $._name),
+        seq(optional('static'), $._name, optional(seq('.', $.asterisk))),
+      ),
       ';',
     ),
 
@@ -981,8 +977,8 @@ module.exports = grammar({
 
     constructor_body: $ => seq(
       '{',
-      optional($.explicit_constructor_invocation),
       repeat($.statement),
+      optional(seq($.explicit_constructor_invocation, repeat($.statement))),
       '}',
     ),
 
@@ -1130,7 +1126,6 @@ module.exports = grammar({
       optional(','),
       '}',
     ),
-
 
     _type: $ => choice(
       $._unannotated_type,
