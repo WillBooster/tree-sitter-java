@@ -73,6 +73,9 @@ module.exports = grammar({
 
   conflicts: $ => [
     [$._literal, $.switch_label],
+    [$.dimensions],
+    [$.array_type, $._unannotated_type],
+    [$.array_type, $.primary_expression],
     [$.modifiers, $.annotated_type, $.receiver_parameter],
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
     [$._unannotated_type, $.primary_expression, $.inferred_parameters],
@@ -475,9 +478,9 @@ module.exports = grammar({
       seq($.super, $._type),
     ),
 
-    dimensions: $ => prec.right(repeat1(
+    dimensions: $ => repeat1(
       seq(repeat($._annotation), '[', ']'),
-    )),
+    ),
 
     switch_expression: $ => seq(
       'switch',
@@ -636,7 +639,10 @@ module.exports = grammar({
       $._variable_declarator_id,
     ),
 
-    catch_type: $ => sep1($._unannotated_type, '|'),
+    catch_type: $ => seq(
+      $._unannotated_type,
+      repeat(seq('|', $._type)),
+    ),
 
     finally_clause: $ => seq('finally', $.block),
 
@@ -1177,7 +1183,7 @@ module.exports = grammar({
     )),
 
     array_type: $ => seq(
-      field('element', $._unannotated_type),
+      field('element', $._simple_type),
       field('dimensions', $.dimensions),
     ),
 
@@ -1242,8 +1248,8 @@ module.exports = grammar({
     spread_parameter: $ => seq(
       optional($.modifiers),
       $._unannotated_type,
-      '...',
       repeat($._annotation),
+      '...',
       $.variable_declarator,
     ),
 
