@@ -102,8 +102,6 @@ module.exports = grammar({
       $.method_declaration,
     ),
 
-    // Literals
-
     _literal: $ => choice(
       $.decimal_integer_literal,
       $.hex_integer_literal,
@@ -226,8 +224,6 @@ module.exports = grammar({
       ))),
 
     null_literal: _ => 'null',
-
-    // Expressions
 
     expression: $ => choice(
       $.assignment_expression,
@@ -540,8 +536,6 @@ module.exports = grammar({
 
     guard: $ => seq('when', $.expression),
 
-    // Statements
-
     statement: $ => choice(
       $.declaration,
       $.expression_statement,
@@ -709,8 +703,6 @@ module.exports = grammar({
       field('body', $.statement),
     ),
 
-    // Annotations
-
     _annotation: $ => choice(
       $.marker_annotation,
       $.annotation,
@@ -754,8 +746,6 @@ module.exports = grammar({
       optional(','),
       '}',
     ),
-
-    // Declarations
 
     declaration: $ => prec(PREC.DECL, choice(
       $.module_declaration,
@@ -848,9 +838,10 @@ module.exports = grammar({
 
     import_declaration: $ => seq(
       'import',
-      optional('static'),
-      $._name,
-      optional(seq('.', $.asterisk)),
+      choice(
+        seq('module', $._name),
+        seq(optional('static'), $._name, optional(seq('.', $.asterisk))),
+      ),
       ';',
     ),
 
@@ -986,8 +977,8 @@ module.exports = grammar({
 
     constructor_body: $ => seq(
       '{',
-      optional($.explicit_constructor_invocation),
       repeat($.statement),
+      optional(seq($.explicit_constructor_invocation, repeat($.statement))),
       '}',
     ),
 
@@ -1135,8 +1126,6 @@ module.exports = grammar({
       optional(','),
       '}',
     ),
-
-    // Types
 
     _type: $ => choice(
       $._unannotated_type,
@@ -1311,8 +1300,6 @@ module.exports = grammar({
 });
 
 /**
- * Creates a rule to match one or more of the rules separated by `separator`
- *
  * @param {RuleOrLiteral} rule
  *
  * @param {RuleOrLiteral} separator
@@ -1324,8 +1311,6 @@ function sep1(rule, separator) {
 }
 
 /**
- * Creates a rule to match one or more of the rules separated by a comma
- *
  * @param {RuleOrLiteral} rule
  *
  * @returns {SeqRule}
@@ -1335,8 +1320,6 @@ function commaSep1(rule) {
 }
 
 /**
- * Creates a rule to optionally match one or more of the rules separated by a comma
- *
  * @param {RuleOrLiteral} rule
  *
  * @returns {ChoiceRule}
