@@ -7,6 +7,12 @@ await Parser.init();
 const language = await Language.load(path.join(import.meta.dirname, '../../tree-sitter-java.wasm'));
 
 for (const literal of [
+  String.raw`'\u{41}'`,
+  String.raw`'\uu{1F600}'`,
+  String.raw`'\u00'`,
+  String.raw`'\u'`,
+  String.raw`'\uzz'`,
+  String.raw`'\u00ZZ'`,
   String.raw`'\u005c\u005c'`,
   String.raw`'\uu005C\uuu005c'`,
   String.raw`'\u005c\'`,

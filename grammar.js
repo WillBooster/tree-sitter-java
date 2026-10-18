@@ -164,17 +164,19 @@ module.exports = grammar({
 
     false: _ => 'false',
 
-    character_literal: _ => token(seq(
-      '\'',
-      repeat1(choice(
+    character_literal: _ => {
+      const character = choice(
         /[^\\'\n]/,
         /\\[^u]/,
         /\\\n/,
         /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])/,
         seq(/\\u+005[cC]/, choice(/\\u+005[cC]/, /./, /\n/)),
-      )),
-      '\'',
-    )),
+      );
+      return token(choice(
+        seq('\'', repeat1(character), '\''),
+        seq('\'', repeat(character), /\\u+[0-9a-fA-F]{0,3}([^0-9a-fA-Fu\\'\n][^\\'\n]*)?/, '\''),
+      ));
+    },
 
     string_literal: $ => choice($._string_literal, $._multiline_string_literal),
     _string_literal: $ => seq(
