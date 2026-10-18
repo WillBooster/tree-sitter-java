@@ -3533,6 +3533,31 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "PREC_DYNAMIC",
+          "value": 1,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "case"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "null_literal"
+              },
+              {
+                "type": "STRING",
+                "value": ","
+              },
+              {
+                "type": "STRING",
+                "value": "default"
+              }
+            ]
+          }
+        },
+        {
           "type": "SEQ",
           "members": [
             {
@@ -7717,6 +7742,10 @@
     }
   ],
   "conflicts": [
+    [
+      "_literal",
+      "switch_label"
+    ],
     [
       "dimensions"
     ],
