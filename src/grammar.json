@@ -1130,6 +1130,10 @@
                 {
                   "type": "PATTERN",
                   "value": "\\\\\\n"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\u+005[cC]."
                 }
               ]
             }
@@ -1305,8 +1309,17 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "STRING",
-            "value": "\\"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "\\"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\\\u+005[cC]"
+              }
+            ]
           },
           {
             "type": "CHOICE",
@@ -1325,7 +1338,7 @@
               },
               {
                 "type": "PATTERN",
-                "value": "u[0-9a-fA-F]{4}"
+                "value": "u+[0-9a-fA-F]{4}"
               },
               {
                 "type": "PATTERN",
