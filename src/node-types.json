@@ -1093,7 +1093,7 @@
       "required": true,
       "types": [
         {
-          "type": "_unannotated_type",
+          "type": "_type",
           "named": true
         }
       ]
