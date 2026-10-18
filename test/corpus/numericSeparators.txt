@@ -1,0 +1,268 @@
+========================
+Repeated underscores in decimal integers
+========================
+
+1____1234;
+1__2__3L;
+12___34l;
+
+---
+
+(program
+  (expression_statement (decimal_integer_literal))
+  (expression_statement (decimal_integer_literal))
+  (expression_statement (decimal_integer_literal)))
+
+========================
+Repeated underscores in hexadecimal integers
+========================
+
+0xA__b___0;
+0X1___FL;
+
+---
+
+(program
+  (expression_statement (hex_integer_literal))
+  (expression_statement (hex_integer_literal)))
+
+========================
+Repeated underscores in octal integers
+========================
+
+0___7;
+01__2___3L;
+0__0;
+
+---
+
+(program
+  (expression_statement (octal_integer_literal))
+  (expression_statement (octal_integer_literal))
+  (expression_statement (octal_integer_literal)))
+
+========================
+Repeated underscores in binary integers
+========================
+
+0b1___0;
+0B0__1L;
+
+---
+
+(program
+  (expression_statement (binary_integer_literal))
+  (expression_statement (binary_integer_literal)))
+
+========================
+Repeated underscores in decimal floating point
+========================
+
+1__2.3___4e5__6;
+1___2e+3__4F;
+.1___2e-3__4;
+1__2.f;
+0__1F;
+0__1e0__1;
+
+---
+
+(program
+  (expression_statement (decimal_floating_point_literal))
+  (expression_statement (decimal_floating_point_literal))
+  (expression_statement (decimal_floating_point_literal))
+  (expression_statement (decimal_floating_point_literal))
+  (expression_statement (decimal_floating_point_literal))
+  (expression_statement (decimal_floating_point_literal)))
+
+========================
+Repeated underscores in hexadecimal floating point
+========================
+
+0xA__B.C___Dp1__0;
+0X.1__Ap-1__2F;
+0x1__0p0__1;
+
+---
+
+(program
+  (expression_statement (hex_floating_point_literal))
+  (expression_statement (hex_floating_point_literal))
+  (expression_statement (hex_floating_point_literal)))
+
+========================
+Invalid numeric separator placement: 0x__1
+:error
+========================
+
+class A { double x = 0x__1; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 0b__1
+:error
+========================
+
+class A { double x = 0b__1; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 123__
+:error
+========================
+
+class A { double x = 123__; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 123__L
+:error
+========================
+
+class A { double x = 123__L; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 0__
+:error
+========================
+
+class A { double x = 0__; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 0x1__L
+:error
+========================
+
+class A { double x = 0x1__L; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 0b1__L
+:error
+========================
+
+class A { double x = 0b1__L; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 1__.0
+:error
+========================
+
+class A { double x = 1__.0; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 1.__0
+:error
+========================
+
+class A { double x = 1.__0; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 1e__2
+:error
+========================
+
+class A { double x = 1e__2; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 1e+__2
+:error
+========================
+
+class A { double x = 1e+__2; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 1e2__
+:error
+========================
+
+class A { double x = 1e2__; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 1.0__F
+:error
+========================
+
+class A { double x = 1.0__F; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 0x1__p2
+:error
+========================
+
+class A { double x = 0x1__p2; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 0x1p__2
+:error
+========================
+
+class A { double x = 0x1p__2; }
+
+---
+
+(ERROR)
+
+========================
+Invalid numeric separator placement: 0x1p2__F
+:error
+========================
+
+class A { double x = 0x1p2__F; }
+
+---
+
+(ERROR)
+
