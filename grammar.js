@@ -72,6 +72,7 @@ module.exports = grammar({
   ],
 
   conflicts: $ => [
+    [$._literal, $.switch_label],
     [$.dimensions],
     [$.array_type, $._unannotated_type],
     [$.array_type, $.primary_expression],
@@ -506,6 +507,7 @@ module.exports = grammar({
     ),
 
     switch_label: $ => choice(
+      prec.dynamic(1, seq('case', $.null_literal, ',', 'default')),
       seq('case',
         choice(
           $.pattern,

@@ -1,0 +1,87 @@
+========================
+Combined null and default switch rules
+========================
+
+switch (value) { case null, default -> 1; }
+switch (value) { case null /* comment */, default -> {} }
+
+---
+
+(program
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label (null_literal))
+        (expression_statement (decimal_integer_literal)))))
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label (null_literal) (block_comment))
+        (block)))))
+
+========================
+Combined null and default switch statement labels
+========================
+
+switch (value) { case null, default: break; }
+
+---
+
+(program
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_block_statement_group
+        (switch_label (null_literal))
+        (break_statement)))))
+
+========================
+Separate null, default, and constant labels
+========================
+
+switch (value) { case null -> 0; default -> 1; }
+switch (value) { case first, defaultValue -> 1; }
+
+---
+
+(program
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label (null_literal))
+        (expression_statement (decimal_integer_literal)))
+      (switch_rule
+        (switch_label)
+        (expression_statement (decimal_integer_literal)))))
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label (identifier) (identifier))
+        (expression_statement (decimal_integer_literal))))))
+
+========================
+Null and expression switch labels
+========================
+
+switch (value) { case null, defaultValue -> 1; }
+switch (value) { case null, X.Y: break; }
+
+---
+
+(program
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_rule
+        (switch_label (null_literal) (identifier))
+        (expression_statement (decimal_integer_literal)))))
+  (switch_expression
+    (parenthesized_expression (identifier))
+    (switch_block
+      (switch_block_statement_group
+        (switch_label (null_literal) (field_access (identifier) (identifier)))
+        (break_statement)))))
