@@ -1,0 +1,15 @@
+================================================================================
+Annotated receiver parameters
+================================================================================
+
+class Outer {
+  class Inner {
+    void plain(Inner this) {}
+    void marked(@Owned Inner this, int value) {}
+    Inner(@Owned Outer Outer.this) {}
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program (class_declaration name: (identifier) body: (class_body (class_declaration name: (identifier) body: (class_body (method_declaration type: (void_type) name: (identifier) parameters: (formal_parameters (receiver_parameter (type_identifier) (this))) body: (block)) (method_declaration type: (void_type) name: (identifier) parameters: (formal_parameters (receiver_parameter (marker_annotation name: (identifier)) (type_identifier) (this)) (formal_parameter type: (integral_type) name: (identifier))) body: (block)) (constructor_declaration name: (identifier) parameters: (formal_parameters (receiver_parameter (marker_annotation name: (identifier)) (type_identifier) (identifier) (this))) body: (constructor_body)))))))
