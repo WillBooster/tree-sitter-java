@@ -225,15 +225,41 @@ module.exports = grammar({
 
     false: _ => 'false',
 
-    character_literal: _ => token(seq(
-      '\'',
-      repeat1(choice(
-        /[^\\'\n]/,
-        /\\./,
-        /\\\n/,
-      )),
-      '\'',
-    )),
+    character_literal: _ => {
+      const incompleteUnicode = /\\u+[0-9a-fA-F]{0,3}/;
+      const malformedUnicode = /\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\'\n]|[^0-9a-fA-Fu\\'\n])/;
+      const encodedBackslash = /\\u+005[cC]/;
+      const unicodeCharacter = /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])/;
+      const plainCharacter = /[^\\'\n]/;
+      const rawEscape = /\\[^u]/;
+      const boundedEscape = choice(
+        malformedUnicode,
+        rawEscape,
+        unicodeCharacter,
+        seq(encodedBackslash, choice(encodedBackslash, /[^'\n]/, /\n/)),
+      );
+      const boundedTail = seq(
+        repeat(choice(
+          plainCharacter,
+          seq(repeat(incompleteUnicode), boundedEscape),
+        )),
+        repeat(incompleteUnicode),
+        optional(encodedBackslash),
+      );
+      const character = choice(
+        plainCharacter,
+        rawEscape,
+        unicodeCharacter,
+        seq(encodedBackslash, choice(encodedBackslash, /./, /\n/)),
+      );
+      return token(seq('\'', choice(
+        repeat1(character),
+        seq(repeat(character), repeat1(incompleteUnicode)),
+        seq(repeat(character), malformedUnicode, boundedTail),
+        seq(repeat(character), repeat1(incompleteUnicode), boundedEscape, boundedTail),
+        seq(repeat(character), repeat1(incompleteUnicode), encodedBackslash),
+      ), '\''));
+    },
 
     string_literal: $ => choice($._string_literal, $._multiline_string_literal),
     _string_literal: $ => seq(
@@ -274,15 +300,23 @@ module.exports = grammar({
       prec(2, token.immediate(seq('\\', /[^bfnrts'\"\\]/))),
       prec(1, $.escape_sequence),
     ),
-    escape_sequence: _ => token.immediate(seq(
-      '\\',
-      choice(
-        /[^xu0-7]/,
-        /[0-7]{1,3}/,
-        /x[0-9a-fA-F]{2}/,
-        /u[0-9a-fA-F]{4}/,
-        /u\{[0-9a-fA-F]+\}/,
-      ))),
+    escape_sequence: _ => token.immediate(choice(
+      seq(/\\u+005[cC]/, choice(
+        /(?:[0-3]|\\u+003[0-3])(?:[0-7]|\\u+003[0-7]){0,2}/,
+        /(?:[4-7]|\\u+003[4-7])(?:[0-7]|\\u+003[0-7])?/,
+        /\\u+[0-9a-fA-F]{4}/,
+      )),
+      seq(
+        choice('\\', /\\u+005[cC]/),
+        choice(
+          /[^xu0-7]/,
+          /(?:[0-3][0-7]{0,2}|[4-7][0-7]?)/,
+          /x[0-9a-fA-F]{2}/,
+          /u+[0-9a-fA-F]{4}/,
+          /u\{[0-9a-fA-F]+\}/,
+        ),
+      ),
+    )),
 
     null_literal: _ => 'null',
 

@@ -1,0 +1,121 @@
+==================
+Unicode escapes in string literals
+==================
+
+class C {
+  String a = "\uuu0041";
+  String b = "\u005c\";
+  String c = "\u005c"";
+  String d = "\uu005C"quoted\u005c"";
+  String e = "\\u005c";
+  int after;
+}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (string_literal
+            (escape_sequence))))
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (string_literal
+            (escape_sequence))))
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (string_literal
+            (escape_sequence))))
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (string_literal
+            (escape_sequence)
+            (string_fragment)
+            (escape_sequence))))
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (string_literal
+            (escape_sequence)
+            (string_fragment))))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier))))))
+
+==================
+Unicode backslashes in character literals
+==================
+
+class C {
+  char a = '\u005c'';
+  char b = '\uu005C'';
+  char c = '\u005cn';
+  char d = '\u005c\';
+  int after;
+}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)
+          (character_literal)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)
+          (character_literal)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)
+          (character_literal)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)
+          (character_literal)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier))))))
+
+==================
+Paired Unicode backslashes preserve adjacent character declarations
+==================
+
+class C { char a = '\u005c\u005c'; char b = 'x'; int after; }
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (integral_type)
+        (variable_declarator (identifier) (character_literal)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator (identifier) (character_literal)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator (identifier))))))
