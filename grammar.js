@@ -227,16 +227,37 @@ module.exports = grammar({
 
     character_literal: _ => {
       const incompleteUnicode = /\\u+[0-9a-fA-F]{0,3}/;
-      const escape = choice(
-        /\\[^u]/,
-        /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])/,
-        seq(/\\u+005[cC]/, choice(/\\u+005[cC]/, /./, /\n/)),
-        /\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\'\n]|[^0-9a-fA-Fu\\'\n])/,
+      const malformedUnicode = /\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\'\n]|[^0-9a-fA-Fu\\'\n])/;
+      const encodedBackslash = /\\u+005[cC]/;
+      const unicodeCharacter = /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])/;
+      const plainCharacter = /[^\\'\n]/;
+      const rawEscape = /\\[^u]/;
+      const boundedEscape = choice(
+        malformedUnicode,
+        rawEscape,
+        unicodeCharacter,
+        seq(encodedBackslash, choice(encodedBackslash, /[^'\n]/, /\n/)),
       );
-      const character = choice(/[^\\'\n]/, seq(repeat(incompleteUnicode), escape));
+      const boundedTail = seq(
+        repeat(choice(
+          plainCharacter,
+          seq(repeat(incompleteUnicode), boundedEscape),
+        )),
+        repeat(incompleteUnicode),
+        optional(encodedBackslash),
+      );
+      const character = choice(
+        plainCharacter,
+        rawEscape,
+        unicodeCharacter,
+        seq(encodedBackslash, choice(encodedBackslash, /./, /\n/)),
+      );
       return token(seq('\'', choice(
         repeat1(character),
         seq(repeat(character), repeat1(incompleteUnicode)),
+        seq(repeat(character), malformedUnicode, boundedTail),
+        seq(repeat(character), repeat1(incompleteUnicode), boundedEscape, boundedTail),
+        seq(repeat(character), repeat1(incompleteUnicode), encodedBackslash),
       ), '\''));
     },
 
