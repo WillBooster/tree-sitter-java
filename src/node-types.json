@@ -2708,12 +2708,17 @@
     }
   },
   {
+    "type": "modifier",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "modifiers",
     "named": true,
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "annotation",
@@ -2721,6 +2726,14 @@
         },
         {
           "type": "marker_annotation",
+          "named": true
+        },
+        {
+          "type": "modifier",
+          "named": true
+        },
+        {
+          "type": "visibility",
           "named": true
         }
       ]
@@ -4064,6 +4077,11 @@
         ]
       }
     }
+  },
+  {
+    "type": "visibility",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "while_statement",

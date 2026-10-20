@@ -412,7 +412,9 @@ class WhileDemo {
     name: (identifier)
     body: (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (visibility)
+          (modifier))
         type: (void_type)
         name: (identifier)
         parameters: (formal_parameters
@@ -566,7 +568,8 @@ class Quack {
       (method_declaration
         (modifiers
           (marker_annotation
-            (identifier)))
+            (identifier))
+          (visibility))
         (void_type)
         (identifier)
         (formal_parameters)
@@ -684,11 +687,14 @@ public class SwitchDemo {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     name: (identifier)
     body: (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (visibility)
+          (modifier))
         type: (void_type)
         name: (identifier)
         parameters: (formal_parameters
@@ -861,7 +867,9 @@ class Test {
           name: (identifier)
           value: (decimal_integer_literal)))
       (field_declaration
-        (modifiers)
+        (modifiers
+          (modifier)
+          (modifier))
         type: (integral_type)
         declarator: (variable_declarator
           name: (identifier)
@@ -932,7 +940,9 @@ class Test {
         declarator: (variable_declarator
           name: (identifier)))
       (field_declaration
-        (modifiers)
+        (modifiers
+          (modifier)
+          (modifier))
         type: (integral_type)
         declarator: (variable_declarator
           name: (identifier)
@@ -1055,7 +1065,8 @@ class Test {
         declarator: (variable_declarator
           name: (identifier)))
       (method_declaration
-        (modifiers)
+        (modifiers
+          (modifier))
         type: (void_type)
         name: (identifier)
         parameters: (formal_parameters
@@ -1116,7 +1127,8 @@ class Test {
         (variable_declarator
           (identifier)))
       (method_declaration
-        (modifiers)
+        (modifiers
+          (modifier))
         (void_type)
         (identifier)
         (formal_parameters
@@ -1166,11 +1178,13 @@ public class Patterns {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (modifier))
         (void_type)
         (identifier)
         (formal_parameters)
@@ -1283,11 +1297,13 @@ public class Switches {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (modifier))
         (void_type)
         (identifier)
         (formal_parameters)
@@ -1373,12 +1389,14 @@ class Box <T> {
         (type_identifier)))
     (class_body
       (field_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (type_identifier)
         (variable_declarator
           (identifier)))
       (constructor_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (identifier)
         (formal_parameters
           (formal_parameter
@@ -1438,7 +1456,8 @@ class someClass <T> {
         (type_identifier)))
     (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (generic_type
           (type_identifier)
           (type_arguments
@@ -1462,7 +1481,9 @@ class someClass <T> {
           (return_statement
             (identifier))))
       (method_declaration
-        (modifiers)
+        (modifiers
+          (visibility)
+          (modifier))
         (type_parameters
           (type_parameter
             (type_identifier)))
@@ -2119,6 +2140,7 @@ try {
             (identifier))
           (marker_annotation
             (identifier))
+          (modifier)
           (marker_annotation
             (identifier))
           (marker_annotation

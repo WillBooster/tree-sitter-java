@@ -15,7 +15,8 @@ class A {
     name: (identifier)
     body: (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         type: (integral_type)
         name: (identifier)
         parameters: (formal_parameters)
@@ -402,15 +403,18 @@ abstract class ColoredPoint extends Point {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (class_body))
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (class_body))
   (class_declaration
-    (modifiers)
+    (modifiers
+      (modifier))
     (identifier)
     (superclass
       (type_identifier))
@@ -427,7 +431,8 @@ public class Dog implements ISpeak {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (super_interfaces
       (type_list
@@ -631,22 +636,26 @@ public class Inner1<T> {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (type_parameters
       (type_parameter
         (type_identifier)))
     (class_body
       (class_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (identifier)
         (class_body
           (class_declaration
-            (modifiers)
+            (modifiers
+              (visibility))
             (identifier)
             (class_body
               (constructor_declaration
-                (modifiers)
+                (modifiers
+                  (visibility))
                 (identifier)
                 (formal_parameters
                   (receiver_parameter
@@ -678,11 +687,13 @@ public class A {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (class_body
       (constructor_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (identifier)
         (formal_parameters
           (receiver_parameter
@@ -690,7 +701,8 @@ public class A {
             (this)))
         (constructor_body))
       (constructor_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (identifier)
         (formal_parameters
           (receiver_parameter
@@ -755,7 +767,8 @@ class Point {
     (identifier)
     (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (floating_point_type)
         (identifier)
         (formal_parameters)
@@ -787,7 +800,8 @@ class JayZ {
     (identifier)
     (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (void_type)
         (identifier)
         (formal_parameters)
@@ -832,7 +846,8 @@ public @interface Foo {
 
 (program
   (annotation_type_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     name: (identifier)
     body: (annotation_type_body
       (enum_declaration
@@ -856,7 +871,8 @@ public record Foo(int bar) {
 
 (program
   (record_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     name: (identifier)
     parameters: (formal_parameters
       (formal_parameter
@@ -875,7 +891,8 @@ public record Foo<T>(T bar) {
 
 (program
   (record_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     name: (identifier)
     type_parameters: (type_parameters
       (type_parameter
@@ -902,11 +919,14 @@ public class Usecase {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     name: (identifier)
     body: (class_body
       (record_declaration
-        (modifiers)
+        (modifiers
+          (visibility)
+          (modifier))
         name: (identifier)
         parameters: (formal_parameters
           (formal_parameter
@@ -917,7 +937,8 @@ public class Usecase {
             name: (identifier)))
         body: (class_body
           (method_declaration
-            (modifiers)
+            (modifiers
+              (visibility))
             type: (type_identifier)
             name: (identifier)
             parameters: (formal_parameters)
@@ -969,7 +990,8 @@ record Person(int age) {
         (identifier)))
     (class_body
       (compact_constructor_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (identifier)
         (block
           (if_statement
@@ -1047,7 +1069,8 @@ non-sealed interface C extends A {}
 
 (program
   (interface_declaration
-    (modifiers)
+    (modifiers
+      (modifier))
     (identifier)
     (permits
       (type_list
@@ -1055,14 +1078,16 @@ non-sealed interface C extends A {}
         (type_identifier)))
     (interface_body))
   (class_declaration
-    (modifiers)
+    (modifiers
+      (modifier))
     (identifier)
     (super_interfaces
       (type_list
         (type_identifier)))
     (class_body))
   (interface_declaration
-    (modifiers)
+    (modifiers
+      (modifier))
     (identifier)
     (extends_interfaces
       (type_list
@@ -1089,18 +1114,21 @@ public class Keywords {
 
 (program
   (annotation_type_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (annotation_type_body
       (annotation_type_element_declaration
         (type_identifier)
         (identifier))))
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (void_type)
         (identifier)
         (formal_parameters)
@@ -1136,11 +1164,13 @@ public class Anno {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (class_body
       (method_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (void_type)
         (identifier)
         (formal_parameters)
@@ -1186,11 +1216,13 @@ public class A {
 
 (program
   (class_declaration
-    (modifiers)
+    (modifiers
+      (visibility))
     (identifier)
     (class_body
       (constructor_declaration
-        (modifiers)
+        (modifiers
+          (visibility))
         (identifier)
         (formal_parameters)
         (constructor_body

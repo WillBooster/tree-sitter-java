@@ -991,9 +991,13 @@ module.exports = grammar({
 
     modifiers: $ => repeat1(choice(
       $._annotation,
-      'public',
-      'protected',
-      'private',
+      $.visibility,
+      $.modifier,
+    )),
+
+    visibility: _ => choice('public', 'protected', 'private'),
+
+    modifier: _ => choice(
       'abstract',
       'static',
       'final',
@@ -1005,7 +1009,7 @@ module.exports = grammar({
       'volatile',
       'sealed',
       'non-sealed',
-    )),
+    ),
 
     type_parameters: $ => seq(
       '<', commaSep1($.type_parameter), '>',
