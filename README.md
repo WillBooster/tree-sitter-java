@@ -62,6 +62,18 @@ parser.setLanguage(await Language.load(java));
 
 The package also ships `grammar.js`, the queries in `queries/`, and the node types in `src/node-types.json`.
 
+Within a declaration's `modifiers`, access keywords are named `visibility` nodes and other modifier keywords are
+named `modifier` nodes. Annotations retain their own nodes, and the keyword tokens remain available for highlighting.
+For example, this query captures explicitly public static methods without matching annotation text:
+
+```scheme
+(method_declaration
+  (modifiers (visibility) @visibility (modifier) @modifier)
+  name: (identifier) @method
+  (#eq? @visibility "public")
+  (#eq? @modifier "static"))
+```
+
 In Rust, depend on the [crate](https://crates.io/crates/willbooster-tree-sitter-java) and on
 [willbooster-tree-sitter](https://crates.io/crates/willbooster-tree-sitter), the runtime this package is tested and
 fuzzed with:
