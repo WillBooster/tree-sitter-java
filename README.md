@@ -16,13 +16,13 @@ This fork is based on tree-sitter-java 0.23.5 and accepts `final` modifiers on s
 and typed record-pattern components, plus qualified names in record patterns. Unnamed variables in switch and
 `instanceof` type patterns, including typed record-pattern components, use `underscore_pattern` nodes. It ships the
 parser as the compact tables that the [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter) generator
-emits under that fork's own ABI number (`0x57420001`), so the parser loads only with that runtime, version 2.0.0 or
-later, and not with upstream's tree-sitter.
+emits under that fork's own ABI number (`0x57420006`), so the parser loads only with that runtime, version 7.0.5 or
+later within major version 7, and not with upstream's tree-sitter.
 
 ## Usage
 
 The npm package ships `tree-sitter-java.wasm` for
-[@willbooster/web-tree-sitter](https://www.npmjs.com/package/@willbooster/web-tree-sitter) version 2.0.0 or later, which runs in Node.js, Bun, browsers, and Cloudflare Workers. In Node.js and Bun, load the grammar from its path:
+[@willbooster/web-tree-sitter](https://www.npmjs.com/package/@willbooster/web-tree-sitter) version 7.0.5 or later within major version 7, which runs in Node.js, Bun, browsers, and Cloudflare Workers. In Node.js and Bun, load the grammar from its path:
 
 ```js
 import { fileURLToPath } from 'node:url';
@@ -68,8 +68,8 @@ fuzzed with:
 
 ```toml
 [dependencies]
-tree-sitter = { package = "willbooster-tree-sitter", version = "2" }
-tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "2" }
+tree-sitter = { package = "willbooster-tree-sitter", version = "7.0.5" }
+tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "4" }
 ```
 
 ```rust
