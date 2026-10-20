@@ -81,7 +81,7 @@ fuzzed with:
 ```toml
 [dependencies]
 tree-sitter = { package = "willbooster-tree-sitter", version = "7.0.5" }
-tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "4" }
+tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "5" }
 ```
 
 ```rust
