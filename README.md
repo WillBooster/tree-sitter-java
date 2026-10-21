@@ -12,12 +12,15 @@ Java grammar for [tree-sitter](https://github.com/tree-sitter/tree-sitter), fork
 [tree-sitter/tree-sitter-java](https://github.com/tree-sitter/tree-sitter-java). We are grateful
 to its authors and contributors. This is not an official release of that project.
 
-This fork is based on tree-sitter-java 0.23.5 and accepts `final` modifiers on switch type patterns
-and typed record-pattern components, plus qualified names in record patterns. Unnamed variables in switch and
-`instanceof` type patterns, including typed record-pattern components, use `underscore_pattern` nodes. It ships the
-parser as the compact tables that the [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter) generator
-emits under that fork's own ABI number (`0x57420007`), so the parser loads only with that runtime, version 9.0.0 or
-later within major version 9, and not with upstream's tree-sitter.
+This fork is based on tree-sitter-java 0.23.5 and accepts annotation and `final` modifiers on switch and
+`instanceof` type patterns and typed record-pattern components, plus qualified names in record patterns. Unnamed
+pattern variables use `underscore_pattern` nodes. Binding annotations are direct children of `type_pattern`,
+`instanceof_expression`, or `record_pattern_component`; an `instanceof` type test without a binding keeps its
+annotations inside the `right` field's `annotated_type` node.
+
+The parser ships as compact tables under the [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter)
+fork's ABI (`0x57420007`). This package is tested with runtime 9.0.0. Runtimes with a different ABI, including
+upstream's tree-sitter, reject the parser.
 
 ## Usage
 
@@ -81,7 +84,7 @@ fuzzed with:
 ```toml
 [dependencies]
 tree-sitter = { package = "willbooster-tree-sitter", version = "9.0.0" }
-tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "6" }
+tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "7" }
 ```
 
 ```rust
