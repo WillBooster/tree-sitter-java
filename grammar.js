@@ -74,6 +74,7 @@ module.exports = grammar({
     [$.array_type, $.primary_expression],
     [$.modifiers, $.annotated_type, $.receiver_parameter],
     [$.type_pattern, $.annotated_type],
+    [$.record_pattern_component, $.annotated_type],
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
     [$._unannotated_type, $.primary_expression, $.inferred_parameters],
     [$._unannotated_type, $.primary_expression],
@@ -620,7 +621,7 @@ module.exports = grammar({
     record_pattern_component: $ => choice(
       $.underscore_pattern,
       seq(
-        optional('final'),
+        repeat(choice($._annotation, 'final')),
         $._unannotated_type,
         choice($.identifier, $._reserved_identifier, $.underscore_pattern),
       ),

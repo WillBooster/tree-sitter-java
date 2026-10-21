@@ -4361,16 +4361,20 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "final"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
+              "type": "REPEAT",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_annotation"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "final"
+                  }
+                ]
+              }
             },
             {
               "type": "SYMBOL",
@@ -8416,6 +8420,10 @@
     ],
     [
       "type_pattern",
+      "annotated_type"
+    ],
+    [
+      "record_pattern_component",
       "annotated_type"
     ],
     [
