@@ -388,7 +388,7 @@ module.exports = grammar({
         seq(
           repeat(choice($._annotation, 'final')),
           field('right', $._unannotated_type),
-          field('name', choice($.identifier, $._reserved_identifier, $.underscore_pattern)),
+          field('name', choice($.identifier, $._reserved_identifier, alias('when', $.identifier), $.underscore_pattern)),
         ),
         field('right', $._type),
         field('pattern', $.record_pattern),
@@ -615,7 +615,7 @@ module.exports = grammar({
       $.type_pattern,
       $.record_pattern,
     ),
-    type_pattern: $ => seq(repeat(choice($._annotation, 'final')), $._unannotated_type, choice($.identifier, $._reserved_identifier, $.underscore_pattern)),
+    type_pattern: $ => seq(repeat(choice($._annotation, 'final')), $._unannotated_type, choice($.identifier, $._reserved_identifier, alias('when', $.identifier), $.underscore_pattern)),
     record_pattern: $ => seq(choice($.identifier, $._reserved_identifier, $.generic_type, $.scoped_type_identifier), $.record_pattern_body),
     record_pattern_body: $ => seq('(', commaSep(choice($.record_pattern_component, $.record_pattern)), ')'),
     record_pattern_component: $ => choice(
@@ -623,7 +623,7 @@ module.exports = grammar({
       seq(
         repeat(choice($._annotation, 'final')),
         $._unannotated_type,
-        choice($.identifier, $._reserved_identifier, $.underscore_pattern),
+        choice($.identifier, $._reserved_identifier, alias('when', $.identifier), $.underscore_pattern),
       ),
     ),
 
