@@ -1,0 +1,138 @@
+================================================================================
+Annotations on switch type patterns
+================================================================================
+
+@interface Mark {
+    int value() default 0;
+}
+@interface Other {}
+class PatternAnnotations {
+    String annotationOnly(Object value) {
+        return switch (value) {
+            case @Mark(1) String text -> text;
+            default -> "";
+        };
+    }
+    String annotationsAroundFinal(Object value) {
+        return switch (value) {
+            case @Other final @Mark(2) String text when !text.isEmpty() -> text;
+            default -> "";
+        };
+    }
+    boolean unnamedBinding(Object value) {
+        return switch (value) {
+            case final @Other String _ -> true;
+            default -> false;
+        };
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (annotation_type_declaration
+    (identifier)
+    (annotation_type_body
+      (annotation_type_element_declaration
+        (integral_type)
+        (identifier)
+        (decimal_integer_literal))))
+  (annotation_type_declaration
+    (identifier)
+    (annotation_type_body))
+  (class_declaration
+    (identifier)
+    (class_body
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (annotation
+                          (identifier)
+                          (annotation_argument_list
+                            (decimal_integer_literal)))
+                        (type_identifier)
+                        (identifier))))
+                  (expression_statement
+                    (identifier)))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (string_literal))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (marker_annotation
+                          (identifier))
+                        (annotation
+                          (identifier)
+                          (annotation_argument_list
+                            (decimal_integer_literal)))
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (unary_expression
+                        (method_invocation
+                          (identifier)
+                          (identifier)
+                          (argument_list)))))
+                  (expression_statement
+                    (identifier)))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (string_literal))))))))
+      (method_declaration
+        (boolean_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (marker_annotation
+                          (identifier))
+                        (type_identifier)
+                        (underscore_pattern))))
+                  (expression_statement
+                    (true)))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (false)))))))))))

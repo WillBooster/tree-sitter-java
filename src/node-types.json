@@ -3951,7 +3951,15 @@
           "named": true
         },
         {
+          "type": "annotation",
+          "named": true
+        },
+        {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "marker_annotation",
           "named": true
         },
         {
