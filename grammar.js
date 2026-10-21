@@ -68,6 +68,7 @@ module.exports = grammar({
   ],
 
   conflicts: $ => [
+    [$.modifiers],
     [$._literal, $.switch_label],
     [$.dimensions],
     [$.array_type, $._unannotated_type],
@@ -1129,7 +1130,8 @@ module.exports = grammar({
 
     annotation_type_declaration: $ => seq(
       optional($.modifiers),
-      '@interface',
+      '@',
+      'interface',
       field('name', $.identifier),
       field('body', $.annotation_type_body),
     ),
