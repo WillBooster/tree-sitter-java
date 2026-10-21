@@ -2042,6 +2042,10 @@
                 {
                   "type": "SYMBOL",
                   "name": "array_access"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "parenthesized_expression"
                 }
               ]
             }

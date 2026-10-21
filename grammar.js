@@ -347,6 +347,7 @@ module.exports = grammar({
         $._reserved_identifier,
         $.field_access,
         $.array_access,
+        $.parenthesized_expression,
       )),
       field('operator', choice('=', '+=', '-=', '*=', '/=', '&=', '|=', '^=', '%=', '<<=', '>>=', '>>>=')),
       field('right', $.expression),
