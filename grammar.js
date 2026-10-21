@@ -337,7 +337,13 @@ module.exports = grammar({
         '(',
         sep1(field('type', $._type), '&'),
         ')',
-        field('value', choice($.primary_expression, $.lambda_expression)),
+        field('value', choice(
+          $.primary_expression,
+          alias($._unary_complement_expression, $.unary_expression),
+          $.cast_expression,
+          $.switch_expression,
+          $.lambda_expression,
+        )),
       ),
     )),
 
@@ -419,17 +425,17 @@ module.exports = grammar({
       field('alternative', $.expression),
     )),
 
-    unary_expression: $ => choice(...[
-      ['+', PREC.UNARY],
-      ['-', PREC.UNARY],
-      ['!', PREC.UNARY],
-      ['~', PREC.UNARY],
-    ].map(([operator, precedence]) =>
-      prec.left(precedence, seq(
-        // @ts-ignore
-        field('operator', operator),
+    unary_expression: $ => choice(
+      $._unary_complement_expression,
+      prec.left(PREC.UNARY, seq(
+        field('operator', choice('+', '-')),
         field('operand', $.expression),
       )),
+    ),
+
+    _unary_complement_expression: $ => prec.left(PREC.UNARY, seq(
+      field('operator', choice('~', '!')),
+      field('operand', $.expression),
     )),
 
     update_expression: $ => prec.left(PREC.UNARY, choice(
