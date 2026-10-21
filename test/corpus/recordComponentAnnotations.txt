@@ -1,0 +1,174 @@
+==================
+Annotated record pattern components
+==================
+
+@interface Mark { int value() default 0; }
+@interface Other {}
+record Pair(Object first, Object second) {}
+class RecordComponentAnnotations {
+    boolean matches(Object value) {
+        return value instanceof Pair(@Mark(1) String text, @Other final @Mark(2) String other)
+            && !text.isEmpty() && !other.isEmpty();
+    }
+    boolean nested(Object value) {
+        return value instanceof Pair(Pair(final @Other String _, @Mark var text), @Other String _)
+            && text != null;
+    }
+    int select(Object value) {
+        return switch (value) {
+            case Pair(@Other String first, final @Mark(3) String _) when !first.isEmpty() -> first.length();
+            default -> 0;
+        };
+    }
+}
+
+---
+
+(program
+  (annotation_type_declaration
+    (identifier)
+    (annotation_type_body
+      (annotation_type_element_declaration
+        (integral_type)
+        (identifier)
+        (decimal_integer_literal))))
+  (annotation_type_declaration
+    (identifier)
+    (annotation_type_body))
+  (record_declaration
+    (identifier)
+    (formal_parameters
+      (formal_parameter
+        (type_identifier)
+        (identifier))
+      (formal_parameter
+        (type_identifier)
+        (identifier)))
+    (class_body))
+  (class_declaration
+    (identifier)
+    (class_body
+      (method_declaration
+        (boolean_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (binary_expression
+              (binary_expression
+                (instanceof_expression
+                  (identifier)
+                  (record_pattern
+                    (identifier)
+                    (record_pattern_body
+                      (record_pattern_component
+                        (annotation
+                          (identifier)
+                          (annotation_argument_list
+                            (decimal_integer_literal)))
+                        (type_identifier)
+                        (identifier))
+                      (record_pattern_component
+                        (marker_annotation
+                          (identifier))
+                        (annotation
+                          (identifier)
+                          (annotation_argument_list
+                            (decimal_integer_literal)))
+                        (type_identifier)
+                        (identifier)))))
+                (unary_expression
+                  (method_invocation
+                    (identifier)
+                    (identifier)
+                    (argument_list))))
+              (unary_expression
+                (method_invocation
+                  (identifier)
+                  (identifier)
+                  (argument_list)))))))
+      (method_declaration
+        (boolean_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (binary_expression
+              (instanceof_expression
+                (identifier)
+                (record_pattern
+                  (identifier)
+                  (record_pattern_body
+                    (record_pattern
+                      (identifier)
+                      (record_pattern_body
+                        (record_pattern_component
+                          (marker_annotation
+                            (identifier))
+                          (type_identifier)
+                          (underscore_pattern))
+                        (record_pattern_component
+                          (marker_annotation
+                            (identifier))
+                          (type_identifier)
+                          (identifier))))
+                    (record_pattern_component
+                      (marker_annotation
+                        (identifier))
+                      (type_identifier)
+                      (underscore_pattern)))))
+              (binary_expression
+                (identifier)
+                (null_literal))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (record_pattern
+                        (identifier)
+                        (record_pattern_body
+                          (record_pattern_component
+                            (marker_annotation
+                              (identifier))
+                            (type_identifier)
+                            (identifier))
+                          (record_pattern_component
+                            (annotation
+                              (identifier)
+                              (annotation_argument_list
+                                (decimal_integer_literal)))
+                            (type_identifier)
+                            (underscore_pattern)))))
+                    (guard
+                      (unary_expression
+                        (method_invocation
+                          (identifier)
+                          (identifier)
+                          (argument_list)))))
+                  (expression_statement
+                    (method_invocation
+                      (identifier)
+                      (identifier)
+                      (argument_list))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal)))))))))))

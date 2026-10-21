@@ -620,7 +620,7 @@ module.exports = grammar({
     record_pattern_component: $ => choice(
       $.underscore_pattern,
       seq(
-        optional('final'),
+        repeat(choice($._annotation, 'final')),
         $._unannotated_type,
         choice($.identifier, $._reserved_identifier, $.underscore_pattern),
       ),
