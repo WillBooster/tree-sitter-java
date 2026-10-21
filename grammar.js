@@ -603,7 +603,7 @@ module.exports = grammar({
       prec.dynamic(1, seq('case', $.null_literal, ',', 'default')),
       seq('case',
         choice(
-          $.pattern,
+          commaSep1($.pattern),
           commaSep1($.expression),
         ),
         optional($.guard),

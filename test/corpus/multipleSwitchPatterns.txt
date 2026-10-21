@@ -1,0 +1,272 @@
+==================
+Multiple unnamed patterns in switch labels
+==================
+
+@interface Mark {}
+record Pair(Object left, Object right) {}
+class MultipleSwitchPatterns {
+    int types(Object value) {
+        return switch (value) {
+            case String _, Integer _, Long _ -> 1;
+            case null, default -> 0;
+        };
+    }
+    int annotated(Object value) {
+        return switch (value) {
+            case @Mark final String _, @Mark Integer _ -> 2;
+            default -> 0;
+        };
+    }
+    int records(Object value) {
+        return switch (value) {
+            case Pair(String _, _), Pair(Integer _, _) -> 3;
+            default -> 0;
+        };
+    }
+    int guarded(Object value) {
+        return switch (value) {
+            case String _, Integer _ when value.hashCode() > 0 -> 4;
+            default -> 0;
+        };
+    }
+    int statement(Object value) {
+        int result = 0;
+        switch (value) {
+            case String _, Integer _:
+                result = 5;
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+    int constants(int value) {
+        return switch (value) {
+            case 1, 2, 3 -> 6;
+            default -> 0;
+        };
+    }
+}
+
+---
+
+(program
+  (annotation_type_declaration
+    (identifier)
+    (annotation_type_body))
+  (record_declaration
+    (identifier)
+    (formal_parameters
+      (formal_parameter
+        (type_identifier)
+        (identifier))
+      (formal_parameter
+        (type_identifier)
+        (identifier)))
+    (class_body))
+  (class_declaration
+    (identifier)
+    (class_body
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (underscore_pattern)))
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (underscore_pattern)))
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (underscore_pattern))))
+                  (expression_statement
+                    (decimal_integer_literal)))
+                (switch_rule
+                  (switch_label
+                    (null_literal))
+                  (expression_statement
+                    (decimal_integer_literal))))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (marker_annotation
+                          (identifier))
+                        (type_identifier)
+                        (underscore_pattern)))
+                    (pattern
+                      (type_pattern
+                        (marker_annotation
+                          (identifier))
+                        (type_identifier)
+                        (underscore_pattern))))
+                  (expression_statement
+                    (decimal_integer_literal)))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal))))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (record_pattern
+                        (identifier)
+                        (record_pattern_body
+                          (record_pattern_component
+                            (type_identifier)
+                            (underscore_pattern))
+                          (record_pattern_component
+                            (underscore_pattern)))))
+                    (pattern
+                      (record_pattern
+                        (identifier)
+                        (record_pattern_body
+                          (record_pattern_component
+                            (type_identifier)
+                            (underscore_pattern))
+                          (record_pattern_component
+                            (underscore_pattern))))))
+                  (expression_statement
+                    (decimal_integer_literal)))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal))))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (underscore_pattern)))
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (underscore_pattern)))
+                    (guard
+                      (binary_expression
+                        (method_invocation
+                          (identifier)
+                          (identifier)
+                          (argument_list))
+                        (decimal_integer_literal))))
+                  (expression_statement
+                    (decimal_integer_literal)))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal))))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (local_variable_declaration
+            (integral_type)
+            (variable_declarator
+              (identifier)
+              (decimal_integer_literal)))
+          (switch_expression
+            (parenthesized_expression
+              (identifier))
+            (switch_block
+              (switch_block_statement_group
+                (switch_label
+                  (pattern
+                    (type_pattern
+                      (type_identifier)
+                      (underscore_pattern)))
+                  (pattern
+                    (type_pattern
+                      (type_identifier)
+                      (underscore_pattern))))
+                (expression_statement
+                  (assignment_expression
+                    (identifier)
+                    (decimal_integer_literal)))
+                (break_statement))
+              (switch_block_statement_group
+                (switch_label)
+                (break_statement))))
+          (return_statement
+            (identifier))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (decimal_integer_literal)
+                    (decimal_integer_literal)
+                    (decimal_integer_literal))
+                  (expression_statement
+                    (decimal_integer_literal)))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal)))))))))))
