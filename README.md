@@ -107,8 +107,8 @@ not the ones this package ships with. Its first run downloads that CLI from the 
 with `cargo` (whose build runs the CMake that `mise.toml` pins) when the download fails or the release has no binary that runs here. Run other CLI commands through it as
 well (e.g. `script/tree-sitter parse File.java`).
 
-`grammar.js` stays as upstream wrote and formatted it, apart from rule changes, so that it can be compared with
-upstream's grammar; the linter and the formatter skip it.
+`grammar.js` keeps upstream's code layout so changes can be compared with upstream's grammar; the linter and formatter
+skip it.
 
 `bun run generate` records a fresh generation profile from the applicable `test/corpus` cases and any Git-tracked
 files in `examples/`, then generates compact parser tables. The parser also embeds metadata from `tree-sitter.json`. After changing a grammar,

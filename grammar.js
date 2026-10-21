@@ -13,36 +13,32 @@ const DECIMAL_DIGITS = token(sep1(/[0-9]+/, /_+/));
 const DIGITS = token(choice('0', seq(/[1-9]/, optional(seq(optional(/_+/), DECIMAL_DIGITS)))));
 const HEX_DIGITS = token(sep1(/[A-Fa-f0-9]+/, /_+/));
 
-/* eslint-disable no-multi-spaces */
-
 const PREC = {
   // https://introcs.cs.princeton.edu/java/11precedence/
-  COMMENT: 0,         // //  /*  */
-  ASSIGN: 1,          // =  += -=  *=  /=  %=  &=  ^=  |=  <<=  >>=  >>>=
+  COMMENT: 0,
+  ASSIGN: 1,
   DECL: 2,
   ELEMENT_VAL: 2,
-  TERNARY: 3,         // ?:
-  OR: 4,              // ||
-  AND: 5,             // &&
-  BIT_OR: 6,          // |
-  BIT_XOR: 7,         // ^
-  BIT_AND: 8,         // &
-  EQUALITY: 9,        // ==  !=
+  TERNARY: 3,
+  OR: 4,
+  AND: 5,
+  BIT_OR: 6,
+  BIT_XOR: 7,
+  BIT_AND: 8,
+  EQUALITY: 9,
   GENERIC: 10,
-  REL: 10,            // <  <=  >  >=  instanceof
-  SHIFT: 11,          // <<  >>  >>>
-  ADD: 12,            // +  -
-  MULT: 13,           // *  /  %
-  CAST: 14,           // (Type)
-  OBJ_INST: 14,       // new
-  UNARY: 15,          // ++a  --a  a++  a--  +  -  !  ~
-  ARRAY: 16,          // [Index]
-  OBJ_ACCESS: 16,     // .
-  PARENS: 16,         // (Expression)
-  CLASS_LITERAL: 17,  // .
+  REL: 10,
+  SHIFT: 11,
+  ADD: 12,
+  MULT: 13,
+  CAST: 14,
+  OBJ_INST: 14,
+  UNARY: 15,
+  ARRAY: 16,
+  OBJ_ACCESS: 16,
+  PARENS: 16,
+  CLASS_LITERAL: 17,
 };
-
-/* eslint-enable no-multi-spaces */
 
 module.exports = grammar({
   name: 'java',
@@ -77,6 +73,7 @@ module.exports = grammar({
     [$.array_type, $._unannotated_type],
     [$.array_type, $.primary_expression],
     [$.modifiers, $.annotated_type, $.receiver_parameter],
+    [$.type_pattern, $.annotated_type],
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
     [$._unannotated_type, $.primary_expression, $.inferred_parameters],
     [$._unannotated_type, $.primary_expression],
@@ -84,7 +81,6 @@ module.exports = grammar({
     [$._unannotated_type, $.generic_type],
     [$.generic_type, $.primary_expression],
     [$.expression, $.statement],
-    // Only conflicts in switch expressions
     [$.lambda_expression, $.primary_expression],
     [$.inferred_parameters, $.primary_expression],
     [$.argument_list, $.record_pattern_body],
@@ -280,10 +276,6 @@ module.exports = grammar({
       )),
       '"""',
     ),
-    // Workaround to https://github.com/tree-sitter/tree-sitter/issues/1156
-    // We give names to the token() constructs containing a regexp
-    // so as to obtain a node in the CST.
-
     string_fragment: _ => token.immediate(prec(1, /[^"\\]+/)),
     _multiline_string_fragment: _ => choice(
       /[^"\\]+/,
@@ -438,7 +430,6 @@ module.exports = grammar({
     )),
 
     update_expression: $ => prec.left(PREC.UNARY, choice(
-      // Post (in|de)crement is evaluated before pre (in|de)crement
       seq($.expression, '++'),
       seq($.expression, '--'),
       seq('++', $.expression),
@@ -623,7 +614,7 @@ module.exports = grammar({
       $.type_pattern,
       $.record_pattern,
     ),
-    type_pattern: $ => seq(optional('final'), $._unannotated_type, choice($.identifier, $._reserved_identifier, $.underscore_pattern)),
+    type_pattern: $ => seq(repeat(choice($._annotation, 'final')), $._unannotated_type, choice($.identifier, $._reserved_identifier, $.underscore_pattern)),
     record_pattern: $ => seq(choice($.identifier, $._reserved_identifier, $.generic_type, $.scoped_type_identifier), $.record_pattern_body),
     record_pattern_body: $ => seq('(', commaSep(choice($.record_pattern_component, $.record_pattern)), ')'),
     record_pattern_component: $ => choice(
@@ -655,7 +646,7 @@ module.exports = grammar({
       $.continue_statement,
       $.return_statement,
       $.yield_statement,
-      $.switch_expression, // switch statements and expressions are identical
+      $.switch_expression,
       $.synchronized_statement,
       $.local_variable_declaration,
       $.throw_statement,
@@ -1053,7 +1044,7 @@ module.exports = grammar({
       $.field_declaration,
       $.record_declaration,
       $.method_declaration,
-      $.compact_constructor_declaration, // For records.
+      $.compact_constructor_declaration,
       $.class_declaration,
       $.interface_declaration,
       $.annotation_type_declaration,
