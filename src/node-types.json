@@ -4350,10 +4350,6 @@
     "named": false
   },
   {
-    "type": "@interface",
-    "named": false
-  },
-  {
     "type": "[",
     "named": false
   },

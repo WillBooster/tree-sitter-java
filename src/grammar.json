@@ -7133,7 +7133,11 @@
         },
         {
           "type": "STRING",
-          "value": "@interface"
+          "value": "@"
+        },
+        {
+          "type": "STRING",
+          "value": "interface"
         },
         {
           "type": "FIELD",
@@ -8460,6 +8464,9 @@
     }
   ],
   "conflicts": [
+    [
+      "modifiers"
+    ],
     [
       "_literal",
       "switch_label"

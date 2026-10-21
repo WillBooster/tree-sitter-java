@@ -1,0 +1,87 @@
+==================
+Separated annotation declaration tokens
+==================
+
+@Deprecated
+@ interface Spaced {
+    int value() default 1;
+}
+@ /*separator*/ interface Commented {
+    String text() default "value";
+}
+@
+interface Newline {}
+@interface Adjacent {}
+@Spaced(2) @Commented @Newline
+class Annotated {
+    @Adjacent void method() {}
+}
+record Container(int value) {
+    @ interface Nested {}
+    @Deprecated Container {}
+}
+
+---
+
+(program
+  (annotation_type_declaration
+    (modifiers
+      (marker_annotation
+        (identifier)))
+    (identifier)
+    (annotation_type_body
+      (annotation_type_element_declaration
+        (integral_type)
+        (identifier)
+        (decimal_integer_literal))))
+  (annotation_type_declaration
+    (block_comment)
+    (identifier)
+    (annotation_type_body
+      (annotation_type_element_declaration
+        (type_identifier)
+        (identifier)
+        (string_literal
+          (string_fragment)))))
+  (annotation_type_declaration
+    (identifier)
+    (annotation_type_body))
+  (annotation_type_declaration
+    (identifier)
+    (annotation_type_body))
+  (class_declaration
+    (modifiers
+      (annotation
+        (identifier)
+        (annotation_argument_list
+          (decimal_integer_literal)))
+      (marker_annotation
+        (identifier))
+      (marker_annotation
+        (identifier)))
+    (identifier)
+    (class_body
+      (method_declaration
+        (modifiers
+          (marker_annotation
+            (identifier)))
+        (void_type)
+        (identifier)
+        (formal_parameters)
+        (block))))
+  (record_declaration
+    (identifier)
+    (formal_parameters
+      (formal_parameter
+        (integral_type)
+        (identifier)))
+    (class_body
+      (annotation_type_declaration
+        (identifier)
+        (annotation_type_body))
+      (compact_constructor_declaration
+        (modifiers
+          (marker_annotation
+            (identifier)))
+        (identifier)
+        (block)))))

@@ -18,6 +18,8 @@ pattern variables use `underscore_pattern` nodes. Binding annotations are direct
 `instanceof_expression`, or `record_pattern_component`; an `instanceof` type test without a binding keeps its
 annotations inside the `right` field's `annotated_type` node.
 
+Annotation interface declarations expose separate `@` and `interface` tokens.
+
 The parser ships as compact tables under the [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter)
 fork's ABI (`0x57420007`). This package is tested with runtime 9.0.0. Runtimes with a different ABI, including
 upstream's tree-sitter, reject the parser.
@@ -84,7 +86,7 @@ fuzzed with:
 ```toml
 [dependencies]
 tree-sitter = { package = "willbooster-tree-sitter", version = "9.0.0" }
-tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "7" }
+tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "8" }
 ```
 
 ```rust
