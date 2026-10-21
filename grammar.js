@@ -1372,6 +1372,7 @@ module.exports = grammar({
           'record',
           'with',
           'sealed',
+          'when',
         ),
         $.identifier,
       )),

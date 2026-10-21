@@ -1,0 +1,216 @@
+==================
+Contextual when pattern bindings
+==================
+
+record Box(Object value) {}
+class WhenBindings {
+    int simple(Object value) {
+        return switch (value) {
+            case String when -> when.length();
+            default -> 0;
+        };
+    }
+    int guarded(Object value) {
+        return switch (value) {
+            case String when when !when.isEmpty() -> when.length();
+            default -> 0;
+        };
+    }
+    int recordBinding(Object value) {
+        return switch (value) {
+            case Box(String when) when !when.isEmpty() -> when.length();
+            default -> 0;
+        };
+    }
+    boolean instanceBinding(Object value) {
+        return value instanceof String when && !when.isEmpty();
+    }
+    int guardControl(Object value) {
+        return switch (value) {
+            case String text when !text.isEmpty() -> text.length();
+            default -> 0;
+        };
+    }
+    int localVariable() {
+        int when = 3;
+        return when;
+    }
+}
+
+---
+
+(program
+  (record_declaration
+    (identifier)
+    (formal_parameters
+      (formal_parameter
+        (type_identifier)
+        (identifier)))
+    (class_body))
+  (class_declaration
+    (identifier)
+    (class_body
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier))))
+                  (expression_statement
+                    (method_invocation
+                      (identifier)
+                      (identifier)
+                      (argument_list))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal))))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (unary_expression
+                        (method_invocation
+                          (identifier)
+                          (identifier)
+                          (argument_list)))))
+                  (expression_statement
+                    (method_invocation
+                      (identifier)
+                      (identifier)
+                      (argument_list))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal))))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (record_pattern
+                        (identifier)
+                        (record_pattern_body
+                          (record_pattern_component
+                            (type_identifier)
+                            (identifier)))))
+                    (guard
+                      (unary_expression
+                        (method_invocation
+                          (identifier)
+                          (identifier)
+                          (argument_list)))))
+                  (expression_statement
+                    (method_invocation
+                      (identifier)
+                      (identifier)
+                      (argument_list))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal))))))))
+      (method_declaration
+        (boolean_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (binary_expression
+              (instanceof_expression
+                (identifier)
+                (type_identifier)
+                (identifier))
+              (unary_expression
+                (method_invocation
+                  (identifier)
+                  (identifier)
+                  (argument_list)))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (unary_expression
+                        (method_invocation
+                          (identifier)
+                          (identifier)
+                          (argument_list)))))
+                  (expression_statement
+                    (method_invocation
+                      (identifier)
+                      (identifier)
+                      (argument_list))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal))))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters)
+        (block
+          (local_variable_declaration
+            (integral_type)
+            (variable_declarator
+              (identifier)
+              (decimal_integer_literal)))
+          (return_statement
+            (identifier)))))))

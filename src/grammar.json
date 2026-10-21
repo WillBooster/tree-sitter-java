@@ -8325,6 +8325,10 @@
                 {
                   "type": "STRING",
                   "value": "sealed"
+                },
+                {
+                  "type": "STRING",
+                  "value": "when"
                 }
               ]
             },
