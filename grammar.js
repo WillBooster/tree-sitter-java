@@ -74,7 +74,6 @@ module.exports = grammar({
     [$.array_type, $.primary_expression],
     [$.modifiers, $.annotated_type, $.receiver_parameter],
     [$.type_pattern, $.annotated_type],
-    [$.record_pattern_component, $.annotated_type],
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
     [$._unannotated_type, $.primary_expression, $.inferred_parameters],
     [$._unannotated_type, $.primary_expression],

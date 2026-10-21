@@ -8423,10 +8423,6 @@
       "annotated_type"
     ],
     [
-      "record_pattern_component",
-      "annotated_type"
-    ],
-    [
       "modifiers",
       "annotated_type",
       "module_declaration",
