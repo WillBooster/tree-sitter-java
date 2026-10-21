@@ -1,0 +1,125 @@
+==================
+Java identifier character classes
+==================
+
+class IdentifierCharacters {
+    int €value;
+    int ¢value;
+    int ‿value;
+    int ⸯvalue;
+    int 𐐀value;
+    int a‌b;
+    int áb;
+    int aाb;
+    int a०b;
+    int ⃁value;
+    int ࢏value;
+    int 𲎰value;
+    int a᫏b;
+    int sum() { return €value + ¢value + ‿value + ⸯvalue + 𐐀value + a‌b + áb + aाb + a०b + ⃁value + ࢏value + 𲎰value + a᫏b; }
+    €Type identity(€Type value) { return value; }
+}
+class €Type {}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (binary_expression
+              (binary_expression
+                (binary_expression
+                  (binary_expression
+                    (binary_expression
+                      (binary_expression
+                        (binary_expression
+                          (binary_expression
+                            (binary_expression
+                              (binary_expression
+                                (binary_expression
+                                  (binary_expression
+                                    (identifier)
+                                    (identifier))
+                                  (identifier))
+                                (identifier))
+                              (identifier))
+                            (identifier))
+                          (identifier))
+                        (identifier))
+                      (identifier))
+                    (identifier))
+                  (identifier))
+                (identifier))
+              (identifier)))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (identifier))))))
+  (class_declaration
+    (identifier)
+    (class_body)))
