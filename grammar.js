@@ -73,7 +73,7 @@ module.exports = grammar({
     [$.array_type, $._unannotated_type],
     [$.array_type, $.primary_expression],
     [$.modifiers, $.annotated_type, $.receiver_parameter],
-    [$.type_pattern, $.annotated_type],
+    [$.instanceof_expression, $.annotated_type],
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
     [$._unannotated_type, $.primary_expression, $.inferred_parameters],
     [$._unannotated_type, $.primary_expression],
@@ -384,12 +384,13 @@ module.exports = grammar({
     instanceof_expression: $ => prec(PREC.REL, seq(
       field('left', $.expression),
       'instanceof',
-      optional('final'),
       choice(
         seq(
-          field('right', $._type),
-          optional(field('name', choice($.identifier, $._reserved_identifier, $.underscore_pattern))),
+          repeat(choice($._annotation, 'final')),
+          field('right', $._unannotated_type),
+          field('name', choice($.identifier, $._reserved_identifier, $.underscore_pattern)),
         ),
+        field('right', $._type),
         field('pattern', $.record_pattern),
       ),
     )),

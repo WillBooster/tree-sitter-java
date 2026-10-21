@@ -2768,58 +2768,62 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "STRING",
-                "value": "final"
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
                 "type": "SEQ",
                 "members": [
+                  {
+                    "type": "REPEAT",
+                    "content": {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "_annotation"
+                        },
+                        {
+                          "type": "STRING",
+                          "value": "final"
+                        }
+                      ]
+                    }
+                  },
                   {
                     "type": "FIELD",
                     "name": "right",
                     "content": {
                       "type": "SYMBOL",
-                      "name": "_type"
+                      "name": "_unannotated_type"
                     }
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "FIELD",
-                        "name": "name",
-                        "content": {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "SYMBOL",
-                              "name": "identifier"
-                            },
-                            {
-                              "type": "SYMBOL",
-                              "name": "_reserved_identifier"
-                            },
-                            {
-                              "type": "SYMBOL",
-                              "name": "underscore_pattern"
-                            }
-                          ]
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "identifier"
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "_reserved_identifier"
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "underscore_pattern"
                         }
-                      },
-                      {
-                        "type": "BLANK"
-                      }
-                    ]
+                      ]
+                    }
                   }
                 ]
+              },
+              {
+                "type": "FIELD",
+                "name": "right",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_type"
+                }
               },
               {
                 "type": "FIELD",
@@ -8419,7 +8423,7 @@
       "receiver_parameter"
     ],
     [
-      "type_pattern",
+      "instanceof_expression",
       "annotated_type"
     ],
     [
