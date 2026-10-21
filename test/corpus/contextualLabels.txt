@@ -1,0 +1,279 @@
+==================
+Contextual keyword statement labels
+==================
+
+class ContextualLabels {
+    void labels(boolean condition) {
+        exports: while (condition) {
+            if (condition) break exports; else continue exports;
+        }
+        module: while (condition) {
+            if (condition) break module; else continue module;
+        }
+        open: while (condition) {
+            if (condition) break open; else continue open;
+        }
+        opens: while (condition) {
+            if (condition) break opens; else continue opens;
+        }
+        permits: while (condition) {
+            if (condition) break permits; else continue permits;
+        }
+        provides: while (condition) {
+            if (condition) break provides; else continue provides;
+        }
+        record: while (condition) {
+            if (condition) break record; else continue record;
+        }
+        requires: while (condition) {
+            if (condition) break requires; else continue requires;
+        }
+        sealed: while (condition) {
+            if (condition) break sealed; else continue sealed;
+        }
+        to: while (condition) {
+            if (condition) break to; else continue to;
+        }
+        transitive: while (condition) {
+            if (condition) break transitive; else continue transitive;
+        }
+        uses: while (condition) {
+            if (condition) break uses; else continue uses;
+        }
+        var: while (condition) {
+            if (condition) break var; else continue var;
+        }
+        when: while (condition) {
+            if (condition) break when; else continue when;
+        }
+        with: while (condition) {
+            if (condition) break with; else continue with;
+        }
+        yield: while (condition) {
+            if (condition) break yield; else continue yield;
+        }
+    }
+}
+
+---
+
+(program
+  (class_declaration
+    (identifier)
+    (class_body
+      (method_declaration
+        (void_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (boolean_type)
+            (identifier)))
+        (block
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier))))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (identifier))
+              (block
+                (if_statement
+                  (parenthesized_expression
+                    (identifier))
+                  (break_statement
+                    (identifier))
+                  (continue_statement
+                    (identifier)))))))))))
