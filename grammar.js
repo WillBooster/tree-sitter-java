@@ -1142,6 +1142,7 @@ module.exports = grammar({
         $.annotation_type_element_declaration,
         $.constant_declaration,
         $.class_declaration,
+        $.record_declaration,
         $.interface_declaration,
         $.enum_declaration,
         $.annotation_type_declaration,

@@ -1,0 +1,133 @@
+==================
+Records inside annotation interfaces
+==================
+
+@interface Config {
+    record Value(int number) {}
+    record Pair<T>(T first, T second) implements java.io.Serializable {}
+    @Deprecated record Marked(String text) {
+        public Marked {
+            if (text == null) text = "";
+        }
+    }
+    class Nested {}
+    interface Marker {}
+    enum Choice { ONE }
+    @interface Label {}
+    int version() default 1;
+}
+class UsesConfig {
+    Config.Value value = new Config.Value(1);
+    Config.Pair<String> pair = new Config.Pair<>("first", "second");
+}
+
+---
+
+(program
+  (annotation_type_declaration
+    (identifier)
+    (annotation_type_body
+      (record_declaration
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (class_body))
+      (record_declaration
+        (identifier)
+        (type_parameters
+          (type_parameter
+            (type_identifier)))
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier))
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (super_interfaces
+          (type_list
+            (scoped_type_identifier
+              (scoped_type_identifier
+                (type_identifier)
+                (type_identifier))
+              (type_identifier))))
+        (class_body))
+      (record_declaration
+        (modifiers
+          (marker_annotation
+            (identifier)))
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (class_body
+          (compact_constructor_declaration
+            (modifiers
+              (visibility))
+            (identifier)
+            (block
+              (if_statement
+                (parenthesized_expression
+                  (binary_expression
+                    (identifier)
+                    (null_literal)))
+                (expression_statement
+                  (assignment_expression
+                    (identifier)
+                    (string_literal))))))))
+      (class_declaration
+        (identifier)
+        (class_body))
+      (interface_declaration
+        (identifier)
+        (interface_body))
+      (enum_declaration
+        (identifier)
+        (enum_body
+          (enum_constant
+            (identifier))))
+      (annotation_type_declaration
+        (identifier)
+        (annotation_type_body))
+      (annotation_type_element_declaration
+        (integral_type)
+        (identifier)
+        (decimal_integer_literal))))
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (scoped_type_identifier
+          (type_identifier)
+          (type_identifier))
+        (variable_declarator
+          (identifier)
+          (object_creation_expression
+            (scoped_type_identifier
+              (type_identifier)
+              (type_identifier))
+            (argument_list
+              (decimal_integer_literal)))))
+      (field_declaration
+        (generic_type
+          (scoped_type_identifier
+            (type_identifier)
+            (type_identifier))
+          (type_arguments
+            (type_identifier)))
+        (variable_declarator
+          (identifier)
+          (object_creation_expression
+            (generic_type
+              (scoped_type_identifier
+                (type_identifier)
+                (type_identifier))
+              (type_arguments))
+            (argument_list
+              (string_literal
+                (string_fragment))
+              (string_literal
+                (string_fragment)))))))))
