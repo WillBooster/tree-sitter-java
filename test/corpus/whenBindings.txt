@@ -16,6 +16,12 @@ class WhenBindings {
             default -> 0;
         };
     }
+    int directGuard(Object value) {
+        return switch (value) {
+            case String when when when.isEmpty() -> when.length();
+            default -> 0;
+        };
+    }
     int recordBinding(Object value) {
         return switch (value) {
             case Box(String when) when !when.isEmpty() -> when.length();
@@ -35,6 +41,16 @@ class WhenBindings {
         int when = 3;
         return when;
     }
+}
+
+class when {}
+class WhenIdentifierControls {
+    Object classLiteral() { return when.class; }
+    void labels() {
+        when: while (true) { break when; }
+        when: while (falseCondition()) { continue when; }
+    }
+    boolean falseCondition() { return false; }
 }
 
 ---
@@ -103,6 +119,39 @@ class WhenBindings {
                           (identifier)
                           (identifier)
                           (argument_list)))))
+                  (expression_statement
+                    (method_invocation
+                      (identifier)
+                      (identifier)
+                      (argument_list))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (decimal_integer_literal))))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (method_invocation
+                        (identifier)
+                        (identifier)
+                        (argument_list))))
                   (expression_statement
                     (method_invocation
                       (identifier)
@@ -213,4 +262,48 @@ class WhenBindings {
               (identifier)
               (decimal_integer_literal)))
           (return_statement
-            (identifier)))))))
+            (identifier))))))
+  (class_declaration
+    (identifier)
+    (class_body))
+  (class_declaration
+    (identifier)
+    (class_body
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (class_literal
+              (type_identifier)))))
+      (method_declaration
+        (void_type)
+        (identifier)
+        (formal_parameters)
+        (block
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (true))
+              (block
+                (break_statement
+                  (identifier)))))
+          (labeled_statement
+            (identifier)
+            (while_statement
+              (parenthesized_expression
+                (method_invocation
+                  (identifier)
+                  (argument_list)))
+              (block
+                (continue_statement
+                  (identifier)))))))
+      (method_declaration
+        (boolean_type)
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (false)))))))
