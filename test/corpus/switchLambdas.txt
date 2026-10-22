@@ -1,0 +1,1007 @@
+==================
+Switch labels and guards with lambda results
+==================
+
+import java.util.function.IntUnaryOperator;
+import java.util.function.BooleanSupplier;
+class SwitchLambdas {
+    static final int CHOICE = 1;
+    static final int A = 2;
+    static final int B = 3;
+    IntUnaryOperator constant(int code) {
+        return switch (code) {
+            case CHOICE -> value -> value + 1;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator arithmetic(int code) {
+        return switch (code) {
+            case A + B -> value -> value + 2;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator multiple(int code) {
+        return switch (code) {
+            case CHOICE, 2 -> value -> value + 3;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator multipleReverse(int code) {
+        return switch (code) {
+            case 2, CHOICE -> value -> value + 3;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator guarded(Object input) {
+        return switch (input) {
+            case Boolean flag when flag -> value -> value + 4;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator compound(Object input, int count) {
+        return switch (input) {
+            case Boolean flag when flag && count > 0 -> value -> value + 5;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator nestedGuard(Object input) {
+        return switch (input) {
+            case String text when choose(() -> !text.isEmpty()) -> value -> value + 7;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator block(int code) {
+        return switch (code) {
+            case CHOICE -> { yield value -> value + 8; }
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator colon(int code) {
+        return switch (code) {
+            case CHOICE: yield value -> value + 9;
+            default: yield value -> value;
+        };
+    }
+    IntUnaryOperator unaryConstant(int code) {
+        return switch (code) {
+            case -A -> value -> value + 10;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator castConstant(int code) {
+        return switch (code) {
+            case (int) CHOICE -> value -> value + 10;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator ternaryConstant(int code) {
+        return switch (code) {
+            case true ? A : B -> value -> value + 10;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator unaryGuard(Object input, boolean other) {
+        return switch (input) {
+            case Boolean flag when !flag -> value -> value + 11;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator compoundVariable(Object input, boolean other) {
+        return switch (input) {
+            case Boolean flag when flag && other -> value -> value + 11;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator ternaryGuard(Object input, boolean other) {
+        return switch (input) {
+            case Boolean flag when flag ? true : other -> value -> value + 11;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator primitiveCastGuard(Object input, boolean other) {
+        return switch (input) {
+            case Boolean flag when (boolean) flag -> value -> value + 11;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator referenceCastGuard(Object input, boolean other) {
+        return switch (input) {
+            case Boolean flag when (Boolean) flag -> value -> value + 11;
+            default -> value -> value;
+        };
+    }
+    IntUnaryOperator castedBlockGuard(Object input, boolean other) {
+        return switch (input) {
+            case Boolean flag when (Boolean) (Object) (Runnable) () -> {} -> value -> value + 11;
+            default -> value -> value;
+        };
+    }
+    static boolean choose(BooleanSupplier predicate) { return predicate.getAsBoolean(); }
+}
+
+---
+
+(program
+  (import_declaration
+    (scoped_identifier
+      (scoped_identifier
+        (scoped_identifier
+          (identifier)
+          (identifier))
+        (identifier))
+      (identifier)))
+  (import_declaration
+    (scoped_identifier
+      (scoped_identifier
+        (scoped_identifier
+          (identifier)
+          (identifier))
+        (identifier))
+      (identifier)))
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (modifiers
+          (modifier)
+          (modifier))
+        (integral_type)
+        (variable_declarator
+          (identifier)
+          (decimal_integer_literal)))
+      (field_declaration
+        (modifiers
+          (modifier)
+          (modifier))
+        (integral_type)
+        (variable_declarator
+          (identifier)
+          (decimal_integer_literal)))
+      (field_declaration
+        (modifiers
+          (modifier)
+          (modifier))
+        (integral_type)
+        (variable_declarator
+          (identifier)
+          (decimal_integer_literal)))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (identifier))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (binary_expression
+                      (identifier)
+                      (identifier)))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (identifier)
+                    (decimal_integer_literal))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (decimal_integer_literal)
+                    (identifier))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (identifier)))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier))
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (binary_expression
+                        (identifier)
+                        (binary_expression
+                          (identifier)
+                          (decimal_integer_literal)))))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (method_invocation
+                        (identifier)
+                        (argument_list
+                          (lambda_expression
+                            (formal_parameters)
+                            (unary_expression
+                              (method_invocation
+                                (identifier)
+                                (identifier)
+                                (argument_list))))))))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (identifier))
+                  (block
+                    (yield_statement
+                      (lambda_expression
+                        (identifier)
+                        (binary_expression
+                          (identifier)
+                          (decimal_integer_literal))))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_block_statement_group
+                  (switch_label
+                    (identifier))
+                  (yield_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_block_statement_group
+                  (switch_label)
+                  (yield_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (unary_expression
+                      (identifier)))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (cast_expression
+                      (integral_type)
+                      (identifier)))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (ternary_expression
+                      (true)
+                      (identifier)
+                      (identifier)))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier))
+          (formal_parameter
+            (boolean_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (unary_expression
+                        (identifier))))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier))
+          (formal_parameter
+            (boolean_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (binary_expression
+                        (identifier)
+                        (identifier))))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier))
+          (formal_parameter
+            (boolean_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (ternary_expression
+                        (identifier)
+                        (true)
+                        (identifier))))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier))
+          (formal_parameter
+            (boolean_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (cast_expression
+                        (boolean_type)
+                        (identifier))))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier))
+          (formal_parameter
+            (boolean_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (cast_expression
+                        (type_identifier)
+                        (identifier))))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier))
+          (formal_parameter
+            (boolean_type)
+            (identifier)))
+        (block
+          (return_statement
+            (switch_expression
+              (parenthesized_expression
+                (identifier))
+              (switch_block
+                (switch_rule
+                  (switch_label
+                    (pattern
+                      (type_pattern
+                        (type_identifier)
+                        (identifier)))
+                    (guard
+                      (cast_expression
+                        (type_identifier)
+                        (cast_expression
+                          (type_identifier)
+                          (cast_expression
+                            (type_identifier)
+                            (lambda_expression
+                              (formal_parameters)
+                              (block)))))))
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (binary_expression
+                        (identifier)
+                        (decimal_integer_literal)))))
+                (switch_rule
+                  (switch_label)
+                  (expression_statement
+                    (lambda_expression
+                      (identifier)
+                      (identifier)))))))))
+      (method_declaration
+        (modifiers
+          (modifier))
+        (boolean_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (type_identifier)
+            (identifier)))
+        (block
+          (return_statement
+            (method_invocation
+              (identifier)
+              (identifier)
+              (argument_list))))))))
+
+==================
+Lambda contexts beside switch boundaries
+==================
+
+import java.io.Serializable;
+import java.util.function.Function;
+import java.util.function.IntUnaryOperator;
+class LambdaBoundaryControls {
+    Function<Integer,Integer> single() { return value -> value + 1; }
+    Function<Integer,Function<Integer,Integer>> curry() { return first -> second -> first + second; }
+    Function<Integer,Integer> cast() { return (Function<Integer,Integer>) value -> value + 1; }
+    Function<Integer,Integer> parenthesizedCast() { return (Function<Integer,Integer>) (value) -> value + 1; }
+    Runnable intersection() { return (Runnable & Serializable) () -> {}; }
+    Function<Integer,Integer> intersectionFunction() { return (Function<Integer,Integer> & Serializable) value -> value + 1; }
+    IntUnaryOperator conditional(boolean flag) { return flag ? value -> value + 1 : value -> value - 1; }
+    IntUnaryOperator identity = value -> value;
+    Function<Integer,Integer> argument() { return Function.<Integer>identity().andThen(value -> value + 1); }
+}
+
+---
+
+(program
+  (import_declaration
+    (scoped_identifier
+      (scoped_identifier
+        (identifier)
+        (identifier))
+      (identifier)))
+  (import_declaration
+    (scoped_identifier
+      (scoped_identifier
+        (scoped_identifier
+          (identifier)
+          (identifier))
+        (identifier))
+      (identifier)))
+  (import_declaration
+    (scoped_identifier
+      (scoped_identifier
+        (scoped_identifier
+          (identifier)
+          (identifier))
+        (identifier))
+      (identifier)))
+  (class_declaration
+    (identifier)
+    (class_body
+      (method_declaration
+        (generic_type
+          (type_identifier)
+          (type_arguments
+            (type_identifier)
+            (type_identifier)))
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (lambda_expression
+              (identifier)
+              (binary_expression
+                (identifier)
+                (decimal_integer_literal))))))
+      (method_declaration
+        (generic_type
+          (type_identifier)
+          (type_arguments
+            (type_identifier)
+            (generic_type
+              (type_identifier)
+              (type_arguments
+                (type_identifier)
+                (type_identifier)))))
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (lambda_expression
+              (identifier)
+              (lambda_expression
+                (identifier)
+                (binary_expression
+                  (identifier)
+                  (identifier)))))))
+      (method_declaration
+        (generic_type
+          (type_identifier)
+          (type_arguments
+            (type_identifier)
+            (type_identifier)))
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (cast_expression
+              (generic_type
+                (type_identifier)
+                (type_arguments
+                  (type_identifier)
+                  (type_identifier)))
+              (lambda_expression
+                (identifier)
+                (binary_expression
+                  (identifier)
+                  (decimal_integer_literal)))))))
+      (method_declaration
+        (generic_type
+          (type_identifier)
+          (type_arguments
+            (type_identifier)
+            (type_identifier)))
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (cast_expression
+              (generic_type
+                (type_identifier)
+                (type_arguments
+                  (type_identifier)
+                  (type_identifier)))
+              (lambda_expression
+                (inferred_parameters
+                  (identifier))
+                (binary_expression
+                  (identifier)
+                  (decimal_integer_literal)))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (cast_expression
+              (type_identifier)
+              (type_identifier)
+              (lambda_expression
+                (formal_parameters)
+                (block))))))
+      (method_declaration
+        (generic_type
+          (type_identifier)
+          (type_arguments
+            (type_identifier)
+            (type_identifier)))
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (cast_expression
+              (generic_type
+                (type_identifier)
+                (type_arguments
+                  (type_identifier)
+                  (type_identifier)))
+              (type_identifier)
+              (lambda_expression
+                (identifier)
+                (binary_expression
+                  (identifier)
+                  (decimal_integer_literal)))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (boolean_type)
+            (identifier)))
+        (block
+          (return_statement
+            (ternary_expression
+              (identifier)
+              (lambda_expression
+                (identifier)
+                (binary_expression
+                  (identifier)
+                  (decimal_integer_literal)))
+              (lambda_expression
+                (identifier)
+                (binary_expression
+                  (identifier)
+                  (decimal_integer_literal)))))))
+      (field_declaration
+        (type_identifier)
+        (variable_declarator
+          (identifier)
+          (lambda_expression
+            (identifier)
+            (identifier))))
+      (method_declaration
+        (generic_type
+          (type_identifier)
+          (type_arguments
+            (type_identifier)
+            (type_identifier)))
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (method_invocation
+              (method_invocation
+                (identifier)
+                (type_arguments
+                  (type_identifier))
+                (identifier)
+                (argument_list))
+              (identifier)
+              (argument_list
+                (lambda_expression
+                  (identifier)
+                  (binary_expression
+                    (identifier)
+                    (decimal_integer_literal)))))))))))

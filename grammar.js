@@ -14,6 +14,7 @@ const DIGITS = token(choice('0', seq(/[1-9]/, optional(seq(optional(/_+/), DECIM
 const HEX_DIGITS = token(sep1(/[A-Fa-f0-9]+/, /_+/));
 
 const PREC = {
+  LAMBDA: -1,
   // https://introcs.cs.princeton.edu/java/11precedence/
   COMMENT: 0,
   ASSIGN: 1,
@@ -82,7 +83,6 @@ module.exports = grammar({
     [$._unannotated_type, $.generic_type],
     [$.generic_type, $.primary_expression],
     [$.expression, $.statement],
-    [$.lambda_expression, $.primary_expression],
     [$.inferred_parameters, $.primary_expression],
     [$.argument_list, $.record_pattern_body],
     [$.yield_statement, $._reserved_identifier],
@@ -404,13 +404,13 @@ module.exports = grammar({
       ),
     )),
 
-    lambda_expression: $ => seq(
+    lambda_expression: $ => prec(PREC.LAMBDA, seq(
       field('parameters', choice(
         $.identifier, $.formal_parameters, $.inferred_parameters, $._reserved_identifier, $.underscore_pattern,
       )),
       '->',
       field('body', choice($.expression, $.block)),
-    ),
+    )),
 
     inferred_parameters: $ => seq(
       '(',
