@@ -52,6 +52,7 @@
 (this) @variable.builtin
 
 [
+  (binary_integer_literal)
   (hex_integer_literal)
   (decimal_integer_literal)
   (octal_integer_literal)
