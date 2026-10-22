@@ -272,7 +272,7 @@ module.exports = grammar({
       '"""',
       repeat(choice(
         alias($._multiline_string_fragment, $.multiline_string_fragment),
-        $._escape_sequence,
+        $.escape_sequence,
         $.string_interpolation,
       )),
       '"""',
@@ -280,7 +280,7 @@ module.exports = grammar({
     string_fragment: _ => token.immediate(prec(1, /[^"\\]+/)),
     _multiline_string_fragment: _ => choice(
       /[^"\\]+/,
-      /"([^"\\]|\\")*/,
+      /"[^"\\]*/,
     ),
 
     string_interpolation: $ => seq(
@@ -289,10 +289,6 @@ module.exports = grammar({
       '}',
     ),
 
-    _escape_sequence: $ => choice(
-      prec(2, token.immediate(seq('\\', /[^bfnrts'\"\\]/))),
-      prec(1, $.escape_sequence),
-    ),
     escape_sequence: _ => token.immediate(choice(
       seq(/\\u+005[cC]/, choice(
         /(?:[0-3]|\\u+003[0-3])(?:[0-7]|\\u+003[0-7]){0,2}/,
@@ -302,6 +298,7 @@ module.exports = grammar({
       seq(
         choice('\\', /\\u+005[cC]/),
         choice(
+          '\r\n',
           /[^xu0-7]/,
           /(?:[0-3][0-7]{0,2}|[4-7][0-7]?)/,
           /x[0-9a-fA-F]{2}/,
