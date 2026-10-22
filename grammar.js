@@ -326,7 +326,7 @@ module.exports = grammar({
       $.switch_expression,
     ),
 
-    cast_expression: $ => prec(PREC.CAST, choice(
+    cast_expression: $ => prec.right(PREC.CAST, choice(
       seq(
         '(',
         field('type', $._type),
@@ -339,6 +339,7 @@ module.exports = grammar({
         ')',
         field('value', choice(
           $.primary_expression,
+          alias($._postfix_update_expression, $.update_expression),
           alias($._unary_complement_expression, $.unary_expression),
           $.cast_expression,
           $.switch_expression,
@@ -438,11 +439,17 @@ module.exports = grammar({
       field('operand', $.expression),
     )),
 
-    update_expression: $ => prec.left(PREC.UNARY, choice(
-      seq($.expression, '++'),
-      seq($.expression, '--'),
-      seq('++', $.expression),
-      seq('--', $.expression),
+    update_expression: $ => choice(
+      $._postfix_update_expression,
+      prec.right(PREC.UNARY, choice(
+        seq('++', $.primary_expression),
+        seq('--', $.primary_expression),
+      )),
+    ),
+
+    _postfix_update_expression: $ => prec.right(PREC.UNARY, choice(
+      seq($.primary_expression, '++'),
+      seq($.primary_expression, '--'),
     )),
 
     primary_expression: $ => choice(

@@ -1,0 +1,312 @@
+==================
+Postfix cast and unary precedence
+==================
+
+import java.io.Serializable;
+class PostfixCasts {
+    int field;
+    int[] values = {0};
+    Object intersection(int value) { return (Object & Serializable) value++; }
+    Object intersectionDecrement(int value) { return (Object & Serializable) value--; }
+    Object single(int value) { return (Object) value++; }
+    Object singleDecrement(int value) { return (Object) value--; }
+    int added(int value) { return (int) value++ + 2; }
+    int negated(int value) { return -value++; }
+    int complement(int value) { return ~value++; }
+    Object grouped(int value) { return (Object) (value++); }
+    int primitivePrefix(int value) { return (int) ++value; }
+    int primitiveDecrement(int value) { return (int) --value; }
+    int parenthesized(int value) { return (int) (value)++; }
+    int prefixField() { return (int) ++this.field; }
+    int prefixArray() { return (int) --values[0]; }
+    int postfixField() { return (int) this.field++; }
+    int postfixArray() { return (int) values[0]--; }
+    Object nested(int value) { return (Object) (int) value++; }
+    int negativePrefix(int value) { return -++value; }
+    int complementPrefix(int value) { return ~--value; }
+    int groupedIncrement(int value) { return (value)++; }
+    int groupedDecrement(int value) { return (value)--; }
+}
+
+---
+
+(program
+  (import_declaration
+    (scoped_identifier
+      (scoped_identifier
+        (identifier)
+        (identifier))
+      (identifier)))
+  (class_declaration
+    (identifier)
+    (class_body
+      (field_declaration
+        (integral_type)
+        (variable_declarator
+          (identifier)))
+      (field_declaration
+        (array_type
+          (integral_type)
+          (dimensions))
+        (variable_declarator
+          (identifier)
+          (array_initializer
+            (decimal_integer_literal))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (cast_expression
+              (type_identifier)
+              (type_identifier)
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (cast_expression
+              (type_identifier)
+              (type_identifier)
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (cast_expression
+              (type_identifier)
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (cast_expression
+              (type_identifier)
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (binary_expression
+              (cast_expression
+                (integral_type)
+                (update_expression
+                  (identifier)))
+              (decimal_integer_literal)))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (unary_expression
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (unary_expression
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (cast_expression
+              (type_identifier)
+              (parenthesized_expression
+                (update_expression
+                  (identifier)))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (cast_expression
+              (integral_type)
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (cast_expression
+              (integral_type)
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (cast_expression
+              (integral_type)
+              (update_expression
+                (parenthesized_expression
+                  (identifier)))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (cast_expression
+              (integral_type)
+              (update_expression
+                (field_access
+                  (this)
+                  (identifier)))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (cast_expression
+              (integral_type)
+              (update_expression
+                (array_access
+                  (identifier)
+                  (decimal_integer_literal)))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (cast_expression
+              (integral_type)
+              (update_expression
+                (field_access
+                  (this)
+                  (identifier)))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters)
+        (block
+          (return_statement
+            (cast_expression
+              (integral_type)
+              (update_expression
+                (array_access
+                  (identifier)
+                  (decimal_integer_literal)))))))
+      (method_declaration
+        (type_identifier)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (cast_expression
+              (type_identifier)
+              (cast_expression
+                (integral_type)
+                (update_expression
+                  (identifier)))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (unary_expression
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (unary_expression
+              (update_expression
+                (identifier))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (update_expression
+              (parenthesized_expression
+                (identifier))))))
+      (method_declaration
+        (integral_type)
+        (identifier)
+        (formal_parameters
+          (formal_parameter
+            (integral_type)
+            (identifier)))
+        (block
+          (return_statement
+            (update_expression
+              (parenthesized_expression
+                (identifier)))))))))
