@@ -19,6 +19,7 @@ pattern variables use `underscore_pattern` nodes. Binding annotations are direct
 annotations inside the `right` field's `annotated_type` node.
 
 Annotation interface declarations expose separate `@` and `interface` tokens.
+Postfix updates appear inside surrounding cast or unary nodes. An `update_expression` has a primary expression as its operand.
 
 The parser ships as compact tables under the [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter)
 fork's ABI (`0x57420007`). This package is tested with runtime 9.0.0. Runtimes with a different ABI, including
@@ -86,7 +87,7 @@ fuzzed with:
 ```toml
 [dependencies]
 tree-sitter = { package = "willbooster-tree-sitter", version = "9.0.0" }
-tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "8" }
+tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "9" }
 ```
 
 ```rust
