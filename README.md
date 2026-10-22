@@ -37,7 +37,8 @@ import { Language, Parser } from '@willbooster/web-tree-sitter';
 await Parser.init();
 const parser = new Parser();
 const wasmPath = fileURLToPath(import.meta.resolve('@willbooster/tree-sitter-java/tree-sitter-java.wasm'));
-parser.setLanguage(await Language.load(wasmPath));
+const language = await Language.load(wasmPath);
+parser.setLanguage(language);
 const tree = parser.parse('class Main { int answer() { return 42; } }\n');
 ```
 
@@ -68,6 +69,60 @@ parser.setLanguage(await Language.load(java));
 
 The package also ships `grammar.js`, the queries in `queries/`, and the node types in `src/node-types.json`.
 
+### Queries
+
+Query patterns use the node types and fields in `src/node-types.json`. A label after `@` names a capture chosen by the
+query author; `name:` selects the declaration's name field. See the [query syntax guide](https://tree-sitter.github.io/tree-sitter/using-parsers/queries/1-syntax.html)
+for the general syntax.
+
+Using `language` and `tree` from the Node.js example, capture class names with the runtime's query API:
+
+```js
+import { Query } from '@willbooster/web-tree-sitter';
+
+const query = new Query(language, '(class_declaration name: (identifier) @class.name)');
+for (const { name, node } of query.captures(tree.rootNode)) {
+  console.log(name, node.text);
+}
+query.delete();
+```
+
+The following patterns capture names of classes, interfaces, enums, records and annotation interfaces:
+
+```scheme
+[
+  (class_declaration name: (identifier) @type.name)
+  (interface_declaration name: (identifier) @type.name)
+  (enum_declaration name: (identifier) @type.name)
+  (record_declaration name: (identifier) @type.name)
+  (annotation_type_declaration name: (identifier) @type.name)
+]
+```
+
+Capture method names with:
+
+```scheme
+(method_declaration name: (identifier) @method.name)
+```
+
+Annotations with and without arguments use different node types. The wildcard captures both simple and qualified
+annotation names:
+
+```scheme
+[
+  (marker_annotation name: (_) @annotation.name)
+  (annotation name: (_) @annotation.name)
+]
+```
+
+Filter a captured name by its text with `#eq?`:
+
+```scheme
+(class_declaration
+  name: (identifier) @class.name
+  (#eq? @class.name "Main"))
+```
+
 Within a declaration's `modifiers`, access keywords are named `visibility` nodes and other modifier keywords are
 named `modifier` nodes. Annotations retain their own nodes, and the keyword tokens remain available for highlighting.
 For example, this query captures explicitly public static methods without matching annotation text:
@@ -79,6 +134,8 @@ For example, this query captures explicitly public static methods without matchi
   (#eq? @visibility "public")
   (#eq? @modifier "static"))
 ```
+
+### Rust
 
 In Rust, depend on the [crate](https://crates.io/crates/willbooster-tree-sitter-java) and on
 [willbooster-tree-sitter](https://crates.io/crates/willbooster-tree-sitter), the runtime this package is tested and
