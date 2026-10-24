@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url';
+
 import { Language, Parser, Query } from '@willbooster/web-tree-sitter';
 import { expect, test } from 'vitest';
 
