@@ -22,13 +22,13 @@ Annotation interface declarations expose separate `@` and `interface` tokens.
 Postfix updates appear inside surrounding cast or unary nodes. An `update_expression` has a primary expression as its operand.
 
 The parser ships as compact tables under the [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter)
-fork's ABI (`0x57420009`). This package is tested with runtime 13.0.0. Runtimes with a different ABI, including
+fork's ABI (`0x5742000a`). This package is tested with runtime 14.0.2. Runtimes with a different ABI, including
 upstream's tree-sitter, reject the parser.
 
 ## Usage
 
 The npm package ships `tree-sitter-java.wasm` for
-[@willbooster/web-tree-sitter](https://www.npmjs.com/package/@willbooster/web-tree-sitter) version 13.0.0 or later within major version 13, which runs in Node.js, Bun, browsers, and Cloudflare Workers. In Node.js and Bun, load the grammar from its path:
+[@willbooster/web-tree-sitter](https://www.npmjs.com/package/@willbooster/web-tree-sitter) version 14.0.0 or later within major version 14, which runs in Node.js, Bun, browsers, and Cloudflare Workers. In Node.js and Bun, load the grammar from its path:
 
 ```js
 import { fileURLToPath } from 'node:url';
@@ -144,8 +144,8 @@ fuzzed with:
 
 ```toml
 [dependencies]
-tree-sitter = { package = "willbooster-tree-sitter", version = "13.0.0" }
-tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "11" }
+tree-sitter = { package = "willbooster-tree-sitter", version = "14.0.0" }
+tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "12" }
 ```
 
 ```rust
