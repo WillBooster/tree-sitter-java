@@ -22,7 +22,7 @@ Annotation interface declarations expose separate `@` and `interface` tokens.
 Postfix updates appear inside surrounding cast or unary nodes. An `update_expression` has a primary expression as its operand.
 
 The parser ships as compact tables under the [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter)
-fork's ABI (`0x5742000a`). This package is tested with runtime 14.0.2. Runtimes with a different ABI, including
+fork's ABI (`0x5742000a`). This package is tested with runtime 14.0.4. Runtimes with a different ABI, including
 upstream's tree-sitter, reject the parser.
 
 ## Usage
