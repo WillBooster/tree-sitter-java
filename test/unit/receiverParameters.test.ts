@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
+
+import { Edit, Language, type Node, Parser } from '@willbooster/web-tree-sitter';
 import { expect, test } from 'vitest';
-import { Edit, Language, Parser, type Node } from '@willbooster/web-tree-sitter';
 
 await Parser.init();
 const language = await Language.load(fileURLToPath(new URL('../../tree-sitter-java.wasm', import.meta.url)));
