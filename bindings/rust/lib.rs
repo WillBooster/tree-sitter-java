@@ -1,8 +1,8 @@
 //! This crate provides Java language support for the [tree-sitter] parsing library.
 //!
-//! The parser carries the ABI number of the WillBooster fork (`0x5742000a`) and is tested with the
-//! [`willbooster-tree-sitter`] runtime 14.0.4 (depend on it as
-//! `tree-sitter = { package = "willbooster-tree-sitter", version = "14.0.0" }`). Runtimes with a different ABI,
+//! The parser carries the ABI number of the WillBooster fork (`0x5742000b`) and is tested with the
+//! [`willbooster-tree-sitter`] runtime 15.0.0 (depend on it as
+//! `tree-sitter = { package = "willbooster-tree-sitter", version = "15.0.0" }`). Runtimes with a different ABI,
 //! including upstream's `tree-sitter` crate, reject it with a `LanguageError`.
 //!
 //! Typically, you will use the [`LANGUAGE`] constant to add this language to a
@@ -19,7 +19,7 @@
 //! assert!(!tree.root_node().has_error());
 //! ```
 //!
-//! [`Parser`]: https://docs.rs/willbooster-tree-sitter/14/tree_sitter/struct.Parser.html
+//! [`Parser`]: https://docs.rs/willbooster-tree-sitter/15.0.0/tree_sitter/struct.Parser.html
 //! [tree-sitter]: https://tree-sitter.github.io/
 //! [`willbooster-tree-sitter`]: https://crates.io/crates/willbooster-tree-sitter
 
