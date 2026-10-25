@@ -2587,37 +2587,37 @@ static const TSMapSlice ts_field_map_slices[PRODUCTION_ID_COUNT] = {
   [182] = {.index = 458, .length = 4},
   [183] = {.index = 462, .length = 4},
   [184] = {.index = 466, .length = 2},
-  [185] = {.index = 468, .length = 1},
-  [186] = {.index = 469, .length = 6},
-  [187] = {.index = 475, .length = 3},
-  [188] = {.index = 478, .length = 4},
-  [189] = {.index = 482, .length = 4},
-  [190] = {.index = 486, .length = 4},
-  [191] = {.index = 490, .length = 4},
-  [192] = {.index = 494, .length = 4},
-  [193] = {.index = 498, .length = 5},
-  [194] = {.index = 503, .length = 5},
-  [195] = {.index = 508, .length = 2},
-  [196] = {.index = 510, .length = 1},
-  [197] = {.index = 511, .length = 3},
-  [198] = {.index = 514, .length = 2},
-  [199] = {.index = 516, .length = 1},
-  [200] = {.index = 517, .length = 2},
-  [201] = {.index = 519, .length = 2},
-  [202] = {.index = 521, .length = 3},
-  [203] = {.index = 524, .length = 5},
-  [204] = {.index = 529, .length = 5},
-  [205] = {.index = 534, .length = 5},
-  [206] = {.index = 539, .length = 2},
-  [207] = {.index = 541, .length = 1},
-  [208] = {.index = 542, .length = 3},
-  [209] = {.index = 545, .length = 3},
-  [210] = {.index = 548, .length = 4},
-  [211] = {.index = 552, .length = 6},
-  [212] = {.index = 558, .length = 3},
-  [213] = {.index = 561, .length = 3},
-  [214] = {.index = 564, .length = 4},
-  [215] = {.index = 568, .length = 4},
+  [185] = {.index = 468, .length = 2},
+  [186] = {.index = 470, .length = 6},
+  [187] = {.index = 476, .length = 3},
+  [188] = {.index = 479, .length = 4},
+  [189] = {.index = 483, .length = 4},
+  [190] = {.index = 487, .length = 4},
+  [191] = {.index = 491, .length = 4},
+  [192] = {.index = 495, .length = 4},
+  [193] = {.index = 499, .length = 5},
+  [194] = {.index = 504, .length = 5},
+  [195] = {.index = 509, .length = 2},
+  [196] = {.index = 511, .length = 1},
+  [197] = {.index = 512, .length = 3},
+  [198] = {.index = 515, .length = 2},
+  [199] = {.index = 517, .length = 1},
+  [200] = {.index = 518, .length = 3},
+  [201] = {.index = 521, .length = 2},
+  [202] = {.index = 523, .length = 3},
+  [203] = {.index = 526, .length = 5},
+  [204] = {.index = 531, .length = 5},
+  [205] = {.index = 536, .length = 5},
+  [206] = {.index = 541, .length = 2},
+  [207] = {.index = 543, .length = 1},
+  [208] = {.index = 544, .length = 3},
+  [209] = {.index = 547, .length = 3},
+  [210] = {.index = 550, .length = 4},
+  [211] = {.index = 554, .length = 6},
+  [212] = {.index = 560, .length = 3},
+  [213] = {.index = 563, .length = 3},
+  [214] = {.index = 566, .length = 4},
+  [215] = {.index = 570, .length = 4},
 };
 
 static const TSFieldMapEntry ts_field_map_entries[] = {
@@ -3249,135 +3249,137 @@ static const TSFieldMapEntry ts_field_map_entries[] = {
     {field_package, 1},
   [468] =
     {field_provided, 1},
-  [469] =
+    {field_provider, 3},
+  [470] =
     {field_body, 7},
     {field_interfaces, 5},
     {field_name, 2},
     {field_permits, 6},
     {field_superclass, 4},
     {field_type_parameters, 3},
-  [475] =
+  [476] =
     {field_arguments, 2},
     {field_constructor, 1},
     {field_type_arguments, 0},
-  [478] =
+  [479] =
     {field_body, 8},
     {field_condition, 3},
     {field_update, 5},
     {field_update, 6, .inherited = true},
-  [482] =
+  [483] =
     {field_body, 8},
     {field_init, 2},
     {field_update, 5},
     {field_update, 6, .inherited = true},
-  [486] =
+  [487] =
     {field_body, 8},
     {field_condition, 4},
     {field_init, 2},
     {field_update, 6},
-  [490] =
+  [491] =
     {field_body, 8},
     {field_init, 2},
     {field_init, 3, .inherited = true},
     {field_update, 6},
-  [494] =
+  [495] =
     {field_body, 8},
     {field_condition, 5},
     {field_init, 2},
     {field_init, 3, .inherited = true},
-  [498] =
+  [499] =
     {field_body, 8},
     {field_dimensions, 4, .inherited = true},
     {field_name, 4, .inherited = true},
     {field_type, 3},
     {field_value, 6},
-  [503] =
+  [504] =
     {field_body, 8},
     {field_condition, 3},
     {field_init, 2},
     {field_update, 5},
     {field_update, 6, .inherited = true},
-  [508] =
+  [509] =
     {field_name, 1},
     {field_type, 0},
-  [510] =
-    {field_modules, 1},
   [511] =
+    {field_modules, 1},
+  [512] =
     {field_modules, 3},
     {field_modules, 4, .inherited = true},
     {field_package, 1},
-  [514] =
+  [515] =
     {field_modules, 0, .inherited = true},
     {field_modules, 1, .inherited = true},
-  [516] =
-    {field_provider, 1},
   [517] =
+    {field_provider, 1},
+  [518] =
     {field_provided, 1},
+    {field_provider, 3},
     {field_provider, 4, .inherited = true},
-  [519] =
+  [521] =
     {field_provider, 0, .inherited = true},
     {field_provider, 1, .inherited = true},
-  [521] =
+  [523] =
     {field_arguments, 3},
     {field_constructor, 2},
     {field_object, 0},
-  [524] =
+  [526] =
     {field_body, 9},
     {field_condition, 4},
     {field_init, 2},
     {field_update, 6},
     {field_update, 7, .inherited = true},
-  [529] =
+  [531] =
     {field_body, 9},
     {field_init, 2},
     {field_init, 3, .inherited = true},
     {field_update, 6},
     {field_update, 7, .inherited = true},
-  [534] =
+  [536] =
     {field_body, 9},
     {field_condition, 5},
     {field_init, 2},
     {field_init, 3, .inherited = true},
     {field_update, 7},
-  [539] =
+  [541] =
     {field_name, 2},
     {field_type, 1},
-  [541] =
+  [543] =
     {field_value, 1},
-  [542] =
+  [544] =
     {field_dimensions, 4},
     {field_name, 1},
     {field_type, 0},
-  [545] =
+  [547] =
     {field_name, 1},
     {field_type, 0},
     {field_value, 4, .inherited = true},
-  [548] =
+  [550] =
     {field_arguments, 4},
     {field_constructor, 3},
     {field_object, 0},
     {field_type_arguments, 2},
-  [552] =
+  [554] =
     {field_body, 10},
     {field_condition, 5},
     {field_init, 2},
     {field_init, 3, .inherited = true},
     {field_update, 7},
     {field_update, 8, .inherited = true},
-  [558] =
+  [560] =
     {field_dimensions, 5},
     {field_name, 2},
     {field_type, 1},
-  [561] =
+  [563] =
     {field_name, 2},
     {field_type, 1},
     {field_value, 5, .inherited = true},
-  [564] =
+  [566] =
     {field_dimensions, 4},
     {field_name, 1},
     {field_type, 0},
     {field_value, 5, .inherited = true},
-  [568] =
+  [570] =
     {field_dimensions, 5},
     {field_name, 2},
     {field_type, 1},

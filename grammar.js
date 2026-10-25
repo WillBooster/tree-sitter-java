@@ -931,8 +931,8 @@ module.exports = grammar({
       'provides',
       field('provided', $._name),
       'with',
-      $._name,
-      repeat(seq(',', (field('provider', $._name)))),
+      field('provider', $._name),
+      repeat(seq(',', field('provider', $._name))),
       ';',
     ),
 
