@@ -8168,26 +8168,38 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "modifiers"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
+          "type": "FIELD",
+          "name": "modifiers",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "modifiers"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
         },
         {
-          "type": "SYMBOL",
-          "name": "_unannotated_type"
-        },
-        {
-          "type": "REPEAT",
+          "type": "FIELD",
+          "name": "type",
           "content": {
             "type": "SYMBOL",
-            "name": "_annotation"
+            "name": "_unannotated_type"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "annotations",
+          "content": {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_annotation"
+            }
           }
         },
         {
