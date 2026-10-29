@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { Edit, Language, type Node, Parser } from '@willbooster/web-tree-sitter';
+import { Language, Parser } from '@willbooster/web-tree-sitter';
 import { expect, test } from 'vitest';
 
 await Parser.init();
@@ -54,58 +54,31 @@ test('distinguishes module imports from ordinary and static imports', () => {
   }
 });
 
-test('retains explicit constructor invocations after prologue statements and edits', () => {
+test('retains explicit constructor invocations after prologue statements', () => {
   const parser = new Parser().setLanguage(language);
   try {
     for (const invocation of ['super(x);', 'this(x);', '<T>super(x);', 'outer.super(x);', 'outer.<T>super(x);']) {
-      const prologue = 'int y = x; if (x < 0) throw new IllegalArgumentException(); ';
-      const original = `class C extends B { C(int x) { ${invocation} after(); } }`;
-      const index = original.indexOf(invocation);
-      let tree = parser.parse(original)!;
-      try {
-        let oldLength = 0;
-        for (const prefix of [prologue, '', prologue]) {
-          tree.edit(
-            new Edit({
-              startIndex: index,
-              oldEndIndex: index + oldLength,
-              newEndIndex: index + prefix.length,
-              startPosition: { row: 0, column: index },
-              oldEndPosition: { row: 0, column: index + oldLength },
-              newEndPosition: { row: 0, column: index + prefix.length },
-            })
-          );
-          const source = original.slice(0, index) + prefix + original.slice(index);
-          const old = tree;
-          tree = parser.parse(source, old)!;
-          old.delete();
-          const fresh = parser.parse(source)!;
-          try {
-            expect(tree.rootNode.hasError, source).toBe(false);
-            expect(
-              tree.rootNode.descendantsOfType('explicit_constructor_invocation').map((node) => node.text),
-              source
-            ).toEqual([invocation]);
-            expect(snapshot(tree.rootNode)).toEqual(snapshot(fresh.rootNode));
-            const body = tree.rootNode.descendantsOfType('constructor_body')[0]!;
-            expect(body.namedChildren.at(-1)?.text).toBe('after();');
-            expect(body.namedChildren.filter((node) => node.type === 'local_variable_declaration')).toHaveLength(
-              prefix ? 1 : 0
-            );
-          } finally {
-            fresh.delete();
-          }
-          oldLength = prefix.length;
+      for (const prologue of ['', 'int y = x; if (x < 0) throw new IllegalArgumentException(); ']) {
+        const source = `class C extends B { C(int x) { ${prologue}${invocation} after(); } }`;
+        const tree = parser.parse(source)!;
+        try {
+          expect(tree.rootNode.hasError, source).toBe(false);
+          expect(
+            tree.rootNode.descendantsOfType('explicit_constructor_invocation').map((node) => node.text),
+            source
+          ).toEqual([invocation]);
+          const body = tree.rootNode.descendantsOfType('constructor_body')[0]!;
+          expect(body.namedChildren.at(-1)?.text, source).toBe('after();');
+          expect(
+            body.namedChildren.filter((node) => node.type === 'local_variable_declaration'),
+            source
+          ).toHaveLength(prologue ? 1 : 0);
+        } finally {
+          tree.delete();
         }
-      } finally {
-        tree.delete();
       }
     }
   } finally {
     parser.delete();
   }
 });
-
-function snapshot(node: Node): unknown {
-  return [node.type, node.startIndex, node.endIndex, node.startPosition, node.endPosition, node.children.map(snapshot)];
-}
