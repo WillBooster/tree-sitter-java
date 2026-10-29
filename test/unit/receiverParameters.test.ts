@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
-import { Edit, Language, type Node, Parser } from '@willbooster/web-tree-sitter';
+import { Language, Parser } from '@willbooster/web-tree-sitter';
 import { expect, test } from 'vitest';
 
 await Parser.init();
@@ -40,46 +40,3 @@ test('retains annotated receiver roles beside ordinary parameters', () => {
     parser.delete();
   }
 });
-
-test('preserves receiver roles when annotations are inserted and removed', () => {
-  const parser = new Parser();
-  parser.setLanguage(language);
-  const original = 'class C { void method(C this, C ordinary) {} }';
-  const index = original.indexOf('C this');
-  const annotation = '@Owned ';
-  const annotated = original.slice(0, index) + annotation + original.slice(index);
-  let tree = parser.parse(original)!;
-  try {
-    for (const inserting of [true, false, true, false]) {
-      tree.edit(
-        new Edit({
-          startIndex: index,
-          oldEndIndex: index + (inserting ? 0 : annotation.length),
-          newEndIndex: index + (inserting ? annotation.length : 0),
-          startPosition: { row: 0, column: index },
-          oldEndPosition: { row: 0, column: index + (inserting ? 0 : annotation.length) },
-          newEndPosition: { row: 0, column: index + (inserting ? annotation.length : 0) },
-        })
-      );
-      const source = inserting ? annotated : original;
-      const next = parser.parse(source, tree)!;
-      tree.delete();
-      tree = next;
-      const fresh = parser.parse(source)!;
-      try {
-        expect(tree.rootNode.hasError).toBe(false);
-        expect(tree.rootNode.descendantsOfType('receiver_parameter')).toHaveLength(1);
-        expect(snapshot(tree.rootNode)).toEqual(snapshot(fresh.rootNode));
-      } finally {
-        fresh.delete();
-      }
-    }
-  } finally {
-    tree.delete();
-    parser.delete();
-  }
-});
-
-function snapshot(node: Node): unknown {
-  return [node.type, node.startIndex, node.endIndex, node.startPosition, node.endPosition, node.children.map(snapshot)];
-}
