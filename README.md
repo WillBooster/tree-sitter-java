@@ -143,7 +143,7 @@ fuzzed with:
 ```toml
 [dependencies]
 tree-sitter = { package = "willbooster-tree-sitter", version = "15.0.0" }
-tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "13" }
+tree-sitter-java = { package = "willbooster-tree-sitter-java", version = "14" }
 ```
 
 ```rust
