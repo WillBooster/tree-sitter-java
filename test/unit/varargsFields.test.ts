@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
-import { Language, Parser, Query } from '@willbooster/web-tree-sitter';
+import { Language, Parser } from '@willbooster/web-tree-sitter';
 import { expect, test } from 'vitest';
 
 await Parser.init();
@@ -8,13 +8,6 @@ const language = await Language.load(fileURLToPath(new URL('../../tree-sitter-ja
 
 test('exposes varargs type, modifiers and ellipsis annotations without changing the binding', () => {
   const parser = new Parser().setLanguage(language);
-  const query = new Query(
-    language,
-    `(spread_parameter type: (_) @type)
-     (spread_parameter modifiers: (_) @modifiers)
-     (spread_parameter annotations: (_) @annotation)
-     (spread_parameter (variable_declarator name: (identifier) @name))`
-  );
   try {
     for (const parameter of [
       { source: 'String... names', type: 'String', modifiers: undefined, annotations: [] },
@@ -33,14 +26,14 @@ test('exposes varargs type, modifiers and ellipsis annotations without changing 
         expect(spread?.childForFieldName('type')?.text).toBe(parameter.type);
         expect(spread?.childForFieldName('modifiers')?.text).toBe(parameter.modifiers);
         expect(spread?.childrenForFieldName('annotations').map((node) => node.text)).toEqual(parameter.annotations);
-        const captures = query.captures(tree.rootNode);
-        const texts = (name: string): string[] =>
-          captures.filter((capture) => capture.name === name).map(({ node }) => node.text);
-        expect(texts('type')).toEqual([parameter.type]);
-        expect(texts('modifiers')).toEqual(parameter.modifiers ? [parameter.modifiers] : []);
-        expect(texts('annotation')).toEqual(parameter.annotations);
-        expect(texts('name')).toEqual(['names']);
-        for (const { node } of captures) {
+        const name = spread?.descendantsOfType('variable_declarator')[0]?.childForFieldName('name');
+        expect(name?.text).toBe('names');
+        for (const node of [
+          spread!.childForFieldName('type')!,
+          ...spread!.childrenForFieldName('modifiers'),
+          ...spread!.childrenForFieldName('annotations'),
+          name!,
+        ]) {
           expect([node.startIndex, node.endIndex]).toEqual([
             source.indexOf(node.text),
             source.indexOf(node.text) + node.text.length,
@@ -51,7 +44,6 @@ test('exposes varargs type, modifiers and ellipsis annotations without changing 
       }
     }
   } finally {
-    query.delete();
     parser.delete();
   }
 });

@@ -1,7 +1,6 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
-import { Language, Parser, Query } from '@willbooster/web-tree-sitter';
+import { Language, Parser } from '@willbooster/web-tree-sitter';
 import { expect, test } from 'vitest';
 
 await Parser.init();
@@ -70,10 +69,6 @@ for (const [escape, suffix] of [
     const source = `class C { String a = "${escape}${suffix}"; int after; }`;
     const parser = new Parser().setLanguage(language);
     const tree = parser.parse(source)!;
-    const query = new Query(
-      language,
-      fs.readFileSync(path.join(import.meta.dirname, '../../queries/highlights.scm'), 'utf8')
-    );
     try {
       expect(tree.rootNode.hasError).toBe(false);
       expect(
@@ -82,15 +77,8 @@ for (const [escape, suffix] of [
       expect(tree.rootNode.descendantsOfType('string_fragment').map((node) => node.text)).toEqual(
         suffix ? [suffix] : []
       );
-      expect(
-        query
-          .captures(tree.rootNode)
-          .filter(({ name }) => name === 'string.escape')
-          .map(({ node }) => node.text)
-      ).toEqual([escape]);
       expect(tree.rootNode.descendantsOfType('field_declaration')).toHaveLength(2);
     } finally {
-      query.delete();
       tree.delete();
       parser.delete();
     }

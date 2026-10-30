@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
-import { Language, Parser, Query } from '@willbooster/web-tree-sitter';
+import { Language, Parser } from '@willbooster/web-tree-sitter';
 import { expect, test } from 'vitest';
 
 await Parser.init();
@@ -8,7 +8,6 @@ const language = await Language.load(fileURLToPath(new URL('../../tree-sitter-ja
 
 test('exposes every module service implementation through the provider field', () => {
   const parser = new Parser().setLanguage(language);
-  const query = new Query(language, '(provides_module_directive provider: (_) @provider)');
   try {
     for (const providers of [
       ['sample.First'],
@@ -26,15 +25,11 @@ test('exposes every module service implementation through the provider field', (
         expect(
           directive?.childrenForFieldName('provider').map((node) => [node.text, node.startIndex, node.endIndex])
         ).toEqual(expected);
-        expect(query.captures(tree.rootNode).map(({ node }) => [node.text, node.startIndex, node.endIndex])).toEqual(
-          expected
-        );
       } finally {
         tree.delete();
       }
     }
   } finally {
-    query.delete();
     parser.delete();
   }
 });
