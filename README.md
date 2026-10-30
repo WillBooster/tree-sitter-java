@@ -125,16 +125,7 @@ Filter a captured name by its text with `#eq?`:
 ```
 
 Within a declaration's `modifiers`, access keywords are named `visibility` nodes and other modifier keywords are
-named `modifier` nodes. Annotations retain their own nodes, and the keyword tokens remain available for highlighting.
-For example, this query captures explicitly public static methods without matching annotation text:
-
-```scheme
-(method_declaration
-  (modifiers (visibility) @visibility (modifier) @modifier)
-  name: (identifier) @method
-  (#eq? @visibility "public")
-  (#eq? @modifier "static"))
-```
+named `modifier` nodes. Annotations retain their own nodes.
 
 ### Rust
 

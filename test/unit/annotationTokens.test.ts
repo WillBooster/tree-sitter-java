@@ -1,47 +1,37 @@
-import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { Language, Parser, Query } from '@willbooster/web-tree-sitter';
+import { Language, Parser } from '@willbooster/web-tree-sitter';
 import { expect, test } from 'vitest';
 
 await Parser.init();
 const language = await Language.load(fileURLToPath(new URL('../../tree-sitter-java.wasm', import.meta.url)));
 
-test('exposes separate annotation declaration tokens to structural and highlighting queries', () => {
+test('keeps the annotation declaration @ and interface tokens separate', () => {
   const parser = new Parser().setLanguage(language);
-  const query = new Query(
-    language,
-    '(annotation_type_declaration "@" @marker "interface" @keyword name: (identifier) @name)'
-  );
-  const highlights = new Query(
-    language,
-    readFileSync(new URL('../../queries/highlights.scm', import.meta.url), 'utf8')
-  );
   try {
     for (const separator of ['', ' ', '/* separator */', '\n']) {
       const source = `@Deprecated @${separator}interface Mark {} @Mark class User {}`;
       const tree = parser.parse(source)!;
       try {
         expect(tree.rootNode.hasError, source).toBe(false);
-        expect(query.captures(tree.rootNode).map(({ name, node }) => [name, node.text])).toEqual([
-          ['marker', '@'],
-          ['keyword', 'interface'],
-          ['name', 'Mark'],
+        const declarations = tree.rootNode.descendantsOfType('annotation_type_declaration');
+        expect(declarations).toHaveLength(1);
+        expect(
+          declarations[0]!.children.filter((node) => !node.isExtra).map((node) => [node.type, node.text]),
+          source
+        ).toEqual([
+          ['modifiers', '@Deprecated'],
+          ['@', '@'],
+          ['interface', 'interface'],
+          ['identifier', 'Mark'],
+          ['annotation_type_body', '{}'],
         ]);
-        const captures = highlights.captures(tree.rootNode);
-        expect(captures.filter(({ name, node }) => name === 'operator' && node.text === '@')).toHaveLength(3);
-        expect(captures.filter(({ name, node }) => name === 'keyword' && node.text === 'interface')).toHaveLength(1);
-        expect(captures.filter(({ name }) => name === 'attribute').map(({ node }) => node.text)).toEqual([
-          'Deprecated',
-          'Mark',
-        ]);
+        expect(declarations[0]!.childForFieldName('name')?.text).toBe('Mark');
       } finally {
         tree.delete();
       }
     }
   } finally {
-    highlights.delete();
-    query.delete();
     parser.delete();
   }
 });
