@@ -4926,29 +4926,41 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_class_literal_type_name"
-              },
-              {
-                "type": "PATTERN",
-                "value": "(?:\\.|\\\\u+002[eE])"
-              },
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "identifier"
-                },
-                "named": true,
-                "value": "type_identifier"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "_class_literal_scoped_type_name"
           },
           "named": true,
           "value": "scoped_type_identifier"
+        }
+      ]
+    },
+    "_class_literal_scoped_type_name": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_class_literal_type_name"
+        },
+        {
+          "type": "ALIAS",
+          "named": false,
+          "value": ".",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "(?:\\.|\\\\u+002[eE])"
+            }
+          }
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          },
+          "named": true,
+          "value": "type_identifier"
         }
       ]
     },

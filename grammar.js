@@ -537,7 +537,13 @@ module.exports = unicodeGrammar(grammar({
 
     _class_literal_type_name: $ => choice(
       alias($.identifier, $.type_identifier),
-      alias(seq($._class_literal_type_name, '.', alias($.identifier, $.type_identifier)), $.scoped_type_identifier),
+      alias($._class_literal_scoped_type_name, $.scoped_type_identifier),
+    ),
+
+    _class_literal_scoped_type_name: $ => seq(
+      $._class_literal_type_name,
+      '.',
+      alias($.identifier, $.type_identifier),
     ),
 
     object_creation_expression: $ => choice(

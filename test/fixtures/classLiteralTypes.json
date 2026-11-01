@@ -2,87 +2,114 @@
   "valid": [
     {
       "source": "class C { static class D {} Class<?> value = String.class; } class After {}",
-      "expression": "String.class"
+      "expression": "String.class",
+      "type": "String"
     },
     {
       "source": "class C { static class D {} Class<?> value = String[][].class; } class After {}",
-      "expression": "String[][].class"
+      "expression": "String[][].class",
+      "type": "String[][]",
+      "element": "String"
     },
     {
       "source": "class C { static class D {} Class<?> value = int.class; } class After {}",
-      "expression": "int.class"
+      "expression": "int.class",
+      "type": "int"
     },
     {
       "source": "class C { static class D {} Class<?> value = int[][].class; } class After {}",
-      "expression": "int[][].class"
+      "expression": "int[][].class",
+      "type": "int[][]",
+      "element": "int"
     },
     {
       "source": "class C { static class D {} Class<?> value = boolean.class; } class After {}",
-      "expression": "boolean.class"
+      "expression": "boolean.class",
+      "type": "boolean"
     },
     {
       "source": "class C { static class D {} Class<?> value = boolean[].class; } class After {}",
-      "expression": "boolean[].class"
+      "expression": "boolean[].class",
+      "type": "boolean[]",
+      "element": "boolean"
     },
     {
       "source": "class C { static class D {} Class<?> value = byte.class; } class After {}",
-      "expression": "byte.class"
+      "expression": "byte.class",
+      "type": "byte"
     },
     {
       "source": "class C { static class D {} Class<?> value = short.class; } class After {}",
-      "expression": "short.class"
+      "expression": "short.class",
+      "type": "short"
     },
     {
       "source": "class C { static class D {} Class<?> value = char.class; } class After {}",
-      "expression": "char.class"
+      "expression": "char.class",
+      "type": "char"
     },
     {
       "source": "class C { static class D {} Class<?> value = long.class; } class After {}",
-      "expression": "long.class"
+      "expression": "long.class",
+      "type": "long"
     },
     {
       "source": "class C { static class D {} Class<?> value = float.class; } class After {}",
-      "expression": "float.class"
+      "expression": "float.class",
+      "type": "float"
     },
     {
       "source": "class C { static class D {} Class<?> value = double.class; } class After {}",
-      "expression": "double.class"
+      "expression": "double.class",
+      "type": "double"
     },
     {
       "source": "class C { static class D {} Class<?> value = void.class; } class After {}",
-      "expression": "void.class"
+      "expression": "void.class",
+      "type": "void"
     },
     {
       "source": "class C { static class D {} Class<?> value = java.lang.String.class; } class After {}",
-      "expression": "java.lang.String.class"
+      "expression": "java.lang.String.class",
+      "type": "java.lang.String"
     },
     {
       "source": "class C { static class D {} Class<?> value = java.lang.String[][].class; } class After {}",
-      "expression": "java.lang.String[][].class"
+      "expression": "java.lang.String[][].class",
+      "type": "java.lang.String[][]",
+      "element": "java.lang.String"
     },
     {
       "source": "class C { static class D {} Class<?> value = C.D.class; } class After {}",
-      "expression": "C.D.class"
+      "expression": "C.D.class",
+      "type": "C.D"
     },
     {
       "source": "class C { static class D {} Class<?> value = C.D[].class; } class After {}",
-      "expression": "C.D[].class"
+      "expression": "C.D[].class",
+      "type": "C.D[]",
+      "element": "C.D"
     },
     {
       "source": "class C { static class D {} Class<?> value = \\u0053tring.class; } class After {}",
-      "expression": "\\u0053tring.class"
+      "expression": "\\u0053tring.class",
+      "type": "\\u0053tring"
     },
     {
       "source": "class C { static class D {} Class<?> value = String\\u005b\\u005d.class; } class After {}",
-      "expression": "String\\u005b\\u005d.class"
+      "expression": "String\\u005b\\u005d.class",
+      "type": "String\\u005b\\u005d",
+      "element": "String"
     },
     {
       "source": "class C { static class D {} Class<?> value = String.\\u0063lass; } class After {}",
-      "expression": "String.\\u0063lass"
+      "expression": "String.\\u0063lass",
+      "type": "String"
     },
     {
       "source": "class when {} class C { Class<?> value = when.class; } class After {}",
-      "expression": "when.class"
+      "expression": "when.class",
+      "type": "when"
     }
   ],
   "invalid": [

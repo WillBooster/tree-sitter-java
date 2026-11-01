@@ -727,7 +727,7 @@
         ]
       },
       "element": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
@@ -1261,7 +1261,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
@@ -3503,7 +3503,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "annotation",
