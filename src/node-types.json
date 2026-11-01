@@ -2826,11 +2826,6 @@
     }
   },
   {
-    "type": "multiline_string_fragment",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "object_creation_expression",
     "named": true,
     "fields": {
@@ -4544,6 +4539,10 @@
   {
     "type": "module",
     "named": false
+  },
+  {
+    "type": "multiline_string_fragment",
+    "named": true
   },
   {
     "type": "native",

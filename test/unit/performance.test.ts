@@ -34,30 +34,33 @@ test('uses a Wasm build built from the current parser', () => {
 test('recovers from an error on each line in linear time', { timeout: 60_000 }, () => {
   const small = '# a\n'.repeat(2000);
   const large = '# a\n'.repeat(20_000);
-  parseCpuTime(large);
-  parseCpuTime(large);
-  let smallFastest = Infinity;
-  let largeFastest = Infinity;
-  for (let run = 0; run < 5; run++) {
-    smallFastest = Math.min(smallFastest, parseCpuTime(small));
-    largeFastest = Math.min(largeFastest, parseCpuTime(large));
-  }
-  expect(largeFastest / smallFastest).toBeLessThan(18);
+  expectLinearParsing(small, large);
 });
 
 test('parses repeated array dimensions in linear time', { timeout: 60_000 }, () => {
   const small = `class C { int${'[]'.repeat(500)} value; }`;
   const large = `class C { int${'[]'.repeat(5000)} value; }`;
-  parseCpuTime(large, false);
-  parseCpuTime(large, false);
+  expectLinearParsing(small, large, false);
+});
+
+test('parses repeated Unicode-backed backslash escapes in linear time', { timeout: 60_000 }, () => {
+  const escape = '\\u005c\\';
+  const small = `class C { String value = "${escape.repeat(500)}"; }`;
+  const large = `class C { String value = "${escape.repeat(5000)}"; }`;
+  expectLinearParsing(small, large, false);
+});
+
+function expectLinearParsing(small: string, large: string, expectedError = true): void {
+  parseCpuTime(large, expectedError);
+  parseCpuTime(large, expectedError);
   let smallFastest = Infinity;
   let largeFastest = Infinity;
   for (let run = 0; run < 5; run++) {
-    smallFastest = Math.min(smallFastest, parseCpuTime(small, false));
-    largeFastest = Math.min(largeFastest, parseCpuTime(large, false));
+    smallFastest = Math.min(smallFastest, parseCpuTime(small, expectedError));
+    largeFastest = Math.min(largeFastest, parseCpuTime(large, expectedError));
   }
   expect(largeFastest / smallFastest).toBeLessThan(18);
-});
+}
 
 function parseCpuTime(source: string, expectedError = true): number {
   const start = process.threadCpuUsage();
