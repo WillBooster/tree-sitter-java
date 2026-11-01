@@ -11316,8 +11316,121 @@
           }
         },
         {
-          "type": "SYMBOL",
-          "name": "variable_declarator"
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_reserved_identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "underscore_pattern"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "dimensions",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_annotated_dimensions"
+                },
+                "named": true,
+                "value": "dimensions"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "_annotated_dimensions": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_annotation"
+          }
+        },
+        {
+          "type": "ALIAS",
+          "named": false,
+          "value": "[",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "(?:\\[|\\\\u+005[bB])"
+            }
+          }
+        },
+        {
+          "type": "ALIAS",
+          "named": false,
+          "value": "]",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "(?:\\]|\\\\u+005[dD])"
+            }
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "REPEAT",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_annotation"
+                }
+              },
+              {
+                "type": "ALIAS",
+                "named": false,
+                "value": "[",
+                "content": {
+                  "type": "TOKEN",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "(?:\\[|\\\\u+005[bB])"
+                  }
+                }
+              },
+              {
+                "type": "ALIAS",
+                "named": false,
+                "value": "]",
+                "content": {
+                  "type": "TOKEN",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "(?:\\]|\\\\u+005[dD])"
+                  }
+                }
+              }
+            ]
+          }
         }
       ]
     },

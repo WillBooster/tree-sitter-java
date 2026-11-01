@@ -1379,7 +1379,13 @@ module.exports = unicodeGrammar(grammar({
       field('type', $._unannotated_type),
       field('annotations', repeat($._annotation)),
       '...',
-      $.variable_declarator,
+      field('name', choice($.identifier, $._reserved_identifier, $.underscore_pattern)),
+      field('dimensions', optional(alias($._annotated_dimensions, $.dimensions))),
+    ),
+
+    _annotated_dimensions: $ => seq(
+      repeat1($._annotation), '[', ']',
+      repeat(seq(repeat($._annotation), '[', ']')),
     ),
 
     throws: $ => seq(

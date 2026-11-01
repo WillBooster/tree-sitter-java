@@ -1993,8 +1993,7 @@ void foo(int @Foo ... x) {
         (integral_type)
         (marker_annotation
           (identifier))
-        (variable_declarator
-          (identifier))))
+        (identifier)))
     (block)))
 
 ================================================================================
@@ -2184,5 +2183,5 @@ void foo(int @Array [] @Elements ... values) {}
           (dimensions
             (marker_annotation (identifier))))
         (marker_annotation (identifier))
-        (variable_declarator (identifier))))
+        (identifier)))
     (block)))
