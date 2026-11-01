@@ -4808,7 +4808,16 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_unannotated_type"
+                "name": "_class_literal_type"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_class_literal_array_type"
+                },
+                "named": true,
+                "value": "array_type"
               },
               {
                 "type": "SYMBOL",
@@ -4842,6 +4851,106 @@
           }
         ]
       }
+    },
+    "_class_literal_array_type": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "element",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_class_literal_type"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "dimensions",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "REPEAT1",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "(?:\\[|\\\\u+005[bB])"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "(?:\\]|\\\\u+005[dD])"
+                  }
+                ]
+              }
+            },
+            "named": true,
+            "value": "dimensions"
+          }
+        }
+      ]
+    },
+    "_class_literal_type": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "integral_type"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "floating_point_type"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "boolean_type"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_class_literal_type_name"
+        }
+      ]
+    },
+    "_class_literal_type_name": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          },
+          "named": true,
+          "value": "type_identifier"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_class_literal_type_name"
+              },
+              {
+                "type": "PATTERN",
+                "value": "(?:\\.|\\\\u+002[eE])"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                "named": true,
+                "value": "type_identifier"
+              }
+            ]
+          },
+          "named": true,
+          "value": "scoped_type_identifier"
+        }
+      ]
     },
     "object_creation_expression": {
       "type": "CHOICE",
@@ -11927,12 +12036,24 @@
       "dimensions"
     ],
     [
+      "_class_literal_array_type",
+      "dimensions"
+    ],
+    [
       "array_type",
       "_unannotated_type"
     ],
     [
-      "array_type",
-      "primary_expression"
+      "primary_expression",
+      "_class_literal_type_name",
+      "array_type"
+    ],
+    [
+      "primary_expression",
+      "_class_literal_type_name",
+      "method_reference",
+      "scoped_identifier",
+      "scoped_type_identifier"
     ],
     [
       "modifiers",
@@ -11956,10 +12077,6 @@
     [
       "_unannotated_type",
       "primary_expression"
-    ],
-    [
-      "_unannotated_type",
-      "scoped_type_identifier"
     ],
     [
       "_unannotated_type",
@@ -11993,13 +12110,6 @@
       "primary_expression",
       "method_reference",
       "scoped_identifier"
-    ],
-    [
-      "primary_expression",
-      "method_reference",
-      "scoped_identifier",
-      "_unannotated_type",
-      "scoped_type_identifier"
     ]
   ],
   "precedences": [],
@@ -12028,6 +12138,7 @@
   "inline": [
     "_name",
     "_simple_type",
+    "_class_literal_type",
     "_class_body_declaration",
     "_variable_initializer"
   ],
