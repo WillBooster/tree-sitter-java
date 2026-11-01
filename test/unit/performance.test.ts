@@ -50,6 +50,26 @@ test('parses repeated Unicode-backed backslash escapes in linear time', { timeou
   expectLinearParsing(small, large, false);
 });
 
+test('parses Unicode-encoded tokens and comment boundaries in linear time', { timeout: 60_000 }, () => {
+  expectLinearParsing(unicodeSource(300), unicodeSource(3000), false);
+});
+
+test('recovers from unterminated Unicode-encoded comments in linear time', { timeout: 60_000 }, () => {
+  const opening = String.raw`\u002f\u002a body `;
+  expectLinearParsing(opening.repeat(500), opening.repeat(5000));
+});
+
+function unicodeSource(count: number): string {
+  return (
+    String.raw`cl\u0061ss C \u007b` +
+    Array.from(
+      { length: count },
+      (_, index) => String.raw`\u0069nt field${index}\u003d\u0031\u003b\u002f\u002f comment\u000a`
+    ).join('') +
+    String.raw`\u007d`
+  );
+}
+
 function expectLinearParsing(small: string, large: string, expectedError = true): void {
   parseCpuTime(large, expectedError);
   parseCpuTime(large, expectedError);
