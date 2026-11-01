@@ -78,7 +78,7 @@ floating point literals
 0.2e-2;
 0.0e-4;
 .2e-2;
-0x5.4;
+0x5.4p0;
 0x5.4p-10;
 
 ---

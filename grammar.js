@@ -210,12 +210,10 @@ module.exports = grammar({
         seq(HEX_DIGITS, optional('.')),
         seq(optional(HEX_DIGITS), '.', HEX_DIGITS),
       ),
-      optional(seq(
-        /[pP]/,
-        optional(choice('-', '+')),
-        DECIMAL_DIGITS,
-        optional(/[fFdD]/),
-      )),
+      /[pP]/,
+      optional(choice('-', '+')),
+      DECIMAL_DIGITS,
+      optional(/[fFdD]/),
     )),
 
     true: _ => 'true',
