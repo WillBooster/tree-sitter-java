@@ -84,6 +84,7 @@ void tree_sitter_java_external_scanner_deserialize(void *payload, const char *bu
 static bool scan_comment_end(TSLexer *lexer, const bool *valid_symbols) {
   if (valid_symbols[LINE_COMMENT_END] && valid_symbols[BLOCK_COMMENT_END]) return false;
   lexer->result_symbol = valid_symbols[LINE_COMMENT_END] ? LINE_COMMENT_END : BLOCK_COMMENT_END;
+  if (valid_symbols[LINE_COMMENT_END]) lexer->mark_end(lexer);
   if (valid_symbols[LINE_COMMENT_END] && lexer->eof(lexer)) return true;
   Translation state = {false, false};
   int32_t character;
@@ -98,7 +99,7 @@ bool tree_sitter_java_external_scanner_scan(void *payload, TSLexer *lexer, const
   Translation state = {false, false};
   int32_t character;
   if (!next_character(lexer, &state, &character)) return false;
-  if (valid_symbols[JAVA_WHITESPACE] && whitespace(character)) return scan_whitespace(lexer, &state);
+  if (valid_symbols[JAVA_WHITESPACE] && (whitespace(character) || (character == 0x1a && lexer->eof(lexer)))) return scan_whitespace(lexer, &state);
   if (character != '/' || !next_character(lexer, &state, &character)) return false;
   bool line = character == '/' && valid_symbols[LINE_COMMENT_BODY];
   if (!line && !(character == '*' && valid_symbols[BLOCK_COMMENT_BODY])) return false;

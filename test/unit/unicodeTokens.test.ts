@@ -7,6 +7,16 @@ await Parser.init();
 const language = await Language.load(fileURLToPath(new URL('../../tree-sitter-java.wasm', import.meta.url)));
 
 const validSources = [
+  String.raw`class C { boolean value = tr\u0000ue; int after; }`,
+  'cl\u0000ass C { int value = 1; int after; }',
+  String.raw`sealed interface A permits C {} non\u0000-sealed class C implements A { int value = 1; int after; }`,
+  String.raw`class C { int cl\u0000assify = 1; int after; }`,
+  String.raw`class C { int class\u0000Name = 1; int after; }`,
+  String.raw`cl\u0000ass C { int value = 1; int after; }`,
+  String.raw`class\u001a C { int value = 1; int after; }`,
+  String.raw`class C { int v\u0000alue = 1; int after; }`,
+  'class C { int value = 1; int after; }\u001A',
+  String.raw`class C { int value = 1; int after; }\u001a`,
   String.raw`class C { String value = "a"\u0020; int after; }`,
   String.raw`class C { char value = 'a'\u0020; int after; }`,
   String.raw`abs\u0074ract class C { int value = 1; int after; }`,
@@ -45,7 +55,12 @@ const validSources = [
   String.raw`class C { int value = 1; int after; } // final backslash ` + '\\',
 ];
 
-for (const source of validSources) {
+const unicode17Sources = [
+  String.raw`class C { int \u20c1value = 1; int after; }`,
+  String.raw`class C { int \ud888\udfb0value = 1; int after; }`,
+];
+
+for (const source of [...validSources, ...unicode17Sources]) {
   test(`preserves declarations and raw ranges after Unicode translation: ${JSON.stringify(source)}`, () => {
     const parser = new Parser().setLanguage(language);
     const tree = parser.parse(source)!;
@@ -59,6 +74,13 @@ for (const source of validSources) {
       const variables = tree.rootNode.descendantsOfType('variable_declarator');
       expect(variables).toHaveLength(2);
       expect(variables[1]!.childForFieldName('name')?.text).toBe('after');
+      const assignment = source.match(/ (?:=|\\u003d) /)!;
+      const expectedName = source.slice(0, assignment.index).split(' ').at(-1)!;
+      const name = variables[0]!.childForFieldName('name')!;
+      expect(name.type).toBe('identifier');
+      expect(name.text).toBe(expectedName);
+      expect(name.startIndex).toBe(assignment.index! - expectedName.length);
+      expect(name.endIndex).toBe(assignment.index);
       const value = variables[0]!.childForFieldName('value')!;
       const literal = source.match(/(?:=|\\u003d) ([\s\S]*?)(?:\\u0020)?(?:;|\\u003b)/)![1]!;
       expect(value.text).toBe(literal);
@@ -74,7 +96,37 @@ for (const source of validSources) {
   });
 }
 
+for (const terminator of ['\n', '\r', '\r\n', String.raw`\u000a`, String.raw`\u000d`, String.raw`\u000d\u000a`]) {
+  test(`keeps the line terminator outside the comment range: ${JSON.stringify(terminator)}`, () => {
+    const comment = '// comment';
+    const source = `class C { int value = 1; ${comment}${terminator} int after; }`;
+    const parser = new Parser().setLanguage(language);
+    const tree = parser.parse(source)!;
+    try {
+      expect(tree.rootNode.hasError, source).toBe(false);
+      const comments = tree.rootNode.descendantsOfType('line_comment');
+      expect(comments).toHaveLength(1);
+      expect(comments[0]!.text).toBe(comment);
+      expect(comments[0]!.startIndex).toBe(source.indexOf(comment));
+      expect(comments[0]!.endIndex).toBe(source.indexOf(comment) + comment.length);
+      expect(tree.rootNode.descendantsOfType('field_declaration')).toHaveLength(2);
+    } finally {
+      tree.delete();
+      parser.delete();
+    }
+  });
+}
+
 for (const source of [
+  'class C { int \u0558 = 1; }',
+  String.raw`class C { int \u0558 = 1; }`,
+  String.raw`class C { long value = 1L\u0000; }`,
+  'class C { int cl\u0000ass = 1; }',
+  String.raw`class C { int c\u0000onst = 1; }`,
+  String.raw`class C { int go\u0000to = 1; }`,
+  String.raw`sealed interface A permits C {} non-\u0000sealed class C implements A {}`,
+  String.raw`class C { int cl\u0000ass = 1; }`,
+  String.raw`class C { int ret\u200burn = 1; }`,
   String.raw`class C { int value = 0\u006f17; }`,
   String.raw`class C { int value = 0\u004f17; }`,
   String.raw`class C { double value = 0x1.\u0066; }`,
