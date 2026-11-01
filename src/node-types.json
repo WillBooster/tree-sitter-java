@@ -3982,7 +3982,23 @@
       "required": false,
       "types": [
         {
-          "type": "_type",
+          "type": "annotated_type",
+          "named": true
+        },
+        {
+          "type": "array_type",
+          "named": true
+        },
+        {
+          "type": "generic_type",
+          "named": true
+        },
+        {
+          "type": "scoped_type_identifier",
+          "named": true
+        },
+        {
+          "type": "type_identifier",
           "named": true
         },
         {
@@ -4252,7 +4268,7 @@
       "required": false,
       "types": [
         {
-          "type": "_type",
+          "type": "annotated_type",
           "named": true
         },
         {
@@ -4260,11 +4276,27 @@
           "named": true
         },
         {
+          "type": "array_type",
+          "named": true
+        },
+        {
+          "type": "generic_type",
+          "named": true
+        },
+        {
           "type": "marker_annotation",
           "named": true
         },
         {
+          "type": "scoped_type_identifier",
+          "named": true
+        },
+        {
           "type": "super",
+          "named": true
+        },
+        {
+          "type": "type_identifier",
           "named": true
         }
       ]

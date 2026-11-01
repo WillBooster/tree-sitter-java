@@ -627,7 +627,7 @@ module.exports = unicodeGrammar(grammar({
 
     type_arguments: $ => seq(
       '<',
-      commaSep1(choice($._type, $.wildcard)),
+      commaSep1(choice($._reference_type, $.wildcard)),
       '>',
     ),
 
@@ -638,8 +638,8 @@ module.exports = unicodeGrammar(grammar({
     ),
 
     _wildcard_bounds: $ => choice(
-      seq('extends', $._type),
-      seq($.super, $._type),
+      seq('extends', $._reference_type),
+      seq($.super, $._reference_type),
     ),
 
     dimensions: $ => repeat1(
@@ -1314,6 +1314,17 @@ module.exports = unicodeGrammar(grammar({
     _type: $ => choice(
       $._unannotated_type,
       $.annotated_type,
+    ),
+
+    _reference_type: $ => choice(
+      $._class_type,
+      $.array_type,
+      alias($._annotated_reference_type, $.annotated_type),
+    ),
+
+    _annotated_reference_type: $ => seq(
+      repeat1($._annotation),
+      choice($._class_type, $.array_type),
     ),
 
     _unannotated_type: $ => choice(
