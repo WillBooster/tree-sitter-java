@@ -237,39 +237,27 @@ module.exports = grammar({
     false: _ => 'false',
 
     character_literal: _ => {
-      const incompleteUnicode = /\\u+[0-9a-fA-F]{0,3}/;
-      const malformedUnicode = /\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\'\n]|[^0-9a-fA-Fu\\'\n])/;
+      const quote = choice('\'', /\\u+0027/);
       const encodedBackslash = /\\u+005[cC]/;
-      const unicodeCharacter = /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])/;
-      const plainCharacter = /[^\\'\n]/;
-      const rawEscape = /\\[^u]/;
-      const boundedEscape = choice(
-        malformedUnicode,
-        rawEscape,
-        unicodeCharacter,
-        seq(encodedBackslash, choice(encodedBackslash, /[^'\n]/, /\n/)),
-      );
-      const boundedTail = seq(
-        repeat(choice(
-          plainCharacter,
-          seq(repeat(incompleteUnicode), boundedEscape),
-        )),
-        repeat(incompleteUnicode),
-        optional(encodedBackslash),
-      );
-      const character = choice(
+      const unicodeCharacter = /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[1346-9a-fA-F][0-9a-fA-F]|000[0-9bcefBCEF]|002[0-68-9a-fA-F]|005[0-9abd-fABD-F])/;
+      const plainCharacter = /[^\r\n'\\\u{10000}-\u{10FFFF}]/u;
+      const simpleEscape = /[btnfrs"'\\]/;
+      const octalDigit = choice(/[0-7]/, /\\u+003[0-7]/);
+      return token(seq(quote, choice(
         plainCharacter,
-        rawEscape,
         unicodeCharacter,
-        seq(encodedBackslash, choice(encodedBackslash, /./, /\n/)),
-      );
-      return token(seq('\'', choice(
-        repeat1(character),
-        seq(repeat(character), repeat1(incompleteUnicode)),
-        seq(repeat(character), malformedUnicode, boundedTail),
-        seq(repeat(character), repeat1(incompleteUnicode), boundedEscape, boundedTail),
-        seq(repeat(character), repeat1(incompleteUnicode), encodedBackslash),
-      ), '\''));
+        seq('\\', choice(
+          simpleEscape,
+          seq(/[0-3]/, optional(octalDigit), optional(octalDigit)),
+          seq(/[4-7]/, optional(octalDigit)),
+        )),
+        seq(encodedBackslash, choice(
+          simpleEscape,
+          /\\u+00(22|27|5[cC]|62|66|6[eE]|72|73|74)/,
+          seq(choice(/[0-3]/, /\\u+003[0-3]/), optional(octalDigit), optional(octalDigit)),
+          seq(choice(/[4-7]/, /\\u+003[4-7]/), optional(octalDigit)),
+        )),
+      ), quote));
     },
 
     string_literal: $ => choice($._string_literal, $._multiline_string_literal),
