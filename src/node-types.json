@@ -3115,6 +3115,56 @@
     }
   },
   {
+    "type": "record_component",
+    "named": true,
+    "fields": {
+      "dimensions": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "dimensions",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "_unannotated_type",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "annotation",
+          "named": true
+        },
+        {
+          "type": "marker_annotation",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "record_declaration",
     "named": true,
     "fields": {
@@ -3153,7 +3203,7 @@
         "required": true,
         "types": [
           {
-            "type": "formal_parameters",
+            "type": "record_header",
             "named": true
           }
         ]
@@ -3175,6 +3225,21 @@
       "types": [
         {
           "type": "modifiers",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "record_header",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "record_component",
           "named": true
         }
       ]
