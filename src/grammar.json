@@ -4065,8 +4065,13 @@
                   "name": "identifier"
                 },
                 {
-                  "type": "SYMBOL",
-                  "name": "formal_parameters"
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_lambda_parameters"
+                  },
+                  "named": true,
+                  "value": "formal_parameters"
                 },
                 {
                   "type": "SYMBOL",
@@ -4114,6 +4119,94 @@
           }
         ]
       }
+    },
+    "_lambda_parameters": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "named": false,
+          "value": "(",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "(?:\\(|\\\\u+0028)"
+            }
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "formal_parameter"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "spread_parameter"
+                    }
+                  ]
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "ALIAS",
+                        "named": false,
+                        "value": ",",
+                        "content": {
+                          "type": "TOKEN",
+                          "content": {
+                            "type": "PATTERN",
+                            "value": "(?:,|\\\\u+002[cC])"
+                          }
+                        }
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "formal_parameter"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "spread_parameter"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "ALIAS",
+          "named": false,
+          "value": ")",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "(?:\\)|\\\\u+0029)"
+            }
+          }
+        }
+      ]
     },
     "inferred_parameters": {
       "type": "SEQ",
@@ -11529,8 +11622,7 @@
     ],
     [
       "modifiers",
-      "annotated_type",
-      "receiver_parameter"
+      "annotated_type"
     ],
     [
       "instanceof_expression",

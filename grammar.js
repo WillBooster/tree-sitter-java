@@ -103,7 +103,7 @@ module.exports = unicodeGrammar(grammar({
     [$.dimensions],
     [$.array_type, $._unannotated_type],
     [$.array_type, $.primary_expression],
-    [$.modifiers, $.annotated_type, $.receiver_parameter],
+    [$.modifiers, $.annotated_type],
     [$.instanceof_expression, $.annotated_type],
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
     [$._unannotated_type, $.primary_expression, $.inferred_parameters],
@@ -424,11 +424,17 @@ module.exports = unicodeGrammar(grammar({
 
     lambda_expression: $ => prec(PREC.LAMBDA, seq(
       field('parameters', choice(
-        $.identifier, $.formal_parameters, $.inferred_parameters, $._reserved_identifier, $.underscore_pattern,
+        $.identifier, alias($._lambda_parameters, $.formal_parameters), $.inferred_parameters, $._reserved_identifier, $.underscore_pattern,
       )),
       '->',
       field('body', choice($.expression, $.block)),
     )),
+
+    _lambda_parameters: $ => seq(
+      '(',
+      commaSep(choice($.formal_parameter, $.spread_parameter)),
+      ')',
+    ),
 
     inferred_parameters: $ => seq(
       '(',
