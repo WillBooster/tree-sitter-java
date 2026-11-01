@@ -251,36 +251,18 @@
         "type": "SEQ",
         "members": [
           {
+            "type": "STRING",
+            "value": "0"
+          },
+          {
             "type": "CHOICE",
             "members": [
               {
-                "type": "STRING",
-                "value": "0o"
+                "type": "PATTERN",
+                "value": "_+"
               },
               {
-                "type": "STRING",
-                "value": "0O"
-              },
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "0"
-                  },
-                  {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "PATTERN",
-                        "value": "_+"
-                      },
-                      {
-                        "type": "BLANK"
-                      }
-                    ]
-                  }
-                ]
+                "type": "BLANK"
               }
             ]
           },
