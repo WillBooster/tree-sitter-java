@@ -37,6 +37,10 @@ test('recovers from an error on each line in linear time', { timeout: 60_000 }, 
   expectLinearParsing(small, large);
 });
 
+test('recovers from malformed record components in linear time', { timeout: 60_000 }, () => {
+  expectLinearParsing(malformedRecordSource(500), malformedRecordSource(5000));
+});
+
 test('parses repeated array dimensions in linear time', { timeout: 60_000 }, () => {
   const small = `class C { int${'[]'.repeat(500)} value; }`;
   const large = `class C { int${'[]'.repeat(5000)} value; }`;
@@ -58,6 +62,10 @@ test('recovers from unterminated Unicode-encoded comments in linear time', { tim
   const opening = String.raw`\u002f\u002a body `;
   expectLinearParsing(opening.repeat(500), opening.repeat(5000));
 });
+
+function malformedRecordSource(count: number): string {
+  return `record C(${Array.from({ length: count }, (_, index) => `${index % 20 === 0 ? 'final ' : ''}int value${index}`).join(',')}) {}`;
+}
 
 function unicodeSource(count: number): string {
   return (
