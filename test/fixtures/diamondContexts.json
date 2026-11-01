@@ -129,13 +129,18 @@
       "source": "class C<T> { java.util.function.Supplier<C<String>> value = C<String>::new; } class After {}",
       "expression": "C<String>::new",
       "nodeType": "method_reference",
-      "typeArguments": []
+      "typeArguments": [
+        "<String>"
+      ],
+      "genericType": "C<String>"
     },
     {
       "source": "class C { java.util.List<String> value = java.util.Collections.<String>emptyList(); } class After {}",
       "expression": "java.util.Collections.<String>emptyList()",
       "nodeType": "method_invocation",
-      "typeArguments": [],
+      "typeArguments": [
+        "<String>"
+      ],
       "explicitArguments": "<String>"
     }
   ],

@@ -22,13 +22,21 @@ for (const entry of sources.valid) {
       expect(value.text).toBe(expression);
       const start = source.indexOf(expression);
       expect([value.startIndex, value.endIndex]).toEqual([start, start + expression.length]);
+      const argumentOwner = entry.type === undefined ? value : value.childForFieldName('type')!;
       if (entry.type !== undefined) {
-        const target = value.childForFieldName('type')!;
+        const target = argumentOwner;
         const typeStart = source.indexOf(entry.type, start);
         expect(target.text).toBe(entry.type);
         expect([target.startIndex, target.endIndex]).toEqual([typeStart, typeStart + entry.type.length]);
-        const typeArguments = target.descendantsOfType('type_arguments');
-        expect(typeArguments.map((node) => node.text)).toEqual(entry.typeArguments);
+      }
+      expect(argumentOwner.descendantsOfType('type_arguments').map((node) => node.text)).toEqual(entry.typeArguments);
+      if (entry.genericType !== undefined) {
+        const genericTypes = value.descendantsOfType('generic_type');
+        expect(genericTypes).toHaveLength(1);
+        const generic = genericTypes[0]!;
+        const typeStart = source.indexOf(entry.genericType, start);
+        expect(generic.text).toBe(entry.genericType);
+        expect([generic.startIndex, generic.endIndex]).toEqual([typeStart, typeStart + entry.genericType.length]);
       }
       expect(value.childForFieldName('type_arguments')?.text).toBe(entry.explicitArguments);
       expect(tree.rootNode.lastNamedChild?.childForFieldName('name')?.text).toBe('After');
