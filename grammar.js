@@ -512,7 +512,7 @@ module.exports = unicodeGrammar(grammar({
 
     parenthesized_expression: $ => seq('(', $.expression, ')'),
 
-    class_literal: $ => prec.dynamic(PREC.CLASS_LITERAL, seq($._unannotated_type, '.', 'class')),
+    class_literal: $ => prec.dynamic(PREC.CLASS_LITERAL, seq(choice($._unannotated_type, $.void_type), '.', 'class')),
 
     object_creation_expression: $ => choice(
       $._unqualified_object_creation_expression,
@@ -1288,7 +1288,6 @@ module.exports = unicodeGrammar(grammar({
     ),
 
     _simple_type: $ => choice(
-      $.void_type,
       $.integral_type,
       $.floating_point_type,
       $.boolean_type,
@@ -1348,15 +1347,21 @@ module.exports = unicodeGrammar(grammar({
         field('type_parameters', $.type_parameters),
         repeat($._annotation),
       )),
-      field('type', $._unannotated_type),
-      $._method_declarator,
+      choice(
+        seq(field('type', $._unannotated_type), $._method_declarator),
+        seq(field('type', $.void_type), $._method_name_and_parameters),
+      ),
       optional($.throws),
     ),
 
     _method_declarator: $ => seq(
+      $._method_name_and_parameters,
+      field('dimensions', optional($.dimensions)),
+    ),
+
+    _method_name_and_parameters: $ => seq(
       field('name', choice($.identifier, $._reserved_identifier)),
       field('parameters', $.formal_parameters),
-      field('dimensions', optional($.dimensions)),
     ),
 
     formal_parameters: $ => seq(

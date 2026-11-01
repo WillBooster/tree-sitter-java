@@ -94,10 +94,6 @@
       {
         "type": "type_identifier",
         "named": true
-      },
-      {
-        "type": "void_type",
-        "named": true
       }
     ]
   },
@@ -668,10 +664,6 @@
           {
             "type": "type_identifier",
             "named": true
-          },
-          {
-            "type": "void_type",
-            "named": true
           }
         ]
       },
@@ -760,10 +752,6 @@
           },
           {
             "type": "type_identifier",
-            "named": true
-          },
-          {
-            "type": "void_type",
             "named": true
           }
         ]
@@ -1278,6 +1266,10 @@
       "types": [
         {
           "type": "_unannotated_type",
+          "named": true
+        },
+        {
+          "type": "void_type",
           "named": true
         }
       ]
@@ -2618,6 +2610,10 @@
           {
             "type": "_unannotated_type",
             "named": true
+          },
+          {
+            "type": "void_type",
+            "named": true
           }
         ]
       },
@@ -2877,10 +2873,6 @@
           },
           {
             "type": "type_identifier",
-            "named": true
-          },
-          {
-            "type": "void_type",
             "named": true
           }
         ]
