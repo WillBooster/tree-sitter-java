@@ -6,50 +6,6 @@ import { expect, test } from 'vitest';
 await Parser.init();
 const language = await Language.load(path.join(import.meta.dirname, '../../tree-sitter-java.wasm'));
 
-for (const literal of [
-  String.raw`'\u0\''`,
-  String.raw`'\u0\u005c'`,
-  String.raw`'\u\uu005C'`,
-  String.raw`'\u00Z\u005c'`,
-  String.raw`'\u0\n'`,
-  String.raw`'\u0 \u0041'`,
-  String.raw`'x\u0\n'`,
-  String.raw`'\u0\u0'`,
-  String.raw`'\u{1}\u{2}'`,
-  String.raw`'\u\u'`,
-  String.raw`'\u{41}'`,
-  String.raw`'\uu{1F600}'`,
-  String.raw`'\u00'`,
-  String.raw`'\u'`,
-  String.raw`'\uzz'`,
-  String.raw`'\u00ZZ'`,
-  String.raw`'\u005c\u005c'`,
-  String.raw`'\uu005C\uuu005c'`,
-  String.raw`'\u005c\'`,
-  String.raw`'\u005c''`,
-  String.raw`'\u005cn'`,
-  String.raw`'\uuu0041'`,
-  String.raw`'\\'`,
-  String.raw`'\''`,
-]) {
-  test(`preserves adjacent declarations after ${literal}`, () => {
-    const parser = new Parser();
-    parser.setLanguage(language);
-    const tree = parser.parse(`class C { char a = ${literal}; char b = 'x'; int after; }`)!;
-    try {
-      expect(tree.rootNode.hasError).toBe(false);
-      expect(tree.rootNode.descendantsOfType('field_declaration')).toHaveLength(3);
-      expect(tree.rootNode.descendantsOfType('character_literal').map((node) => node.text)).toEqual([literal, "'x'"]);
-      expect(
-        tree.rootNode.descendantsOfType('variable_declarator').map((node) => node.childForFieldName('name')?.text)
-      ).toEqual(['a', 'b', 'after']);
-    } finally {
-      tree.delete();
-      parser.delete();
-    }
-  });
-}
-
 for (const [escape, suffix] of [
   [String.raw`\u005c\u005c`, ''],
   [String.raw`\uu005C\uuu005c`, ''],

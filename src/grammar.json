@@ -1230,449 +1230,47 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "STRING",
-            "value": "'"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "'"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\\\u+0027"
+              }
+            ]
           },
           {
             "type": "CHOICE",
             "members": [
               {
-                "type": "REPEAT1",
-                "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "PATTERN",
-                      "value": "[^\\\\'\\n]"
-                    },
-                    {
-                      "type": "PATTERN",
-                      "value": "\\\\[^u]"
-                    },
-                    {
-                      "type": "PATTERN",
-                      "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                    },
-                    {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+005[cC]"
-                        },
-                        {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "PATTERN",
-                              "value": "."
-                            },
-                            {
-                              "type": "PATTERN",
-                              "value": "\\n"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
+                "type": "PATTERN",
+                "value": "[^\\r\\n'\\\\\\u{10000}-\\u{10FFFF}]",
+                "flags": "u"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[1346-9a-fA-F][0-9a-fA-F]|000[0-9bcefBCEF]|002[0-68-9a-fA-F]|005[0-9abd-fABD-F])"
               },
               {
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "[^\\\\'\\n]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\[^u]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                        },
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\\\u+005[cC]"
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "."
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\n"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "[^\\\\'\\n]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\[^u]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                        },
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\\\u+005[cC]"
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "."
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\n"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\\\'\\n]|[^0-9a-fA-Fu\\\\'\\n])"
-                  },
-                  {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "REPEAT",
-                        "content": {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "[^\\\\'\\n]"
-                            },
-                            {
-                              "type": "SEQ",
-                              "members": [
-                                {
-                                  "type": "REPEAT",
-                                  "content": {
-                                    "type": "PATTERN",
-                                    "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                                  }
-                                },
-                                {
-                                  "type": "CHOICE",
-                                  "members": [
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\\\'\\n]|[^0-9a-fA-Fu\\\\'\\n])"
-                                    },
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\[^u]"
-                                    },
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                                    },
-                                    {
-                                      "type": "SEQ",
-                                      "members": [
-                                        {
-                                          "type": "PATTERN",
-                                          "value": "\\\\u+005[cC]"
-                                        },
-                                        {
-                                          "type": "CHOICE",
-                                          "members": [
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "\\\\u+005[cC]"
-                                            },
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "[^'\\n]"
-                                            },
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "\\n"
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        "type": "REPEAT",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                        }
-                      },
-                      {
-                        "type": "CHOICE",
-                        "members": [
-                          {
-                            "type": "PATTERN",
-                            "value": "\\\\u+005[cC]"
-                          },
-                          {
-                            "type": "BLANK"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "[^\\\\'\\n]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\[^u]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                        },
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\\\u+005[cC]"
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "."
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\n"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                    }
+                    "type": "STRING",
+                    "value": "\\"
                   },
                   {
                     "type": "CHOICE",
                     "members": [
                       {
                         "type": "PATTERN",
-                        "value": "\\\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\\\'\\n]|[^0-9a-fA-Fu\\\\'\\n])"
+                        "value": "[btnfrs\"'\\\\]"
                       },
                       {
                         "type": "PATTERN",
-                        "value": "\\\\[^u]"
-                      },
-                      {
-                        "type": "PATTERN",
-                        "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                      },
-                      {
-                        "type": "SEQ",
-                        "members": [
-                          {
-                            "type": "PATTERN",
-                            "value": "\\\\u+005[cC]"
-                          },
-                          {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "PATTERN",
-                                "value": "\\\\u+005[cC]"
-                              },
-                              {
-                                "type": "PATTERN",
-                                "value": "[^'\\n]"
-                              },
-                              {
-                                "type": "PATTERN",
-                                "value": "\\n"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "REPEAT",
-                        "content": {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "[^\\\\'\\n]"
-                            },
-                            {
-                              "type": "SEQ",
-                              "members": [
-                                {
-                                  "type": "REPEAT",
-                                  "content": {
-                                    "type": "PATTERN",
-                                    "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                                  }
-                                },
-                                {
-                                  "type": "CHOICE",
-                                  "members": [
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\\\'\\n]|[^0-9a-fA-Fu\\\\'\\n])"
-                                    },
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\[^u]"
-                                    },
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                                    },
-                                    {
-                                      "type": "SEQ",
-                                      "members": [
-                                        {
-                                          "type": "PATTERN",
-                                          "value": "\\\\u+005[cC]"
-                                        },
-                                        {
-                                          "type": "CHOICE",
-                                          "members": [
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "\\\\u+005[cC]"
-                                            },
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "[^'\\n]"
-                                            },
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "\\n"
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        "type": "REPEAT",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                        }
-                      },
-                      {
-                        "type": "CHOICE",
-                        "members": [
-                          {
-                            "type": "PATTERN",
-                            "value": "\\\\u+005[cC]"
-                          },
-                          {
-                            "type": "BLANK"
-                          }
-                        ]
+                        "value": "[0-3][0-7]{0,2}|[4-7][0-7]?"
                       }
                     ]
                   }
@@ -1682,69 +1280,137 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "[^\\\\'\\n]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\[^u]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                        },
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\\\u+005[cC]"
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "."
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\n"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                    }
-                  },
-                  {
                     "type": "PATTERN",
                     "value": "\\\\u+005[cC]"
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "PATTERN",
+                        "value": "[btnfrs\"'\\\\]"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "\\\\u+00(22|27|5[cC]|62|66|6[eE]|72|73|74)"
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[0-3]"
+                              },
+                              {
+                                "type": "PATTERN",
+                                "value": "\\\\u+003[0-3]"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[4-7]"
+                              },
+                              {
+                                "type": "PATTERN",
+                                "value": "\\\\u+003[4-7]"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }
             ]
           },
           {
-            "type": "STRING",
-            "value": "'"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "'"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\\\u+0027"
+              }
+            ]
           }
         ]
       }
