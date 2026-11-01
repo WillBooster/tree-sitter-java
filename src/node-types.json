@@ -2188,6 +2188,11 @@
     }
   },
   {
+    "type": "hex_floating_point_literal",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "if_statement",
     "named": true,
     "fields": {
@@ -4494,10 +4499,6 @@
   {
     "type": "for",
     "named": false
-  },
-  {
-    "type": "hex_floating_point_literal",
-    "named": true
   },
   {
     "type": "hex_integer_literal",

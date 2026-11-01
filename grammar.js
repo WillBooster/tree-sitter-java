@@ -204,18 +204,31 @@ module.exports = grammar({
       seq(DECIMAL_DIGITS, optional(seq((/[eE]/), optional(choice('-', '+')), DECIMAL_DIGITS)), (/[fFdD]/)),
     )),
 
-    hex_floating_point_literal: _ => token(seq(
-      choice('0x', '0X'),
-      choice(
-        seq(HEX_DIGITS, optional('.')),
-        seq(optional(HEX_DIGITS), '.', HEX_DIGITS),
-      ),
-      optional(seq(
+    hex_floating_point_literal: $ => choice(
+      token(seq(
+        choice('0x', '0X'),
+        HEX_DIGITS,
         /[pP]/,
         optional(choice('-', '+')),
         DECIMAL_DIGITS,
         optional(/[fFdD]/),
       )),
+      seq($._hex_floating_significand, $._hex_floating_exponent),
+    ),
+
+    _hex_floating_significand: _ => token(seq(
+      choice('0x', '0X'),
+      choice(
+        seq(HEX_DIGITS, '.', optional(HEX_DIGITS)),
+        seq('.', HEX_DIGITS),
+      ),
+    )),
+
+    _hex_floating_exponent: _ => token.immediate(seq(
+      /[pP]/,
+      optional(choice('-', '+')),
+      DECIMAL_DIGITS,
+      optional(/[fFdD]/),
     )),
 
     true: _ => 'true',
