@@ -1161,9 +1161,19 @@ module.exports = unicodeGrammar(grammar({
       'record',
       field('name', $.identifier),
       optional(field('type_parameters', $.type_parameters)),
-      field('parameters', $.formal_parameters),
+      field('parameters', $.record_header),
       optional(field('interfaces', $.super_interfaces)),
       field('body', $.class_body),
+    ),
+
+    record_header: $ => seq('(', commaSep($.record_component), ')'),
+
+    record_component: $ => seq(
+      repeat($._annotation),
+      field('type', $._unannotated_type),
+      optional(seq(repeat($._annotation), '...')),
+      field('name', choice($.identifier, $._reserved_identifier)),
+      field('dimensions', optional(alias($._annotated_dimensions, $.dimensions))),
     ),
 
     annotation_type_declaration: $ => seq(

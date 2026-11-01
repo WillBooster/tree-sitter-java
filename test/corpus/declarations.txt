@@ -874,8 +874,8 @@ public record Foo(int bar) {
     (modifiers
       (visibility))
     name: (identifier)
-    parameters: (formal_parameters
-      (formal_parameter
+    parameters: (record_header
+      (record_component
         type: (integral_type)
         name: (identifier)))
     body: (class_body)))
@@ -897,8 +897,8 @@ public record Foo<T>(T bar) {
     type_parameters: (type_parameters
       (type_parameter
         (type_identifier)))
-    parameters: (formal_parameters
-      (formal_parameter
+    parameters: (record_header
+      (record_component
         type: (type_identifier)
         name: (identifier)))
     body: (class_body)))
@@ -928,11 +928,10 @@ public class Usecase {
           (visibility)
           (modifier))
         name: (identifier)
-        parameters: (formal_parameters
-          (formal_parameter
-            (modifiers
-              (marker_annotation
-                name: (identifier)))
+        parameters: (record_header
+          (record_component
+            (marker_annotation
+              name: (identifier))
             type: (type_identifier)
             name: (identifier)))
         body: (class_body
@@ -963,8 +962,8 @@ interface I { record R(int a) {} }
     (interface_body
       (record_declaration
         (identifier)
-        (formal_parameters
-          (formal_parameter
+        (record_header
+          (record_component
             (integral_type)
             (identifier)))
         (class_body)))))
@@ -984,8 +983,8 @@ record Person(int age) {
 (program
   (record_declaration
     (identifier)
-    (formal_parameters
-      (formal_parameter
+    (record_header
+      (record_component
         (integral_type)
         (identifier)))
     (class_body
@@ -1017,7 +1016,7 @@ record R() implements I {}
 (program
   (record_declaration
     (identifier)
-    (formal_parameters)
+    (record_header)
     (super_interfaces
       (type_list
         (type_identifier)))

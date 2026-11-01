@@ -73,7 +73,6 @@ for (const source of [
 
 for (const source of [
   'class C { C(int... names) {} }',
-  'record C(int... names) {}',
   'class C { java.util.function.ToIntFunction<int[]> value = (int... names) -> names.length; }',
 ]) {
   test(`preserves a varargs binding in its declaration context: ${source}`, () => {

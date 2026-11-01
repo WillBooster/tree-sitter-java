@@ -9915,7 +9915,7 @@
           "name": "parameters",
           "content": {
             "type": "SYMBOL",
-            "name": "formal_parameters"
+            "name": "record_header"
           }
         },
         {
@@ -9940,6 +9940,166 @@
           "content": {
             "type": "SYMBOL",
             "name": "class_body"
+          }
+        }
+      ]
+    },
+    "record_header": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "named": false,
+          "value": "(",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "(?:\\(|\\\\u+0028)"
+            }
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "record_component"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "ALIAS",
+                        "named": false,
+                        "value": ",",
+                        "content": {
+                          "type": "TOKEN",
+                          "content": {
+                            "type": "PATTERN",
+                            "value": "(?:,|\\\\u+002[cC])"
+                          }
+                        }
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "record_component"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "ALIAS",
+          "named": false,
+          "value": ")",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "(?:\\)|\\\\u+0029)"
+            }
+          }
+        }
+      ]
+    },
+    "record_component": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_annotation"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "type",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_unannotated_type"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_annotation"
+                  }
+                },
+                {
+                  "type": "ALIAS",
+                  "named": false,
+                  "value": "...",
+                  "content": {
+                    "type": "TOKEN",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "(?:\\.|\\\\u+002[eE])(?:\\.|\\\\u+002[eE])(?:\\.|\\\\u+002[eE])"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_reserved_identifier"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "dimensions",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_annotated_dimensions"
+                },
+                "named": true,
+                "value": "dimensions"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           }
         }
       ]
