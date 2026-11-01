@@ -9,6 +9,10 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
+const IDENTIFIER_RANGES = require('./src/identifierRanges.json');
+const JAVA_IDENTIFIER_START = characterClass(IDENTIFIER_RANGES.start);
+const JAVA_IDENTIFIER_PART = characterClass(IDENTIFIER_RANGES.part);
+
 const DECIMAL_DIGITS = token(sep1(/[0-9]+/, /_+/));
 const DIGITS = token(choice('0', seq(/[1-9]/, optional(seq(optional(/_+/), DECIMAL_DIGITS)))));
 const HEX_DIGITS = token(sep1(/[A-Fa-f0-9]+/, /_+/));
@@ -37,7 +41,6 @@ const JAVA_ESCAPE = choice(
 const PREC = {
   LAMBDA: -1,
   // https://introcs.cs.princeton.edu/java/11precedence/
-  COMMENT: 0,
   ASSIGN: 1,
   DECL: 2,
   ELEMENT_VAL: 2,
@@ -62,14 +65,19 @@ const PREC = {
   CLASS_LITERAL: 17,
 };
 
-module.exports = grammar({
+const JAVA_KEYWORD_IGNORABLE = new RegExp(characterClass(IDENTIFIER_RANGES.ignorable.filter(([, end]) => end <= 0xffff)), 'u');
+const JAVA_KEYWORD_IGNORABLES = `(?:${JAVA_KEYWORD_IGNORABLE.source}|${encodedCharacters(JAVA_KEYWORD_IGNORABLE, true)})*`;
+
+module.exports = unicodeGrammar(grammar({
   name: 'java',
 
   extras: $ => [
     $.line_comment,
     $.block_comment,
-    /\s/,
+    $._java_whitespace,
   ],
+
+  externals: $ => [$._line_comment_body, $._line_comment_end, $._block_comment_body, $._block_comment_end, $._java_whitespace],
 
   supertypes: $ => [
     $.expression,
@@ -1411,28 +1419,18 @@ module.exports = grammar({
       alias('yield', $.identifier),
     ),
 
-    _const: _ => /const/,
-    _goto: _ => /goto/,
+    _const: _ => 'const',
+    _goto: _ => 'goto',
 
     this: _ => 'this',
 
     super: _ => 'super',
 
-    // Unicode 17 additions supplement the generator's Unicode 16 category tables.
-    identifier: _ => /[\p{L}\p{Nl}\p{Sc}\p{Pc}\u{88F}\u{C5C}\u{CDC}\u{20C1}\u{A7CE}-\u{A7CF}\u{A7D2}\u{A7D4}\u{A7F1}\u{10940}-\u{10959}\u{10EC5}-\u{10EC7}\u{11DB0}-\u{11DDB}\u{16EA0}-\u{16EB8}\u{16EBB}-\u{16ED3}\u{16FF2}-\u{16FF6}\u{187F8}-\u{187FF}\u{18D09}-\u{18D1E}\u{18D80}-\u{18DF2}\u{1E6C0}-\u{1E6DE}\u{1E6E0}-\u{1E6E2}\u{1E6E4}-\u{1E6E5}\u{1E6E7}-\u{1E6ED}\u{1E6F0}-\u{1E6F4}\u{1E6FE}-\u{1E6FF}\u{2B73A}-\u{2B73F}\u{2CEA2}-\u{2CEAD}\u{323B0}-\u{33479}][\p{L}\p{Nl}\p{Sc}\p{Pc}\p{Nd}\p{Mc}\p{Mn}\p{Cf}\u0000-\u0008\u000E-\u001B\u007F-\u009F\u{88F}\u{C5C}\u{CDC}\u{1ACF}-\u{1ADD}\u{1AE0}-\u{1AEB}\u{20C1}\u{A7CE}-\u{A7CF}\u{A7D2}\u{A7D4}\u{A7F1}\u{10940}-\u{10959}\u{10EC5}-\u{10EC7}\u{10EFA}-\u{10EFB}\u{11B60}-\u{11B67}\u{11DB0}-\u{11DDB}\u{11DE0}-\u{11DE9}\u{16EA0}-\u{16EB8}\u{16EBB}-\u{16ED3}\u{16FF2}-\u{16FF6}\u{187F8}-\u{187FF}\u{18D09}-\u{18D1E}\u{18D80}-\u{18DF2}\u{1E6C0}-\u{1E6DE}\u{1E6E0}-\u{1E6F5}\u{1E6FE}-\u{1E6FF}\u{2B73A}-\u{2B73F}\u{2CEA2}-\u{2CEAD}\u{323B0}-\u{33479}]*/u,
-
-    line_comment: _ => token(prec(PREC.COMMENT, seq('//', /[^\n]*/))),
-
-    // http://stackoverflow.com/questions/13014947/regex-to-match-a-c-style-multiline-comment/36328890#36328890
-    block_comment: _ => token(prec(PREC.COMMENT,
-      seq(
-        '/*',
-        /[^*]*\*+([^/*][^*]*\*+)*/,
-        '/',
-      ),
-    )),
+    identifier: _ => new RegExp(`${JAVA_IDENTIFIER_START}${JAVA_IDENTIFIER_PART}*`, 'u'),
+    line_comment: $ => seq($._line_comment_body, $._line_comment_end),
+    block_comment: $ => seq($._block_comment_body, $._block_comment_end),
   },
-});
+}));
 
 /**
  * @param {Record<string, SymbolRule>} rules
@@ -1497,4 +1495,103 @@ function commaSep1(rule) {
  */
 function commaSep(rule) {
   return optional(commaSep1(rule));
+}
+
+function characterClass(ranges) {
+  return `[${ranges.map(([start, end]) => start === end ? `\\u{${start.toString(16)}}` : `\\u{${start.toString(16)}}-\\u{${end.toString(16)}}`).join('')}]`;
+}
+
+function unicodeGrammar(result) {
+  const {rules, reserved} = result.grammar;
+  for (const [name, rule] of Object.entries(rules)) {
+    if (!/(string|text_block|escape|character_literal)/.test(name)) {
+      rules[name] = expandUnicodeRule(rule, name === 'identifier', rule.type === 'STRING');
+    }
+  }
+  for (const [name, words] of Object.entries(reserved)) {
+    reserved[name] = words.map(word => expandUnicodeRule(word, false, true));
+  }
+  return result;
+}
+
+function expandUnicodeRule(rule, identifier, lexical = false, keywords = true) {
+  if (rule.type === 'STRING') {
+    const content = {type: 'PATTERN', value: unicodeSpelling(rule.value, keywords)};
+    return lexical ? content : {type: 'ALIAS', named: false, value: rule.value, content: {type: 'TOKEN', content}};
+  }
+  if (rule.type === 'PATTERN') {
+    const atoms = rule.value.match(/\[(?:\\.|[^\]])*\]|\\.|./gu);
+    return {...rule, value: atoms.map(atom => {
+      if (/^[*+?]$/.test(atom)) return atom;
+      const predicate = new RegExp(`^(?:${atom})$`, 'u');
+      return `(?:${atom}|${encodedCharacters(predicate, identifier)})`;
+    }).join('')};
+  }
+  const nestedLexical = lexical || rule.type === 'TOKEN' || rule.type === 'IMMEDIATE_TOKEN' || rule.type === 'ALIAS';
+  const nestedKeywords = keywords && rule.type !== 'TOKEN' && rule.type !== 'IMMEDIATE_TOKEN';
+  if (rule.content) return {...rule, content: expandUnicodeRule(rule.content, identifier, nestedLexical, nestedKeywords)};
+  if (rule.members) return {...rule, members: rule.members.map(member => expandUnicodeRule(member, identifier, nestedLexical, nestedKeywords))};
+  return rule;
+}
+
+function unicodeSpelling(value, keywords) {
+  const word = keywords && /^[A-Za-z_][A-Za-z0-9_-]*$/.test(value);
+  return [...value].map(character => unicodeCharacter(character) + (word && character !== '-' ? JAVA_KEYWORD_IGNORABLES : '')).join('');
+}
+
+function unicodeCharacter(character) {
+  return `(?:${character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}|\\\\u+${hexadecimalPattern([character.charCodeAt(0)])})`;
+}
+
+function encodedCharacters(predicate, identifier) {
+  const bmp = [];
+  const supplementary = new Map();
+  const limit = identifier ? 0x10ffff : 0x7f;
+  for (let code = 0; code <= limit; code++) {
+    if (!predicate.test(String.fromCodePoint(code))) continue;
+    if (code <= 0xffff) {
+      bmp.push(code);
+    } else {
+      const high = 0xd800 + ((code - 0x10000) >> 10);
+      const low = 0xdc00 + ((code - 0x10000) & 0x3ff);
+      const values = supplementary.get(high) ?? [];
+      values.push(low);
+      supplementary.set(high, values);
+    }
+  }
+  const alternatives = bmp.length ? [`\\\\u+${hexadecimalPattern(bmp)}`] : [];
+  const lowGroups = new Map();
+  for (const [high, low] of supplementary) {
+    const pattern = hexadecimalPattern(low);
+    const values = lowGroups.get(pattern) ?? [];
+    values.push(high);
+    lowGroups.set(pattern, values);
+  }
+  for (const [low, high] of lowGroups) alternatives.push(`\\\\u+${hexadecimalPattern(high)}\\\\u+${low}`);
+  if (!alternatives.length) throw new Error(`No encoded characters for ${predicate}`);
+  return alternatives.join('|');
+}
+
+function hexadecimalPattern(values, shift = 12) {
+  if (shift < 0) return '';
+  const prefixes = new Map();
+  for (const value of values) {
+    const digit = (value >> shift) & 15;
+    const group = prefixes.get(digit) ?? [];
+    group.push(value);
+    prefixes.set(digit, group);
+  }
+  const suffixGroups = new Map();
+  for (const [digit, group] of prefixes) {
+    const suffix = hexadecimalPattern(group, shift - 4);
+    const digits = suffixGroups.get(suffix) ?? [];
+    const hex = digit.toString(16);
+    digits.push(hex < 'a' ? hex : hex + hex.toUpperCase());
+    suffixGroups.set(suffix, digits);
+  }
+  const alternatives = [...suffixGroups].map(([suffix, digits]) => {
+    const characters = digits.join('');
+    return (characters.length === 1 ? characters : `[${characters}]`) + suffix;
+  });
+  return alternatives.length === 1 ? alternatives[0] : `(?:${alternatives.join('|')})`;
 }
