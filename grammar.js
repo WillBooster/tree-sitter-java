@@ -95,6 +95,7 @@ module.exports = grammar({
     [$.dimensions],
     [$.array_type, $._unannotated_type],
     [$.array_type, $.primary_expression],
+    [$.modifiers, $.annotated_type],
     [$.modifiers, $.annotated_type, $.receiver_parameter],
     [$.instanceof_expression, $.annotated_type],
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
@@ -416,11 +417,17 @@ module.exports = grammar({
 
     lambda_expression: $ => prec(PREC.LAMBDA, seq(
       field('parameters', choice(
-        $.identifier, $.formal_parameters, $.inferred_parameters, $._reserved_identifier, $.underscore_pattern,
+        $.identifier, alias($._lambda_parameters, $.formal_parameters), $.inferred_parameters, $._reserved_identifier, $.underscore_pattern,
       )),
       '->',
       field('body', choice($.expression, $.block)),
     )),
+
+    _lambda_parameters: $ => seq(
+      '(',
+      commaSep(choice($.formal_parameter, $.spread_parameter)),
+      ')',
+    ),
 
     inferred_parameters: $ => seq(
       '(',

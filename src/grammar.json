@@ -3761,8 +3761,13 @@
                   "name": "identifier"
                 },
                 {
-                  "type": "SYMBOL",
-                  "name": "formal_parameters"
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_lambda_parameters"
+                  },
+                  "named": true,
+                  "value": "formal_parameters"
                 },
                 {
                   "type": "SYMBOL",
@@ -3802,6 +3807,70 @@
           }
         ]
       }
+    },
+    "_lambda_parameters": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "formal_parameter"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "spread_parameter"
+                    }
+                  ]
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ","
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "formal_parameter"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "spread_parameter"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
     },
     "inferred_parameters": {
       "type": "SEQ",
@@ -9392,6 +9461,10 @@
     [
       "array_type",
       "primary_expression"
+    ],
+    [
+      "modifiers",
+      "annotated_type"
     ],
     [
       "modifiers",
