@@ -34,6 +34,10 @@ for (const literal of [
   String.raw`'\t'`,
   String.raw`'\f'`,
   String.raw`'\r'`,
+  String.raw`'\1\u0032'`,
+  String.raw`'\0\u0030'`,
+  String.raw`'\3\u0037\u0037'`,
+  String.raw`'\7\u0037'`,
 ]) {
   test(`parses the complete character literal ${JSON.stringify(literal)}`, () => {
     const source = `class C { char value = ${literal}; int after; }`;
@@ -86,6 +90,9 @@ for (const literal of [
   String.raw`'\u'`,
   String.raw`'\uzz'`,
   String.raw`'\u00ZZ'`,
+  String.raw`'\4\u0030\u0030'`,
+  String.raw`'\\u0031'`,
+  String.raw`'\1\u0038'`,
 ]) {
   test(`reports an error for the malformed character literal ${JSON.stringify(literal)}`, () => {
     const source = `class C { char value = ${literal}; int after; }`;

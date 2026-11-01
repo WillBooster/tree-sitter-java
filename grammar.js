@@ -245,7 +245,11 @@ module.exports = grammar({
       return token(seq(quote, choice(
         plainCharacter,
         unicodeCharacter,
-        seq('\\', choice(simpleEscape, /[0-3][0-7]{0,2}|[4-7][0-7]?/)),
+        seq('\\', choice(
+          simpleEscape,
+          seq(/[0-3]/, optional(octalDigit), optional(octalDigit)),
+          seq(/[4-7]/, optional(octalDigit)),
+        )),
         seq(encodedBackslash, choice(
           simpleEscape,
           /\\u+00(22|27|5[cC]|62|66|6[eE]|72|73|74)/,
