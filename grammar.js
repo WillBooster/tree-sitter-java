@@ -94,6 +94,7 @@ module.exports = unicodeGrammar(grammar({
     $._name,
     $._simple_type,
     $._class_type,
+    $._class_literal_type,
     $._class_body_declaration,
     $._variable_initializer,
   ],
@@ -102,14 +103,15 @@ module.exports = unicodeGrammar(grammar({
     [$.modifiers],
     [$._literal, $.switch_label],
     [$.dimensions],
+    [$._class_literal_array_type, $.dimensions],
     [$.array_type, $._unannotated_type],
-    [$.array_type, $.primary_expression],
+    [$.primary_expression, $._class_literal_type_name, $.array_type],
+    [$.primary_expression, $._class_literal_type_name, $.method_reference, $.scoped_identifier, $.scoped_type_identifier],
     [$.modifiers, $.annotated_type],
     [$.instanceof_expression, $.annotated_type],
     [$.modifiers, $.annotated_type, $.module_declaration, $.package_declaration],
     [$._unannotated_type, $.primary_expression, $.inferred_parameters],
     [$._unannotated_type, $.primary_expression],
-    [$._unannotated_type, $.scoped_type_identifier],
     [$._unannotated_type, $.generic_type],
     [$.generic_type, $.primary_expression],
     [$.expression, $.statement],
@@ -118,7 +120,6 @@ module.exports = unicodeGrammar(grammar({
     [$.yield_statement, $._reserved_identifier],
     [$.scoped_identifier, $.scoped_type_identifier],
     [$.primary_expression, $.method_reference, $.scoped_identifier],
-    [$.primary_expression, $.method_reference, $.scoped_identifier, $._unannotated_type, $.scoped_type_identifier],
   ],
 
   reserved: {
@@ -513,7 +514,38 @@ module.exports = unicodeGrammar(grammar({
 
     parenthesized_expression: $ => seq('(', $.expression, ')'),
 
-    class_literal: $ => prec.dynamic(PREC.CLASS_LITERAL, seq(choice($._unannotated_type, $.void_type), '.', 'class')),
+    class_literal: $ => prec.dynamic(PREC.CLASS_LITERAL, seq(
+      choice(
+        $._class_literal_type,
+        alias($._class_literal_array_type, $.array_type),
+        $.void_type,
+      ),
+      '.',
+      'class',
+    )),
+
+    _class_literal_array_type: $ => seq(
+      field('element', $._class_literal_type),
+      field('dimensions', alias(repeat1(seq('[', ']')), $.dimensions)),
+    ),
+
+    _class_literal_type: $ => choice(
+      $.integral_type,
+      $.floating_point_type,
+      $.boolean_type,
+      $._class_literal_type_name,
+    ),
+
+    _class_literal_type_name: $ => choice(
+      alias($.identifier, $.type_identifier),
+      alias($._class_literal_scoped_type_name, $.scoped_type_identifier),
+    ),
+
+    _class_literal_scoped_type_name: $ => seq(
+      $._class_literal_type_name,
+      '.',
+      alias($.identifier, $.type_identifier),
+    ),
 
     object_creation_expression: $ => choice(
       $._unqualified_object_creation_expression,
