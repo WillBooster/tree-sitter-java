@@ -9467,11 +9467,6 @@
       "annotated_type"
     ],
     [
-      "modifiers",
-      "annotated_type",
-      "receiver_parameter"
-    ],
-    [
       "instanceof_expression",
       "annotated_type"
     ],
