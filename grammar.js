@@ -1457,6 +1457,42 @@ function javaStringEscape(multiline) {
 
 
 /**
+ * @param {Record<string, SymbolRule>} rules
+ * @param {boolean} multiline
+ */
+function javaStringContent(rules, multiline) {
+  const fragment = multiline ? alias(rules._multiline_string_fragment, rules.multiline_string_fragment) : rules.string_fragment;
+  const restrictedFragment = alias(
+    multiline ? rules._non_u_multiline_string_fragment : rules._non_u_string_fragment,
+    multiline ? rules.multiline_string_fragment : rules.string_fragment,
+  );
+  const escape = multiline ? alias(rules._text_block_escape_sequence, rules.escape_sequence) : rules.escape_sequence;
+  const backslash = alias(rules._encoded_backslash_escape, rules.escape_sequence);
+  return seq(
+    repeat(choice(
+      fragment,
+      escape,
+      rules.string_interpolation,
+      seq(repeat1(backslash), choice(restrictedFragment, escape, rules.string_interpolation)),
+    )),
+    repeat(backslash),
+  );
+}
+
+/** @param {boolean} multiline */
+function javaStringEscape(multiline) {
+  const unicodeCharacter = /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[1346-9a-fA-F][0-9a-fA-F]|000[0-9bcefBCEF]|002[013-9a-fA-F]|005[0-9abd-fABD-F])/;
+  const ordinary = choice(JAVA_ESCAPE, unicodeCharacter);
+  return token.immediate(multiline ? choice(
+    ordinary,
+    /\\u+000[aAdD]/,
+    seq('\\', /\r\n?|\n/),
+    seq(JAVA_ENCODED_BACKSLASH, JAVA_LINE_TERMINATOR),
+  ) : ordinary);
+}
+
+
+/**
  * @param {RuleOrLiteral} rule
  *
  * @param {RuleOrLiteral} separator
