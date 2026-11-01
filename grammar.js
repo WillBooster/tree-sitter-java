@@ -1365,7 +1365,7 @@ module.exports = grammar({
       field('type', $._unannotated_type),
       field('annotations', repeat($._annotation)),
       '...',
-      field('name', choice($.identifier, $._reserved_identifier)),
+      field('name', choice($.identifier, $._reserved_identifier, $.underscore_pattern)),
     ),
 
     throws: $ => seq(

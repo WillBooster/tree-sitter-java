@@ -94,3 +94,25 @@ for (const source of [
     }
   });
 }
+
+test('preserves an unnamed varargs lambda parameter', () => {
+  const source = 'class C { java.util.function.ToIntFunction<int[]> value = (int... _) -> 1; }';
+  const parser = new Parser().setLanguage(language);
+  const tree = parser.parse(source)!;
+  try {
+    expect(tree.rootNode.hasError, source).toBe(false);
+    const [lambda] = tree.rootNode.descendantsOfType('lambda_expression');
+    expect(lambda?.parent?.childForFieldName('value')?.equals(lambda)).toBe(true);
+    const [spread] = lambda!.descendantsOfType('spread_parameter');
+    expect(spread?.parent?.equals(lambda!.childForFieldName('parameters')!)).toBe(true);
+    const name = spread?.childForFieldName('name');
+    expect(name?.type).toBe('underscore_pattern');
+    expect(name?.text).toBe('_');
+    expect([name?.startIndex, name?.endIndex]).toEqual([source.indexOf('_'), source.indexOf('_') + 1]);
+    expect(spread?.childForFieldName('type')?.text).toBe('int');
+    expect(lambda!.childForFieldName('body')?.text).toBe('1');
+  } finally {
+    tree.delete();
+    parser.delete();
+  }
+});
