@@ -38,6 +38,9 @@ for (const literal of [
   String.raw`'\0\u0030'`,
   String.raw`'\3\u0037\u0037'`,
   String.raw`'\7\u0037'`,
+  String.raw`'\u005c\\u0027`,
+  String.raw`'\u005C\\u0027`,
+  String.raw`\u0027\u005C\\u0027`,
 ]) {
   test(`parses the complete character literal ${JSON.stringify(literal)}`, () => {
     const source = `class C { char value = ${literal}; int after; }`;
