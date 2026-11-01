@@ -34,8 +34,8 @@ hex integer literals
 octal integer literals
 ======================
 
-0o123;
-0O123;
+0_123;
+0__123L;
 0123;
 
 ---

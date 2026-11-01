@@ -186,7 +186,8 @@ module.exports = grammar({
     )),
 
     octal_integer_literal: _ => token(seq(
-      choice('0o', '0O', seq('0', optional(/_+/))),
+      '0',
+      optional(/_+/),
       sep1(/[0-7]+/, /_+/),
       optional(choice('l', 'L')),
     )),
