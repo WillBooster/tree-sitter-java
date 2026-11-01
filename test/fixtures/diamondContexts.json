@@ -1,0 +1,157 @@
+{
+  "valid": [
+    {
+      "source": "class C<T> { C<String> value = new C<>(); } class After {}",
+      "expression": "new C<>()",
+      "nodeType": "object_creation_expression",
+      "type": "C<>",
+      "typeArguments": [
+        "<>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<String> value = new C < >(); } class After {}",
+      "expression": "new C < >()",
+      "nodeType": "object_creation_expression",
+      "type": "C < >",
+      "typeArguments": [
+        "< >"
+      ]
+    },
+    {
+      "source": "class C<T> { C<String> value = new C< /* trivia */ >(); } class After {}",
+      "expression": "new C< /* trivia */ >()",
+      "nodeType": "object_creation_expression",
+      "type": "C< /* trivia */ >",
+      "typeArguments": [
+        "< /* trivia */ >"
+      ]
+    },
+    {
+      "source": "class C<T> { C<String> value = new \\u0043<>(); } class After {}",
+      "expression": "new \\u0043<>()",
+      "nodeType": "object_creation_expression",
+      "type": "\\u0043<>",
+      "typeArguments": [
+        "<>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<String> value = new C\\u003c\\u003e(); } class After {}",
+      "expression": "new C\\u003c\\u003e()",
+      "nodeType": "object_creation_expression",
+      "type": "C\\u003c\\u003e",
+      "typeArguments": [
+        "\\u003c\\u003e"
+      ]
+    },
+    {
+      "source": "class C<T> { C<String> value = new C<>() {}; } class After {}",
+      "expression": "new C<>() {}",
+      "nodeType": "object_creation_expression",
+      "type": "C<>",
+      "typeArguments": [
+        "<>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<String> value = new C<String>(); } class After {}",
+      "expression": "new C<String>()",
+      "nodeType": "object_creation_expression",
+      "type": "C<String>",
+      "typeArguments": [
+        "<String>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<String> value = new C(); } class After {}",
+      "expression": "new C()",
+      "nodeType": "object_creation_expression",
+      "type": "C",
+      "typeArguments": []
+    },
+    {
+      "source": "class C { java.util.List<String> value = new java.util.ArrayList<>(); } class After {}",
+      "expression": "new java.util.ArrayList<>()",
+      "nodeType": "object_creation_expression",
+      "type": "java.util.ArrayList<>",
+      "typeArguments": [
+        "<>"
+      ]
+    },
+    {
+      "source": "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<String> value = new @A C<>(); } class After {}",
+      "expression": "new @A C<>()",
+      "nodeType": "object_creation_expression",
+      "type": "C<>",
+      "typeArguments": [
+        "<>"
+      ]
+    },
+    {
+      "source": "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C { java.util.List<String> value = new java.util.@A ArrayList<>(); } class After {}",
+      "expression": "new java.util.@A ArrayList<>()",
+      "nodeType": "object_creation_expression",
+      "type": "java.util.@A ArrayList<>",
+      "typeArguments": [
+        "<>"
+      ]
+    },
+    {
+      "source": "class C<T> { class D<U> {} D<String> value = this.new D<>(); } class After {}",
+      "expression": "this.new D<>()",
+      "nodeType": "object_creation_expression",
+      "type": "D<>",
+      "typeArguments": [
+        "<>"
+      ]
+    },
+    {
+      "source": "class O<T> { class I<U> {} } class C { O<String>.I<Integer> value = new O<String>().new I<>(); } class After {}",
+      "expression": "new O<String>().new I<>()",
+      "nodeType": "object_creation_expression",
+      "type": "I<>",
+      "typeArguments": [
+        "<>"
+      ]
+    },
+    {
+      "source": "class C<T> { <U> C() {} C<Integer> value = new <String> C<Integer>(); } class After {}",
+      "expression": "new <String> C<Integer>()",
+      "nodeType": "object_creation_expression",
+      "type": "C<Integer>",
+      "typeArguments": [
+        "<Integer>"
+      ],
+      "explicitArguments": "<String>"
+    },
+    {
+      "source": "class C<T> { java.util.function.Supplier<C<String>> value = C<String>::new; } class After {}",
+      "expression": "C<String>::new",
+      "nodeType": "method_reference",
+      "typeArguments": []
+    },
+    {
+      "source": "class C { java.util.List<String> value = java.util.Collections.<String>emptyList(); } class After {}",
+      "expression": "java.util.Collections.<String>emptyList()",
+      "nodeType": "method_invocation",
+      "typeArguments": [],
+      "explicitArguments": "<String>"
+    }
+  ],
+  "invalid": [
+    "class C<T> { C<> value; } class After {}",
+    "class C<T> { C<C<>> value; } class After {}",
+    "class C<T> { C<>[] value; } class After {}",
+    "class C { Object value = java.util.Collections.<>emptyList(); } class After {}",
+    "class C<T> { <U> C() {} C<String> value = new <> C<String>(); } class After {}",
+    "class C<T> extends java.util.ArrayList<> {} class After {}",
+    "class C<T> { java.util.List<> value; } class After {}",
+    "class C<T> { C< > value; } class After {}",
+    "class C<T> { C</* trivia */> value; } class After {}",
+    "class C { Object value = java.util.Collections.< >emptyList(); } class After {}",
+    "class C<T> { <U> C() {} C<String> value = new < /* trivia */ > C<String>(); } class After {}",
+    "class C<T> { Object value = new C<>[1]; } class After {}",
+    "class C<T> { java.util.function.Supplier<C<String>> value = C<>::new; } class After {}"
+  ]
+}

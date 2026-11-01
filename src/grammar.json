@@ -5059,8 +5059,22 @@
             "type": "FIELD",
             "name": "type",
             "content": {
-              "type": "SYMBOL",
-              "name": "_class_type"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_class_type"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_diamond_type"
+                  },
+                  "named": true,
+                  "value": "generic_type"
+                }
+              ]
             }
           },
           {
@@ -5590,61 +5604,53 @@
           }
         },
         {
-          "type": "CHOICE",
+          "type": "SEQ",
           "members": [
             {
-              "type": "SEQ",
+              "type": "CHOICE",
               "members": [
                 {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "_type"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "wildcard"
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "_type"
                 },
                 {
-                  "type": "REPEAT",
-                  "content": {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "ALIAS",
-                        "named": false,
-                        "value": ",",
-                        "content": {
-                          "type": "TOKEN",
-                          "content": {
-                            "type": "PATTERN",
-                            "value": "(?:,|\\\\u+002[cC])"
-                          }
-                        }
-                      },
-                      {
-                        "type": "CHOICE",
-                        "members": [
-                          {
-                            "type": "SYMBOL",
-                            "name": "_type"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "wildcard"
-                          }
-                        ]
-                      }
-                    ]
-                  }
+                  "type": "SYMBOL",
+                  "name": "wildcard"
                 }
               ]
             },
             {
-              "type": "BLANK"
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "ALIAS",
+                    "named": false,
+                    "value": ",",
+                    "content": {
+                      "type": "TOKEN",
+                      "content": {
+                        "type": "PATTERN",
+                        "value": "(?:,|\\\\u+002[cC])"
+                      }
+                    }
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "_type"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "wildcard"
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           ]
         },
@@ -11102,22 +11108,8 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "identifier"
-                },
-                "named": true,
-                "value": "type_identifier"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "scoped_type_identifier"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "_generic_type_name"
           },
           {
             "type": "SYMBOL",
@@ -11125,6 +11117,71 @@
           }
         ]
       }
+    },
+    "_diamond_type": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_generic_type_name"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_diamond_type_arguments"
+          },
+          "named": true,
+          "value": "type_arguments"
+        }
+      ]
+    },
+    "_diamond_type_arguments": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "named": false,
+          "value": "<",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "(?:<|\\\\u+003[cC])"
+            }
+          }
+        },
+        {
+          "type": "ALIAS",
+          "named": false,
+          "value": ">",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "(?:>|\\\\u+003[eE])"
+            }
+          }
+        }
+      ]
+    },
+    "_generic_type_name": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          },
+          "named": true,
+          "value": "type_identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "scoped_type_identifier"
+        }
+      ]
     },
     "array_type": {
       "type": "SEQ",
@@ -12160,6 +12217,7 @@
     "_name",
     "_simple_type",
     "_class_type",
+    "_generic_type_name",
     "_class_literal_type",
     "_class_body_declaration",
     "_variable_initializer"
