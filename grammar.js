@@ -65,8 +65,8 @@ const PREC = {
   CLASS_LITERAL: 17,
 };
 
-const JAVA_IDENTIFIER_IGNORABLE = new RegExp(characterClass(IDENTIFIER_RANGES.ignorable), 'u');
-const JAVA_IGNORABLE = `(?:${JAVA_IDENTIFIER_IGNORABLE.source}|${encodedCharacters(JAVA_IDENTIFIER_IGNORABLE, true)})*`;
+const JAVA_KEYWORD_IGNORABLE = new RegExp(characterClass(IDENTIFIER_RANGES.ignorable.filter(([, end]) => end <= 0xffff)), 'u');
+const JAVA_KEYWORD_IGNORABLES = `(?:${JAVA_KEYWORD_IGNORABLE.source}|${encodedCharacters(JAVA_KEYWORD_IGNORABLE, true)})*`;
 
 module.exports = unicodeGrammar(grammar({
   name: 'java',
@@ -1530,7 +1530,7 @@ function expandUnicodeRule(rule, identifier, lexical = false, keywords = true) {
 
 function unicodeSpelling(value, keywords) {
   const word = keywords && /^[A-Za-z_][A-Za-z0-9_-]*$/.test(value);
-  return [...value].map(character => unicodeCharacter(character) + (word && character !== '-' ? JAVA_IGNORABLE : '')).join('');
+  return [...value].map(character => unicodeCharacter(character) + (word && character !== '-' ? JAVA_KEYWORD_IGNORABLES : '')).join('');
 }
 
 function unicodeCharacter(character) {

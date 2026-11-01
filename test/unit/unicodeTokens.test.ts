@@ -7,6 +7,10 @@ await Parser.init();
 const language = await Language.load(fileURLToPath(new URL('../../tree-sitter-java.wasm', import.meta.url)));
 
 const validSources = [
+  String.raw`class C { int cl\uDB40\uDC01ass = 1; int after; }`,
+  String.raw`class C { int _\uDB40\uDC01 = 1; int after; }`,
+  'class C { int cl\u{E0001}ass = 1; int after; }',
+  'class C { int _\u{E0001} = 1; int after; }',
   String.raw`class C { boolean value = tr\u0000ue; int after; }`,
   'cl\u0000ass C { int value = 1; int after; }',
   String.raw`sealed interface A permits C {} non\u0000-sealed class C implements A { int value = 1; int after; }`,
@@ -118,6 +122,8 @@ for (const terminator of ['\n', '\r', '\r\n', String.raw`\u000a`, String.raw`\u0
 }
 
 for (const source of [
+  String.raw`cl\uDB40\uDC01ass C { int value = 1; int after; }`,
+  'cl\u{E0001}ass C { int value = 1; int after; }',
   'class C { int \u0558 = 1; }',
   String.raw`class C { int \u0558 = 1; }`,
   String.raw`class C { long value = 1L\u0000; }`,
