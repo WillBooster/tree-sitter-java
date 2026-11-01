@@ -1365,7 +1365,7 @@ module.exports = grammar({
       field('type', $._unannotated_type),
       field('annotations', repeat($._annotation)),
       '...',
-      $.variable_declarator,
+      field('name', choice($.identifier, $._reserved_identifier)),
     ),
 
     throws: $ => seq(
