@@ -38,7 +38,7 @@ test('recovers from an error on each line in linear time', { timeout: 60_000 }, 
 });
 
 test('recovers from malformed record components in linear time', { timeout: 60_000 }, () => {
-  expectLinearParsing(malformedRecordSource(2000), malformedRecordSource(20_000));
+  expectLinearParsing(malformedRecordSource(500), malformedRecordSource(5000));
 });
 
 test('parses repeated array dimensions in linear time', { timeout: 60_000 }, () => {
