@@ -1,0 +1,111 @@
+{
+  "valid": [
+    {
+      "source": "class C { void run() {} } class After {}",
+      "voidOwners": [
+        "method_declaration"
+      ]
+    },
+    {
+      "source": "interface C { void run(); } class After {}",
+      "voidOwners": [
+        "method_declaration"
+      ]
+    },
+    {
+      "source": "class C { static void run() {} } class After {}",
+      "voidOwners": [
+        "method_declaration"
+      ]
+    },
+    {
+      "source": "class C { <T> void run(T value) {} } class After {}",
+      "voidOwners": [
+        "method_declaration"
+      ]
+    },
+    {
+      "source": "class C { @Deprecated public void run() {} } class After {}",
+      "voidOwners": [
+        "method_declaration"
+      ]
+    },
+    {
+      "source": "class C { Class<Void> kind = void.class; } class After {}",
+      "voidOwners": [
+        "class_literal"
+      ]
+    },
+    {
+      "source": "class C { Class<?> primitive = int.class; Class<?> array = int[][].class; } class After {}",
+      "voidOwners": []
+    },
+    {
+      "source": "class C { Void value; Void run(Void parameter) { return parameter; } } class After {}",
+      "voidOwners": []
+    },
+    {
+      "source": "record C(Void value) {} class After {}",
+      "voidOwners": []
+    },
+    {
+      "source": "class C { void run() { int value = 1; } } class After {}",
+      "voidOwners": [
+        "method_declaration"
+      ]
+    },
+    {
+      "source": "class C { java.util.function.Consumer<Void> value = (Void parameter) -> {}; } class After {}",
+      "voidOwners": []
+    },
+    {
+      "source": "class C { Object value = new Object(); } class After {}",
+      "voidOwners": []
+    },
+    {
+      "source": "class C { v\\u006fid run() {} Class<?> kind = v\\u006fid.class; } class After {}",
+      "voidOwners": [
+        "method_declaration",
+        "class_literal"
+      ]
+    },
+    {
+      "source": "class C { int run()[] { return new int[0]; } } class After {}",
+      "voidOwners": []
+    },
+    {
+      "source": "interface C { String run()[]; } class After {}",
+      "voidOwners": []
+    },
+    {
+      "source": "class C { <T> T run(T[] value)[] { return value; } } class After {}",
+      "voidOwners": []
+    }
+  ],
+  "invalid": [
+    "class C { void value; } class After {}",
+    "interface C { void value = null; } class After {}",
+    "@interface C { void value(); } class After {}",
+    "class C { void run() { void value; } } class After {}",
+    "class C { void run() { for (void value; ; ) {} } } class After {}",
+    "class C { void[] value; } class After {}",
+    "class C { void[][] run() { return null; } } class After {}",
+    "class C { void run(void value) {} } class After {}",
+    "class C { void run(void... values) {} } class After {}",
+    "class C { java.util.function.Consumer<Object> value = (void parameter) -> {}; } class After {}",
+    "class C { void run(void this) {} } class After {}",
+    "record C(void value) {} class After {}",
+    "class C { Object value = (void) null; } class After {}",
+    "class C { boolean run(Object value) { return value instanceof void; } } class After {}",
+    "class C { java.util.List<void> value; } class After {}",
+    "class C { Object value = new void(); } class After {}",
+    "class C { Object value = new void[1]; } class After {}",
+    "class C { Class<?> kind = void[].class; } class After {}",
+    "class C { void run() throws void {} } class After {}",
+    "class C<T extends void> {} class After {}",
+    "class C { v\\u006fid value; } class After {}",
+    "class C { void run()[] {} } class After {}",
+    "class C { <T> void run(T value)[][] {} } class After {}",
+    "interface C { void run()[]; } class After {}"
+  ]
+}
