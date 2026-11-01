@@ -306,18 +306,18 @@ module.exports = unicodeGrammar(grammar({
       JAVA_LINE_TERMINATOR,
     ))),
     _text_block_close: _ => token.immediate(prec(3, seq(JAVA_QUOTE, JAVA_QUOTE, JAVA_QUOTE))),
-    string_fragment: _ => token.immediate(prec(1, /[^"\\\r\n]+/)),
-    _non_u_string_fragment: _ => token.immediate(prec(1, /[^u"\\\r\n][^"\\\r\n]*/)),
+    string_fragment: _ => token.immediate(prec(1, /[^"\\\r\n]{1,256}/)),
+    _non_u_string_fragment: _ => token.immediate(prec(1, /[^u"\\\r\n][^"\\\r\n]{0,255}/)),
     _non_u_multiline_string_fragment: _ => token.immediate(prec(1, choice(
-      /[^u"\\][^"\\]*/,
-      seq(JAVA_QUOTE, /[^"\\]*/),
-      seq(JAVA_QUOTE, JAVA_QUOTE, /[^"\\]*/),
+      /[^u"\\][^"\\]{0,255}/,
+      seq(JAVA_QUOTE, /[^"\\]{0,256}/),
+      seq(JAVA_QUOTE, JAVA_QUOTE, /[^"\\]{0,256}/),
     ))),
     _encoded_backslash_escape: _ => token.immediate(seq(JAVA_ENCODED_BACKSLASH, '\\')),
     _multiline_string_fragment: _ => token.immediate(prec(1, choice(
-      /[^"\\]+/,
-      seq(JAVA_QUOTE, /[^"\\]*/),
-      seq(JAVA_QUOTE, JAVA_QUOTE, /[^"\\]*/),
+      /[^"\\]{1,256}/,
+      seq(JAVA_QUOTE, /[^"\\]{0,256}/),
+      seq(JAVA_QUOTE, JAVA_QUOTE, /[^"\\]{0,256}/),
     ))),
 
     string_interpolation: $ => seq(

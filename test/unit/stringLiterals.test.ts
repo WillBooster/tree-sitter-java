@@ -142,3 +142,33 @@ body
     }
   });
 }
+
+for (const [kind, opening, closing] of [
+  ['ordinary string', '"', '"'],
+  ['text block', '"""\n', '\n"""'],
+] as const) {
+  test(`preserves all characters in long ${kind} content`, () => {
+    const content = `${'plain text /* content */ '.repeat(128)}${String.raw`\u0041\n`}${'tail '.repeat(128)}`;
+    const literal = `${opening}${content}${closing}`;
+    const source = `class C { String value = ${literal}; int after; }`;
+    const parser = new Parser().setLanguage(language);
+    const tree = parser.parse(source)!;
+    try {
+      expect(tree.rootNode.hasError).toBe(false);
+      const [string] = tree.rootNode.descendantsOfType('string_literal');
+      expect(string?.text).toBe(literal);
+      expect(string!.namedChildren.map((node) => node.text).join('')).toBe(
+        `${content}${kind === 'text block' ? '\n' : ''}`
+      );
+      expect([string!.startIndex, string!.endIndex]).toEqual([
+        source.indexOf(literal),
+        source.indexOf(literal) + literal.length,
+      ]);
+      expect(string!.parent?.childForFieldName('value')?.equals(string!)).toBe(true);
+      expect(tree.rootNode.descendantsOfType('field_declaration')).toHaveLength(2);
+    } finally {
+      tree.delete();
+      parser.delete();
+    }
+  });
+}
