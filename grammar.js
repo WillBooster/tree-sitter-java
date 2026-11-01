@@ -93,6 +93,7 @@ module.exports = unicodeGrammar(grammar({
   inline: $ => [
     $._name,
     $._simple_type,
+    $._class_type,
     $._class_literal_type,
     $._class_body_declaration,
     $._variable_initializer,
@@ -561,7 +562,7 @@ module.exports = unicodeGrammar(grammar({
         ),
         repeat($._annotation),
       ),
-      field('type', $._simple_type),
+      field('type', $._class_type),
       field('arguments', $.argument_list),
       optional($.class_body),
     )),
@@ -1323,6 +1324,10 @@ module.exports = unicodeGrammar(grammar({
       $.integral_type,
       $.floating_point_type,
       $.boolean_type,
+      $._class_type,
+    ),
+
+    _class_type: $ => choice(
       alias($.identifier, $.type_identifier),
       $.scoped_type_identifier,
       $.generic_type,

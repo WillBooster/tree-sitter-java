@@ -5060,7 +5060,7 @@
             "name": "type",
             "content": {
               "type": "SYMBOL",
-              "name": "_simple_type"
+              "name": "_class_type"
             }
           },
           {
@@ -10997,6 +10997,15 @@
           "name": "boolean_type"
         },
         {
+          "type": "SYMBOL",
+          "name": "_class_type"
+        }
+      ]
+    },
+    "_class_type": {
+      "type": "CHOICE",
+      "members": [
+        {
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
@@ -12150,6 +12159,7 @@
   "inline": [
     "_name",
     "_simple_type",
+    "_class_type",
     "_class_literal_type",
     "_class_body_declaration",
     "_variable_initializer"

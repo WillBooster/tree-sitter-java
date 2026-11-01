@@ -1,0 +1,122 @@
+{
+  "valid": [
+    {
+      "source": "class C { Object value = new Object(); } class After {}",
+      "expression": "new Object()",
+      "type": "Object",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { String value = new String(); } class After {}",
+      "expression": "new String()",
+      "type": "String",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { int[] value = new int[1]; } class After {}",
+      "expression": "new int[1]",
+      "type": "int",
+      "nodeType": "array_creation_expression"
+    },
+    {
+      "source": "class C { Object[] value = new Object[1]; } class After {}",
+      "expression": "new Object[1]",
+      "type": "Object",
+      "nodeType": "array_creation_expression"
+    },
+    {
+      "source": "class C<T> { Object value = new C<String>(); } class After {}",
+      "expression": "new C<String>()",
+      "type": "C<String>",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { static class D {} D value = new D(); } class After {}",
+      "expression": "new D()",
+      "type": "D",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { class D {} D value = new D(); } class After {}",
+      "expression": "new D()",
+      "type": "D",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C { Object value = new @A Object(); } class After {}",
+      "expression": "new @A Object()",
+      "type": "Object",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { Object value = new java.lang.Object(); } class After {}",
+      "expression": "new java.lang.Object()",
+      "type": "java.lang.Object",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { static class D<T> {} Object value = new C.D<String>(); } class After {}",
+      "expression": "new C.D<String>()",
+      "type": "C.D<String>",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { static class D<T> {} Object value = new C.D<>(); } class After {}",
+      "expression": "new C.D<>()",
+      "type": "C.D<>",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { <T> C() {} Object value = new <String> C(); } class After {}",
+      "expression": "new <String> C()",
+      "type": "C",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { Object value = new Runnable() { public void run() {} }; } class After {}",
+      "expression": "new Runnable() { public void run() {} }",
+      "type": "Runnable",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { Object value = new \\u004fbject(); } class After {}",
+      "expression": "new \\u004fbject()",
+      "type": "\\u004fbject",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { class D {} Object value = this.new D(); } class After {}",
+      "expression": "this.new D()",
+      "type": "D",
+      "nodeType": "object_creation_expression"
+    },
+    {
+      "source": "class C { boolean[] value = new boolean[1]; } class After {}",
+      "expression": "new boolean[1]",
+      "type": "boolean",
+      "nodeType": "array_creation_expression"
+    },
+    {
+      "source": "class C { float[] value = new float[1]; } class After {}",
+      "expression": "new float[1]",
+      "type": "float",
+      "nodeType": "array_creation_expression"
+    }
+  ],
+  "invalid": [
+    "class C { Object value = new boolean(); } class After {}",
+    "class C { Object value = new byte(); } class After {}",
+    "class C { Object value = new short(); } class After {}",
+    "class C { Object value = new char(); } class After {}",
+    "class C { Object value = new int(); } class After {}",
+    "class C { Object value = new long(); } class After {}",
+    "class C { Object value = new float(); } class After {}",
+    "class C { Object value = new double(); } class After {}",
+    "class C { Object value = new int(1); } class After {}",
+    "class C { Object value = new <String> int(); } class After {}",
+    "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C { Object value = new @A int(); } class After {}",
+    "class C { Object value = this.new int(); } class After {}",
+    "class C { Object value = new int() {}; } class After {}",
+    "class C { Object value = new \\u0069nt(); } class After {}"
+  ]
+}
