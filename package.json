@@ -17,6 +17,9 @@
   "files": [
     "grammar.js",
     "src/node-types.json",
+    "src/scanner.c",
+    "src/identifierRanges.json",
+    "src/identifierRanges.LICENSE",
     "tree-sitter.json",
     "*.wasm"
   ],

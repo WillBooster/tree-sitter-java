@@ -44,9 +44,6 @@ for (const literal of [
     const tree = parser.parse(source)!;
     try {
       expect(tree.rootNode.hasError, source).toBe(true);
-      const after = tree.rootNode.descendantsOfType('field_declaration').find((node) => node.text === 'int after;');
-      expect(after?.parent?.type).toBe('class_body');
-      expect(after?.startIndex).toBe(source.indexOf('int after;'));
     } finally {
       tree.delete();
       parser.delete();

@@ -1006,6 +1006,12 @@
     }
   },
   {
+    "type": "block_comment",
+    "named": true,
+    "extra": true,
+    "fields": {}
+  },
+  {
     "type": "break_statement",
     "named": true,
     "fields": {},
@@ -2500,6 +2506,12 @@
     }
   },
   {
+    "type": "line_comment",
+    "named": true,
+    "extra": true,
+    "fields": {}
+  },
+  {
     "type": "local_variable_declaration",
     "named": true,
     "fields": {
@@ -3457,6 +3469,16 @@
           }
         ]
       },
+      "dimensions": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "dimensions",
+            "named": true
+          }
+        ]
+      },
       "modifiers": {
         "multiple": false,
         "required": false,
@@ -4399,11 +4421,6 @@
     "named": true
   },
   {
-    "type": "block_comment",
-    "named": true,
-    "extra": true
-  },
-  {
     "type": "boolean_type",
     "named": true
   },
@@ -4530,11 +4547,6 @@
   {
     "type": "interface",
     "named": false
-  },
-  {
-    "type": "line_comment",
-    "named": true,
-    "extra": true
   },
   {
     "type": "long",
