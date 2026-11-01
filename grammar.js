@@ -13,6 +13,27 @@ const DECIMAL_DIGITS = token(sep1(/[0-9]+/, /_+/));
 const DIGITS = token(choice('0', seq(/[1-9]/, optional(seq(optional(/_+/), DECIMAL_DIGITS)))));
 const HEX_DIGITS = token(sep1(/[A-Fa-f0-9]+/, /_+/));
 
+const JAVA_QUOTE = choice('"', /\\u+0022/);
+const JAVA_CR = choice('\r', /\\u+000[dD]/);
+const JAVA_LF = choice('\n', /\\u+000[aA]/);
+const JAVA_LINE_TERMINATOR = choice(seq(JAVA_CR, JAVA_LF), JAVA_CR, JAVA_LF);
+const JAVA_ENCODED_BACKSLASH = /\\u+005[cC]/;
+const JAVA_SIMPLE_ESCAPE = /[btnfrs"'\\]/;
+const JAVA_OCTAL_DIGIT = choice(/[0-7]/, /\\u+003[0-7]/);
+const JAVA_ESCAPE = choice(
+  seq('\\', choice(
+    JAVA_SIMPLE_ESCAPE,
+    seq(/[0-3]/, optional(JAVA_OCTAL_DIGIT), optional(JAVA_OCTAL_DIGIT)),
+    seq(/[4-7]/, optional(JAVA_OCTAL_DIGIT)),
+  )),
+  seq(JAVA_ENCODED_BACKSLASH, choice(
+    /[btnfrs"']/,
+    /\\u+00(22|27|5[cC]|62|66|6[eE]|72|73|74)/,
+    seq(choice(/[0-3]/, /\\u+003[0-3]/), optional(JAVA_OCTAL_DIGIT), optional(JAVA_OCTAL_DIGIT)),
+    seq(choice(/[4-7]/, /\\u+003[4-7]/), optional(JAVA_OCTAL_DIGIT)),
+  )),
+);
+
 const PREC = {
   LAMBDA: -1,
   // https://introcs.cs.princeton.edu/java/11precedence/
@@ -49,7 +70,7 @@ module.exports = unicodeGrammar(grammar({
     $._java_whitespace,
   ],
 
-  externals: $ => [$.line_comment, $.block_comment, $._java_whitespace],
+  externals: $ => [$._line_comment_body, $._line_comment_end, $._block_comment_body, $._block_comment_end, $._java_whitespace],
 
   supertypes: $ => [
     $.expression,
@@ -238,90 +259,68 @@ module.exports = unicodeGrammar(grammar({
     false: _ => 'false',
 
     character_literal: _ => {
-      const incompleteUnicode = /\\u+[0-9a-fA-F]{0,3}/;
-      const malformedUnicode = /\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\'\n]|[^0-9a-fA-Fu\\'\n])/;
+      const quote = choice('\'', /\\u+0027/);
       const encodedBackslash = /\\u+005[cC]/;
-      const unicodeCharacter = /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])/;
-      const plainCharacter = /[^\\'\n]/;
-      const rawEscape = /\\[^u]/;
-      const boundedEscape = choice(
-        malformedUnicode,
-        rawEscape,
-        unicodeCharacter,
-        seq(encodedBackslash, choice(encodedBackslash, /[^'\n]/, /\n/)),
-      );
-      const boundedTail = seq(
-        repeat(choice(
-          plainCharacter,
-          seq(repeat(incompleteUnicode), boundedEscape),
-        )),
-        repeat(incompleteUnicode),
-        optional(encodedBackslash),
-      );
-      const character = choice(
+      const unicodeCharacter = /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[1346-9a-fA-F][0-9a-fA-F]|000[0-9bcefBCEF]|002[0-68-9a-fA-F]|005[0-9abd-fABD-F])/;
+      const plainCharacter = /[^\r\n'\\\u{10000}-\u{10FFFF}]/u;
+      const simpleEscape = /[btnfrs"'\\]/;
+      const octalDigit = choice(/[0-7]/, /\\u+003[0-7]/);
+      return token(seq(quote, choice(
         plainCharacter,
-        rawEscape,
         unicodeCharacter,
-        seq(encodedBackslash, choice(encodedBackslash, /./, /\n/)),
-      );
-      return token(seq('\'', choice(
-        repeat1(character),
-        seq(repeat(character), repeat1(incompleteUnicode)),
-        seq(repeat(character), malformedUnicode, boundedTail),
-        seq(repeat(character), repeat1(incompleteUnicode), boundedEscape, boundedTail),
-        seq(repeat(character), repeat1(incompleteUnicode), encodedBackslash),
-      ), '\''));
+        seq('\\', choice(
+          simpleEscape,
+          seq(/[0-3]/, optional(octalDigit), optional(octalDigit)),
+          seq(/[4-7]/, optional(octalDigit)),
+        )),
+        seq(encodedBackslash, choice(
+          simpleEscape,
+          /\\u+00(22|27|5[cC]|62|66|6[eE]|72|73|74)/,
+          seq(choice(/[0-3]/, /\\u+003[0-3]/), optional(octalDigit), optional(octalDigit)),
+          seq(choice(/[4-7]/, /\\u+003[4-7]/), optional(octalDigit)),
+        )),
+      ), quote));
     },
 
     string_literal: $ => choice($._string_literal, $._multiline_string_literal),
     _string_literal: $ => seq(
-      '"',
-      repeat(choice(
-        $.string_fragment,
-        $.escape_sequence,
-        $.string_interpolation,
-      )),
-      '"',
+      alias(token(prec(2, JAVA_QUOTE)), '"'),
+      javaStringContent($, false),
+      alias(token.immediate(prec(2, JAVA_QUOTE)), '"'),
     ),
     _multiline_string_literal: $ => seq(
-      '"""',
-      repeat(choice(
-        alias($._multiline_string_fragment, $.multiline_string_fragment),
-        $.escape_sequence,
-        $.string_interpolation,
-      )),
-      '"""',
+      alias($._text_block_open, '"""'),
+      javaStringContent($, true),
+      alias($._text_block_close, '"""'),
     ),
-    string_fragment: _ => token.immediate(prec(1, /[^"\\]+/)),
-    _multiline_string_fragment: _ => choice(
+    _text_block_open: _ => token(prec(3, seq(
+      JAVA_QUOTE, JAVA_QUOTE, JAVA_QUOTE,
+      repeat(choice(/[ \t\f]/, /\\u+00(20|09|0[cC])/)),
+      JAVA_LINE_TERMINATOR,
+    ))),
+    _text_block_close: _ => token.immediate(prec(3, seq(JAVA_QUOTE, JAVA_QUOTE, JAVA_QUOTE))),
+    string_fragment: _ => token.immediate(prec(1, /[^"\\\r\n]+/)),
+    _non_u_string_fragment: _ => token.immediate(prec(1, /[^u"\\\r\n][^"\\\r\n]*/)),
+    _non_u_multiline_string_fragment: _ => token.immediate(prec(1, choice(
+      /[^u"\\][^"\\]*/,
+      seq(JAVA_QUOTE, /[^"\\]*/),
+      seq(JAVA_QUOTE, JAVA_QUOTE, /[^"\\]*/),
+    ))),
+    _encoded_backslash_escape: _ => token.immediate(seq(JAVA_ENCODED_BACKSLASH, '\\')),
+    _multiline_string_fragment: _ => token.immediate(prec(1, choice(
       /[^"\\]+/,
-      /"[^"\\]*/,
-    ),
+      seq(JAVA_QUOTE, /[^"\\]*/),
+      seq(JAVA_QUOTE, JAVA_QUOTE, /[^"\\]*/),
+    ))),
 
     string_interpolation: $ => seq(
-      '\\{',
+      alias(token.immediate(choice('\\{', seq(JAVA_ENCODED_BACKSLASH, choice('{', /\\u+007[bB]/)))), '\\{'),
       $.expression,
-      '}',
+      alias(token(choice('}', /\\u+007[dD]/)), '}'),
     ),
 
-    escape_sequence: _ => token.immediate(choice(
-      seq(/\\u+005[cC]/, choice(
-        /(?:[0-3]|\\u+003[0-3])(?:[0-7]|\\u+003[0-7]){0,2}/,
-        /(?:[4-7]|\\u+003[4-7])(?:[0-7]|\\u+003[0-7])?/,
-        /\\u+[0-9a-fA-F]{4}/,
-      )),
-      seq(
-        choice('\\', /\\u+005[cC]/),
-        choice(
-          '\r\n',
-          /[^xu0-7]/,
-          /(?:[0-3][0-7]{0,2}|[4-7][0-7]?)/,
-          /x[0-9a-fA-F]{2}/,
-          /u+[0-9a-fA-F]{4}/,
-          /u\{[0-9a-fA-F]+\}/,
-        ),
-      ),
-    )),
+    escape_sequence: _ => javaStringEscape(false),
+    _text_block_escape_sequence: _ => javaStringEscape(true),
 
     null_literal: _ => 'null',
 
@@ -1416,8 +1415,46 @@ module.exports = unicodeGrammar(grammar({
 
     // Unicode 17 additions supplement the generator's Unicode 16 category tables.
     identifier: _ => /[\p{L}\p{Nl}\p{Sc}\p{Pc}\u{88F}\u{C5C}\u{CDC}\u{20C1}\u{A7CE}-\u{A7CF}\u{A7D2}\u{A7D4}\u{A7F1}\u{10940}-\u{10959}\u{10EC5}-\u{10EC7}\u{11DB0}-\u{11DDB}\u{16EA0}-\u{16EB8}\u{16EBB}-\u{16ED3}\u{16FF2}-\u{16FF6}\u{187F8}-\u{187FF}\u{18D09}-\u{18D1E}\u{18D80}-\u{18DF2}\u{1E6C0}-\u{1E6DE}\u{1E6E0}-\u{1E6E2}\u{1E6E4}-\u{1E6E5}\u{1E6E7}-\u{1E6ED}\u{1E6F0}-\u{1E6F4}\u{1E6FE}-\u{1E6FF}\u{2B73A}-\u{2B73F}\u{2CEA2}-\u{2CEAD}\u{323B0}-\u{33479}][\p{L}\p{Nl}\p{Sc}\p{Pc}\p{Nd}\p{Mc}\p{Mn}\p{Cf}\u0000-\u0008\u000E-\u001B\u007F-\u009F\u{88F}\u{C5C}\u{CDC}\u{1ACF}-\u{1ADD}\u{1AE0}-\u{1AEB}\u{20C1}\u{A7CE}-\u{A7CF}\u{A7D2}\u{A7D4}\u{A7F1}\u{10940}-\u{10959}\u{10EC5}-\u{10EC7}\u{10EFA}-\u{10EFB}\u{11B60}-\u{11B67}\u{11DB0}-\u{11DDB}\u{11DE0}-\u{11DE9}\u{16EA0}-\u{16EB8}\u{16EBB}-\u{16ED3}\u{16FF2}-\u{16FF6}\u{187F8}-\u{187FF}\u{18D09}-\u{18D1E}\u{18D80}-\u{18DF2}\u{1E6C0}-\u{1E6DE}\u{1E6E0}-\u{1E6F5}\u{1E6FE}-\u{1E6FF}\u{2B73A}-\u{2B73F}\u{2CEA2}-\u{2CEAD}\u{323B0}-\u{33479}]*/u,
+    line_comment: $ => seq($._line_comment_body, $._line_comment_end),
+    block_comment: $ => seq($._block_comment_body, $._block_comment_end),
   },
 }));
+
+/**
+ * @param {Record<string, SymbolRule>} rules
+ * @param {boolean} multiline
+ */
+function javaStringContent(rules, multiline) {
+  const fragment = multiline ? alias(rules._multiline_string_fragment, rules.multiline_string_fragment) : rules.string_fragment;
+  const restrictedFragment = alias(
+    multiline ? rules._non_u_multiline_string_fragment : rules._non_u_string_fragment,
+    multiline ? rules.multiline_string_fragment : rules.string_fragment,
+  );
+  const escape = multiline ? alias(rules._text_block_escape_sequence, rules.escape_sequence) : rules.escape_sequence;
+  const backslash = alias(rules._encoded_backslash_escape, rules.escape_sequence);
+  return seq(
+    repeat(choice(
+      fragment,
+      escape,
+      rules.string_interpolation,
+      seq(repeat1(backslash), choice(restrictedFragment, escape, rules.string_interpolation)),
+    )),
+    repeat(backslash),
+  );
+}
+
+/** @param {boolean} multiline */
+function javaStringEscape(multiline) {
+  const unicodeCharacter = /\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[1346-9a-fA-F][0-9a-fA-F]|000[0-9bcefBCEF]|002[013-9a-fA-F]|005[0-9abd-fABD-F])/;
+  const ordinary = choice(JAVA_ESCAPE, unicodeCharacter);
+  return token.immediate(multiline ? choice(
+    ordinary,
+    /\\u+000[aAdD]/,
+    seq('\\', /\r\n?|\n/),
+    seq(JAVA_ENCODED_BACKSLASH, JAVA_LINE_TERMINATOR),
+  ) : ordinary);
+}
+
 
 /**
  * @param {RuleOrLiteral} rule

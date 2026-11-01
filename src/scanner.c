@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-enum TokenType { LINE_COMMENT, BLOCK_COMMENT, JAVA_WHITESPACE };
+enum TokenType { LINE_COMMENT_BODY, LINE_COMMENT_END, BLOCK_COMMENT_BODY, BLOCK_COMMENT_END, JAVA_WHITESPACE };
 
 typedef struct {
   bool odd_backslashes;
@@ -54,27 +54,18 @@ static bool scan_whitespace(TSLexer *lexer, Translation *state) {
   return true;
 }
 
-static bool scan_comment(TSLexer *lexer, Translation *state, bool line) {
+static bool scan_comment_body(TSLexer *lexer, Translation *state, bool line) {
   int32_t character;
   int32_t previous = 0;
-  for (;;) {
+  lexer->result_symbol = line ? LINE_COMMENT_BODY : BLOCK_COMMENT_BODY;
+  lexer->mark_end(lexer);
+  while (next_character(lexer, state, &character)) {
+    if (line && (character == '\r' || character == '\n')) return true;
+    if (!line && previous == '*' && character == '/') return true;
     lexer->mark_end(lexer);
-    if (lexer->eof(lexer)) {
-      lexer->result_symbol = LINE_COMMENT;
-      return line;
-    }
-    if (!next_character(lexer, state, &character)) return false;
-    if (line && (character == '\r' || character == '\n')) {
-      lexer->result_symbol = LINE_COMMENT;
-      return true;
-    }
-    if (!line && previous == '*' && character == '/') {
-      lexer->mark_end(lexer);
-      lexer->result_symbol = BLOCK_COMMENT;
-      return true;
-    }
     previous = character;
   }
+  return true;
 }
 
 void *tree_sitter_java_external_scanner_create(void) { return NULL; }
@@ -90,14 +81,26 @@ void tree_sitter_java_external_scanner_deserialize(void *payload, const char *bu
   (void)length;
 }
 
+static bool scan_comment_end(TSLexer *lexer, const bool *valid_symbols) {
+  if (valid_symbols[LINE_COMMENT_END] && valid_symbols[BLOCK_COMMENT_END]) return false;
+  lexer->result_symbol = valid_symbols[LINE_COMMENT_END] ? LINE_COMMENT_END : BLOCK_COMMENT_END;
+  if (valid_symbols[LINE_COMMENT_END] && lexer->eof(lexer)) return true;
+  Translation state = {false, false};
+  int32_t character;
+  if (!next_character(lexer, &state, &character)) return false;
+  if (valid_symbols[LINE_COMMENT_END]) return character == '\r' || character == '\n';
+  return character == '/';
+}
+
 bool tree_sitter_java_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   (void)payload;
+  if (valid_symbols[LINE_COMMENT_END] || valid_symbols[BLOCK_COMMENT_END]) return scan_comment_end(lexer, valid_symbols);
   Translation state = {false, false};
   int32_t character;
   if (!next_character(lexer, &state, &character)) return false;
   if (valid_symbols[JAVA_WHITESPACE] && whitespace(character)) return scan_whitespace(lexer, &state);
   if (character != '/' || !next_character(lexer, &state, &character)) return false;
-  bool line = character == '/' && valid_symbols[LINE_COMMENT];
-  if (!line && !(character == '*' && valid_symbols[BLOCK_COMMENT])) return false;
-  return scan_comment(lexer, &state, line);
+  bool line = character == '/' && valid_symbols[LINE_COMMENT_BODY];
+  if (!line && !(character == '*' && valid_symbols[BLOCK_COMMENT_BODY])) return false;
+  return scan_comment_body(lexer, &state, line);
 }

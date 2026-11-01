@@ -1212,447 +1212,122 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "STRING",
-            "value": "'"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "'"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\\\u+0027"
+              }
+            ]
           },
           {
             "type": "CHOICE",
             "members": [
               {
-                "type": "REPEAT1",
-                "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "PATTERN",
-                      "value": "[^\\\\'\\n]"
-                    },
-                    {
-                      "type": "PATTERN",
-                      "value": "\\\\[^u]"
-                    },
-                    {
-                      "type": "PATTERN",
-                      "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                    },
-                    {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+005[cC]"
-                        },
-                        {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "PATTERN",
-                              "value": "."
-                            },
-                            {
-                              "type": "PATTERN",
-                              "value": "\\n"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
+                "type": "PATTERN",
+                "value": "[^\\r\\n'\\\\\\u{10000}-\\u{10FFFF}]",
+                "flags": "u"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[1346-9a-fA-F][0-9a-fA-F]|000[0-9bcefBCEF]|002[0-68-9a-fA-F]|005[0-9abd-fABD-F])"
               },
               {
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "[^\\\\'\\n]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\[^u]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                        },
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\\\u+005[cC]"
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "."
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\n"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "[^\\\\'\\n]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\[^u]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                        },
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\\\u+005[cC]"
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "."
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\n"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\\\'\\n]|[^0-9a-fA-Fu\\\\'\\n])"
-                  },
-                  {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "REPEAT",
-                        "content": {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "[^\\\\'\\n]"
-                            },
-                            {
-                              "type": "SEQ",
-                              "members": [
-                                {
-                                  "type": "REPEAT",
-                                  "content": {
-                                    "type": "PATTERN",
-                                    "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                                  }
-                                },
-                                {
-                                  "type": "CHOICE",
-                                  "members": [
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\\\'\\n]|[^0-9a-fA-Fu\\\\'\\n])"
-                                    },
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\[^u]"
-                                    },
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                                    },
-                                    {
-                                      "type": "SEQ",
-                                      "members": [
-                                        {
-                                          "type": "PATTERN",
-                                          "value": "\\\\u+005[cC]"
-                                        },
-                                        {
-                                          "type": "CHOICE",
-                                          "members": [
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "\\\\u+005[cC]"
-                                            },
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "[^'\\n]"
-                                            },
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "\\n"
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        "type": "REPEAT",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                        }
-                      },
-                      {
-                        "type": "CHOICE",
-                        "members": [
-                          {
-                            "type": "PATTERN",
-                            "value": "\\\\u+005[cC]"
-                          },
-                          {
-                            "type": "BLANK"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "[^\\\\'\\n]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\[^u]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                        },
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\\\u+005[cC]"
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "."
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\n"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                    }
+                    "type": "STRING",
+                    "value": "\\"
                   },
                   {
                     "type": "CHOICE",
                     "members": [
                       {
                         "type": "PATTERN",
-                        "value": "\\\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\\\'\\n]|[^0-9a-fA-Fu\\\\'\\n])"
-                      },
-                      {
-                        "type": "PATTERN",
-                        "value": "\\\\[^u]"
-                      },
-                      {
-                        "type": "PATTERN",
-                        "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
+                        "value": "[btnfrs\"'\\\\]"
                       },
                       {
                         "type": "SEQ",
                         "members": [
                           {
                             "type": "PATTERN",
-                            "value": "\\\\u+005[cC]"
+                            "value": "[0-3]"
                           },
                           {
                             "type": "CHOICE",
                             "members": [
                               {
-                                "type": "PATTERN",
-                                "value": "\\\\u+005[cC]"
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
                               },
                               {
-                                "type": "PATTERN",
-                                "value": "[^'\\n]"
+                                "type": "BLANK"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
                               },
                               {
-                                "type": "PATTERN",
-                                "value": "\\n"
+                                "type": "BLANK"
                               }
                             ]
                           }
                         ]
-                      }
-                    ]
-                  },
-                  {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "REPEAT",
-                        "content": {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "[^\\\\'\\n]"
-                            },
-                            {
-                              "type": "SEQ",
-                              "members": [
-                                {
-                                  "type": "REPEAT",
-                                  "content": {
-                                    "type": "PATTERN",
-                                    "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                                  }
-                                },
-                                {
-                                  "type": "CHOICE",
-                                  "members": [
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\u+([0-9a-fA-F]{1,3}[^0-9a-fA-F\\\\'\\n]|[^0-9a-fA-Fu\\\\'\\n])"
-                                    },
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\[^u]"
-                                    },
-                                    {
-                                      "type": "PATTERN",
-                                      "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                                    },
-                                    {
-                                      "type": "SEQ",
-                                      "members": [
-                                        {
-                                          "type": "PATTERN",
-                                          "value": "\\\\u+005[cC]"
-                                        },
-                                        {
-                                          "type": "CHOICE",
-                                          "members": [
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "\\\\u+005[cC]"
-                                            },
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "[^'\\n]"
-                                            },
-                                            {
-                                              "type": "PATTERN",
-                                              "value": "\\n"
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
                       },
                       {
-                        "type": "REPEAT",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                        }
-                      },
-                      {
-                        "type": "CHOICE",
+                        "type": "SEQ",
                         "members": [
                           {
                             "type": "PATTERN",
-                            "value": "\\\\u+005[cC]"
+                            "value": "[4-7]"
                           },
                           {
-                            "type": "BLANK"
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
                           }
                         ]
                       }
@@ -1664,69 +1339,137 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "PATTERN",
-                          "value": "[^\\\\'\\n]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\[^u]"
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[0-46-9a-fA-F][0-9a-fA-F]|005[0-9abd-fABD-F])"
-                        },
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "\\\\u+005[cC]"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\\\u+005[cC]"
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "."
-                                },
-                                {
-                                  "type": "PATTERN",
-                                  "value": "\\n"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\\\u+[0-9a-fA-F]{0,3}"
-                    }
-                  },
-                  {
                     "type": "PATTERN",
                     "value": "\\\\u+005[cC]"
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "PATTERN",
+                        "value": "[btnfrs\"'\\\\]"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "\\\\u+00(22|27|5[cC]|62|66|6[eE]|72|73|74)"
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[0-3]"
+                              },
+                              {
+                                "type": "PATTERN",
+                                "value": "\\\\u+003[0-3]"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[4-7]"
+                              },
+                              {
+                                "type": "PATTERN",
+                                "value": "\\\\u+003[4-7]"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }
             ]
           },
           {
-            "type": "STRING",
-            "value": "'"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "'"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\\\u+0027"
+              }
+            ]
           }
         ]
       }
@@ -1748,31 +1491,129 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
+          "type": "ALIAS",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PREC",
+              "value": 2,
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "\""
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\\\u+0022"
+                  }
+                ]
+              }
+            }
+          },
+          "named": false,
           "value": "\""
         },
         {
-          "type": "REPEAT",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "string_fragment"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "escape_sequence"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "string_interpolation"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "string_fragment"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "escape_sequence"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "string_interpolation"
+                  },
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "REPEAT1",
+                        "content": {
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "_encoded_backslash_escape"
+                          },
+                          "named": true,
+                          "value": "escape_sequence"
+                        }
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "ALIAS",
+                            "content": {
+                              "type": "SYMBOL",
+                              "name": "_non_u_string_fragment"
+                            },
+                            "named": true,
+                            "value": "string_fragment"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "escape_sequence"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "string_interpolation"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               }
-            ]
-          }
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_encoded_backslash_escape"
+                },
+                "named": true,
+                "value": "escape_sequence"
+              }
+            }
+          ]
         },
         {
-          "type": "STRING",
+          "type": "ALIAS",
+          "content": {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "PREC",
+              "value": 2,
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "\""
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\\\u+0022"
+                  }
+                ]
+              }
+            }
+          },
+          "named": false,
           "value": "\""
         }
       ]
@@ -1781,39 +1622,295 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_text_block_open"
+          },
+          "named": false,
           "value": "\"\"\""
         },
         {
-          "type": "REPEAT",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_multiline_string_fragment"
+                    },
+                    "named": true,
+                    "value": "multiline_string_fragment"
+                  },
+                  {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_text_block_escape_sequence"
+                    },
+                    "named": true,
+                    "value": "escape_sequence"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "string_interpolation"
+                  },
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "REPEAT1",
+                        "content": {
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "_encoded_backslash_escape"
+                          },
+                          "named": true,
+                          "value": "escape_sequence"
+                        }
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "ALIAS",
+                            "content": {
+                              "type": "SYMBOL",
+                              "name": "_non_u_multiline_string_fragment"
+                            },
+                            "named": true,
+                            "value": "multiline_string_fragment"
+                          },
+                          {
+                            "type": "ALIAS",
+                            "content": {
+                              "type": "SYMBOL",
+                              "name": "_text_block_escape_sequence"
+                            },
+                            "named": true,
+                            "value": "escape_sequence"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "string_interpolation"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "REPEAT",
+              "content": {
                 "type": "ALIAS",
                 "content": {
                   "type": "SYMBOL",
-                  "name": "_multiline_string_fragment"
+                  "name": "_encoded_backslash_escape"
                 },
                 "named": true,
-                "value": "multiline_string_fragment"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "escape_sequence"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "string_interpolation"
+                "value": "escape_sequence"
               }
-            ]
-          }
+            }
+          ]
         },
         {
-          "type": "STRING",
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_text_block_close"
+          },
+          "named": false,
           "value": "\"\"\""
         }
       ]
+    },
+    "_text_block_open": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 3,
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "\""
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\u+0022"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "\""
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\u+0022"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "\""
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\u+0022"
+                }
+              ]
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[ \\t\\f]"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\\\u+00(20|09|0[cC])"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "\r"
+                        },
+                        {
+                          "type": "PATTERN",
+                          "value": "\\\\u+000[dD]"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "\n"
+                        },
+                        {
+                          "type": "PATTERN",
+                          "value": "\\\\u+000[aA]"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "\r"
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+000[dD]"
+                    }
+                  ]
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "\n"
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+000[aA]"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "_text_block_close": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 3,
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "\""
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\u+0022"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "\""
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\u+0022"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "\""
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\u+0022"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     "string_fragment": {
       "type": "IMMEDIATE_TOKEN",
@@ -1822,28 +1919,223 @@
         "value": 1,
         "content": {
           "type": "PATTERN",
-          "value": "[^\"\\\\]+"
+          "value": "[^\"\\\\\\r\\n]+"
         }
       }
     },
-    "_multiline_string_fragment": {
-      "type": "CHOICE",
-      "members": [
-        {
+    "_non_u_string_fragment": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
           "type": "PATTERN",
-          "value": "[^\"\\\\]+"
-        },
-        {
-          "type": "PATTERN",
-          "value": "\"[^\"\\\\]*"
+          "value": "[^u\"\\\\\\r\\n][^\"\\\\\\r\\n]*"
         }
-      ]
+      }
+    },
+    "_non_u_multiline_string_fragment": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "[^u\"\\\\][^\"\\\\]*"
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "\""
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+0022"
+                    }
+                  ]
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[^\"\\\\]*"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "\""
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+0022"
+                    }
+                  ]
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "\""
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+0022"
+                    }
+                  ]
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[^\"\\\\]*"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "_encoded_backslash_escape": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "PATTERN",
+            "value": "\\\\u+005[cC]"
+          },
+          {
+            "type": "STRING",
+            "value": "\\"
+          }
+        ]
+      }
+    },
+    "_multiline_string_fragment": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "[^\"\\\\]+"
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "\""
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+0022"
+                    }
+                  ]
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[^\"\\\\]*"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "\""
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+0022"
+                    }
+                  ]
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "\""
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+0022"
+                    }
+                  ]
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[^\"\\\\]*"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     "string_interpolation": {
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
+          "type": "ALIAS",
+          "content": {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "\\{"
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "PATTERN",
+                      "value": "\\\\u+005[cC]"
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "{"
+                        },
+                        {
+                          "type": "PATTERN",
+                          "value": "\\\\u+007[bB]"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "named": false,
           "value": "\\{"
         },
         {
@@ -1851,7 +2143,24 @@
           "name": "expression"
         },
         {
-          "type": "STRING",
+          "type": "ALIAS",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "}"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\u+007[dD]"
+                }
+              ]
+            }
+          },
+          "named": false,
           "value": "}"
         }
       ]
@@ -1861,6 +2170,494 @@
       "content": {
         "type": "CHOICE",
         "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "\\"
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "PATTERN",
+                        "value": "[btnfrs\"'\\\\]"
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "PATTERN",
+                            "value": "[0-3]"
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "PATTERN",
+                            "value": "[4-7]"
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "\\\\u+005[cC]"
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "PATTERN",
+                        "value": "[btnfrs\"']"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "\\\\u+00(22|27|5[cC]|62|66|6[eE]|72|73|74)"
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[0-3]"
+                              },
+                              {
+                                "type": "PATTERN",
+                                "value": "\\\\u+003[0-3]"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[4-7]"
+                              },
+                              {
+                                "type": "PATTERN",
+                                "value": "\\\\u+003[4-7]"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "PATTERN",
+            "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[1346-9a-fA-F][0-9a-fA-F]|000[0-9bcefBCEF]|002[013-9a-fA-F]|005[0-9abd-fABD-F])"
+          }
+        ]
+      }
+    },
+    "_text_block_escape_sequence": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": "\\"
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "PATTERN",
+                            "value": "[btnfrs\"'\\\\]"
+                          },
+                          {
+                            "type": "SEQ",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[0-3]"
+                              },
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "CHOICE",
+                                    "members": [
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "[0-7]"
+                                      },
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "\\\\u+003[0-7]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "BLANK"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "CHOICE",
+                                    "members": [
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "[0-7]"
+                                      },
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "\\\\u+003[0-7]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "BLANK"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "SEQ",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[4-7]"
+                              },
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "CHOICE",
+                                    "members": [
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "[0-7]"
+                                      },
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "\\\\u+003[0-7]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "BLANK"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "PATTERN",
+                        "value": "\\\\u+005[cC]"
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "PATTERN",
+                            "value": "[btnfrs\"']"
+                          },
+                          {
+                            "type": "PATTERN",
+                            "value": "\\\\u+00(22|27|5[cC]|62|66|6[eE]|72|73|74)"
+                          },
+                          {
+                            "type": "SEQ",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[0-3]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[0-3]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "CHOICE",
+                                    "members": [
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "[0-7]"
+                                      },
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "\\\\u+003[0-7]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "BLANK"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "CHOICE",
+                                    "members": [
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "[0-7]"
+                                      },
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "\\\\u+003[0-7]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "BLANK"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "SEQ",
+                            "members": [
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "[4-7]"
+                                  },
+                                  {
+                                    "type": "PATTERN",
+                                    "value": "\\\\u+003[4-7]"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "CHOICE",
+                                    "members": [
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "[0-7]"
+                                      },
+                                      {
+                                        "type": "PATTERN",
+                                        "value": "\\\\u+003[0-7]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "BLANK"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\\\u+([1-9a-fA-F][0-9a-fA-F]{3}|0[1-9a-fA-F][0-9a-fA-F]{2}|00[1346-9a-fA-F][0-9a-fA-F]|000[0-9bcefBCEF]|002[013-9a-fA-F]|005[0-9abd-fABD-F])"
+              }
+            ]
+          },
+          {
+            "type": "PATTERN",
+            "value": "\\\\u+000[aAdD]"
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "\\"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\r\\n?|\\n"
+              }
+            ]
+          },
           {
             "type": "SEQ",
             "members": [
@@ -1872,63 +2669,61 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "PATTERN",
-                    "value": "(?:[0-3]|\\\\u+003[0-3])(?:[0-7]|\\\\u+003[0-7]){0,2}"
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "\r"
+                          },
+                          {
+                            "type": "PATTERN",
+                            "value": "\\\\u+000[dD]"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "\n"
+                          },
+                          {
+                            "type": "PATTERN",
+                            "value": "\\\\u+000[aA]"
+                          }
+                        ]
+                      }
+                    ]
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "(?:[4-7]|\\\\u+003[4-7])(?:[0-7]|\\\\u+003[0-7])?"
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": "\r"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "\\\\u+000[dD]"
+                      }
+                    ]
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "\\\\u+[0-9a-fA-F]{4}"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\\"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\\\u+005[cC]"
-                  }
-                ]
-              },
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\r\n"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "[^xu0-7]"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "(?:[0-3][0-7]{0,2}|[4-7][0-7]?)"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "x[0-9a-fA-F]{2}"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "u+[0-9a-fA-F]{4}"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "u\\{[0-9a-fA-F]+\\}"
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": "\n"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "\\\\u+000[aA]"
+                      }
+                    ]
                   }
                 ]
               }
@@ -10671,6 +11466,32 @@
       "type": "PATTERN",
       "value": "(?:[\\p{L}\\p{Nl}\\p{Sc}\\p{Pc}\\u{88F}\\u{C5C}\\u{CDC}\\u{20C1}\\u{A7CE}-\\u{A7CF}\\u{A7D2}\\u{A7D4}\\u{A7F1}\\u{10940}-\\u{10959}\\u{10EC5}-\\u{10EC7}\\u{11DB0}-\\u{11DDB}\\u{16EA0}-\\u{16EB8}\\u{16EBB}-\\u{16ED3}\\u{16FF2}-\\u{16FF6}\\u{187F8}-\\u{187FF}\\u{18D09}-\\u{18D1E}\\u{18D80}-\\u{18DF2}\\u{1E6C0}-\\u{1E6DE}\\u{1E6E0}-\\u{1E6E2}\\u{1E6E4}-\\u{1E6E5}\\u{1E6E7}-\\u{1E6ED}\\u{1E6F0}-\\u{1E6F4}\\u{1E6FE}-\\u{1E6FF}\\u{2B73A}-\\u{2B73F}\\u{2CEA2}-\\u{2CEAD}\\u{323B0}-\\u{33479}]|\\\\u+(?:0(?:0(?:24|[46][123456789aAbBcCdDeEfF]|5[0123456789aAfF]|7[0123456789aA]|[aA][2345aA]|[bB][5aA]|[cCeE][0123456789aAbBcCdDeEfF]|[dDfF][012345689aAbBcCdDeEfF])|1[0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|2(?:[0123456789aAbB][0123456789aAbBcCdDeEfF]|[cC][016789aAbBcCdDeEfF]|[dD][01]|[eE][01234cCeE])|3(?:7[0123467aAbBcCdDfF]|8[689aAcCeEfF]|[9bBcCdDeE][0123456789aAbBcCdDeEfF]|[aA][013456789aAbBcCdDeEfF]|[fF][012345789aAbBcCdDeEfF])|4(?:[012345679aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|8[01aAbBcCdDeEfF])|5(?:[012467dD][0123456789aAbBcCdDeEfF]|3[123456789aAbBcCdDeEfF]|5[012345689]|8[012345678bBcCfF]|[eE][0123456789aAfF]|[fF][012])|6(?:0[bB]|[2389aAbBcC][0123456789aAbBcCdDeEfF]|4[0123456789aA]|6[eEfF]|7[123456789aAbBcCdDeEfF]|[dD][01235]|[eE][56eEfF]|[fF][aAbBcCfF])|7(?:1[023456789aAbBcCdDeEfF]|[256789dD][0123456789aAbBcCdDeEfF]|4[dDeEfF]|[aA][012345]|[bB]1|[cC][aAbBcCdDeEfF]|[eE][0123456789aA]|[fF][45aAeEfF])|8(?:[047aAbB][0123456789aAbBcCdDeEfF]|1[012345aA]|2[48]|5[012345678]|6[0123456789aA]|8[012345679aAbBcCdDeEfF]|[cC][0123456789])|9(?:0[456789aAbBcCdDeEfF]|[12][0123456789aAbBcCdDeEfF]|3[0123456789dD]|5[089aAbBcCdDeEfF]|[6eE][01]|7[123456789aAbBcCdDeEfF]|8[056789aAbBcCfF]|9[03456789aAbBcCdDeEfF]|[aA][012345678aAbBcCdDeEfF]|[bB][026789dD]|[cC][eE]|[dD][cCdDfF]|[fF][0123bBcC])|[aA](?:0[56789aAfF]|1[03456789aAbBcCdDeEfF]|[2aA][012345678aAbBcCdDeEfF]|3[0235689]|5[9aAbBcCeE]|7[234]|8[56789aAbBcCdDfF]|9[013456789aAbBcCdDeEfF]|[bB][02356789dD]|[dD]0|[eE][01]|[fF][19])|[bB](?:0[56789aAbBcCfF]|1[03456789aAbBcCdDeEfF]|2[012345678aAbBcCdDeEfF]|3[02356789dD]|5[cCdDfF]|6[01]|71|8[356789aAeEfF]|9[023459aAcCeEfF]|[aA][3489aAeEfF]|[bB][0123456789]|[dD]0|[fF]9)|[cC](?:0[56789aAbBcCeEfF]|[19][023456789aAbBcCdDeEfF]|[2aA][012345678aAbBcCdDeEfF]|3[0123456789dD]|5[89aAcCdD]|[6eE][01]|8[056789aAbBcCeEfF]|[bB][012356789dD]|[dD][cCdDeE]|[fF][12])|[dD](?:0[456789aAbBcCeEfF]|1[023456789aAbBcCdDeEfF]|[2aA][0123456789aAbBcCdDeEfF]|3[0123456789aAdD]|4[eE]|5[456fF]|6[01]|7[aAbBcCdDeEfF]|8[56789aAbBcCdDeEfF]|9[0123456aAbBcCdDeEfF]|[bB][013456789aAbBdD]|[cC][0123456])|[eE](?:0[123456789aAbBcCdDeEfF]|[129][0123456789aAbBcCdDeEfF]|3[023fF]|4[0123456]|8[1246789aAcCdDeEfF]|[aA][01235789aAbBcCdDeEfF]|[bB][023dD]|[cC][012346]|[dD][cCdDeEfF])|[fF](?:00|4[012345679aAbBcCdDeEfF]|5[0123456789aAbBcCdDeEfF]|6[0123456789aAbBcC]|8[89aAbBcC]))|1(?:0(?:[01aAbBdDeE][0123456789aAbBcCdDeEfF]|2[0123456789aA]|3[fF]|5[012345aAbBcCdD]|6[156eEfF]|7[056789aAbBcCdDeEfF]|8[01eE]|[cC][0123457dD]|[fF][0123456789aAcCdDeEfF])|[15eE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|2(?:[0123679aAeEfF][0123456789aAbBcCdDeEfF]|[48][012345678aAbBcCdD]|5[01234568aAbBcCdD]|[bB][0234589aAbBcCdDeE]|[cC][0234589aAbBcCdDeEfF]|[dD][012345689aAbBcCdDeEfF])|3(?:[02348aAbBcCdDeE][0123456789aAbBcCdDeEfF]|1[0234589aAbBcCdDeEfF]|5[0123456789aA]|[fF][01234589aAbBcCdD])|4(?:0[123456789aAbBcCdDeEfF]|[123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|6(?:[0123457aAbBcCdD][0123456789aAbBcCdDeEfF]|6[0123456789aAbBcCfF]|8[123456789aAbBcCdDeEfF]|9[0123456789aA]|[eE][0123456789aAeEfF]|[fF][012345678])|7(?:[02489aA][0123456789aAbBcCdDeEfF]|1[01fF]|[35][01]|6[0123456789aAbBcCeEfF]|70|[bB][0123]|[dD][7bBcC])|8(?:[234569bBcCdDeE][0123456789aAbBcCdDeEfF]|7[012345678]|8[01234789aAbBcCdDeEfF]|[aA][012345678aA]|[fF][012345])|9(?:[0589bB][0123456789aAbBcCdDeEfF]|1[0123456789aAbBcCdDeE]|6[0123456789aAbBcCdD]|7[01234]|[aA][0123456789aAbB]|[cC][0123456789])|[aA](?:[0234][0123456789aAbBcCdDeEfF]|1[0123456]|5[01234]|[aA]7)|[bB](?:0[56789aAbBcCdDeEfF]|[129cCdD][0123456789aAbBcCdDeEfF]|3[0123]|4[56789aAbBcC]|8[3456789aAbBcCdDeEfF]|[aA][0eEfF]|[bB][aAbBcCdDeEfF]|[eE][012345])|[cC](?:[0169aA][0123456789aAbBcCdDeEfF]|2[0123]|4[dDeEfF]|5[aAbBcCdDeEfF]|7[0123456789aAbBcCdD]|8[0123456789aA]|[bB][0123456789aAdDeEfF]|[eE][9aAbBcCeEfF]|[fF][012356aA])|[dD][0123456789aAbB][0123456789aAbBcCdDeEfF]|[fF](?:[023689aA][0123456789aAbBcCdDeEfF]|[14][01234589aAbBcCdD]|5[012345679bBdDfF]|7[0123456789aAbBcCdD]|[bB][012346789aAbBcCeE]|[cCfF][2346789aAbBcC]|[dD][01236789aAbB]|[eE][0123456789aAbBcC]))|2(?:0(?:[38][fF]|40|54|7[1fF]|[9aAbB][0123456789aAbBcCdDeEfF]|[cC][01234])|1(?:0[27aAbBcCdDeEfF]|1[012359aAbBcCdD]|2[468aAbBcCdDfF]|3[0123456789cCdDeEfF]|4[56789eE]|[67][0123456789aAbBcCdDeEfF]|8[012345678])|[cC](?:[0123456789aAbBcCdD][0123456789aAbBcCdDeEfF]|[eE][01234bBcCdDeE]|[fF][23])|[dD](?:[013458][0123456789aAbBcCdDeEfF]|2[0123457dD]|6[01234567fF]|9[0123456]|[aAbBcCdD][012345689aAbBcCdDeE])|[eE]2[fF])|3(?:0(?:0[567]|2[123456789]|3[1234589aAbBcC]|[4aA][123456789aAbBcCdDeEfF]|[5678bBcCdDeE][0123456789aAbBcCdDeEfF]|9[0123456dDeEfF]|[fF][0123456789aAcCdDeEfF])|1(?:0[56789aAbBcCdDeEfF]|[124567aAbBfF][0123456789aAbBcCdDeEfF]|3[123456789aAbBcCdDeEfF]|8[0123456789aAbBcCdDeE])|[456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|4(?:[0123456789aAbBcCeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[dD][0123456789aAbB][0123456789aAbBcCdDeEfF])|[56789bBcC][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[aA](?:[01235cCdDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|4(?:[01234567dDeE][0123456789aAbBcCdDeEfF]|8[0123456789aAbBcC]|[fF][0123456789aAbBcCdD])|6(?:0[0123456789aAbBcC]|[1458aAbBcCdDeE][0123456789aAbBcCdDeEfF]|2[aAbB]|6[0123456789aAbBcCdDeE]|7[fF]|9[0123456789aAbBcCdD])|7(?:1[789aAbBcCdDeEfF]|2[23456789aAbBcCdDeEfF]|[345679aAbBcC][0123456789aAbBcCdDeEfF]|8[012345678bBcCdDeEfF]|[dD][0123456789aAbBcCdD]|[eE]2|[fF][123456789aAbBcCdDeEfF])|8(?:0[01345789aAcCdDeEfF]|[14569aA][0123456789aAbBcCdDeEfF]|2[012]|38|[7bB][0123]|8[23456789aAbBcCdDeEfF]|[fF][234567bBdDeE])|9(?:0[aAbBcCdDeEfF]|[1369aA][0123456789aAbBcCdDeEfF]|2[012345]|4[0123456]|7[0123456789aAbBcC]|8[456789aAbBcCdDeEfF]|[bB][012]|[cC][fF]|[eE][012346789aAbBcCdDeEfF]|[fF][aAbBcCdDeE])|[aA](?:[01689aA][0123456789aAbBcCdDeEfF]|2[012345678]|4[012456789aAbB]|7[0123456aAeEfF]|[bB][1569aAbBcCdD]|[cC][02]|[dD][bBcCdD]|[eE][0123456789aA]|[fF][234])|[bB](?:0[1234569aAbBcCdDeE]|1[123456]|2[012345689aAbBcCdDeE]|[34789aAbBcCdD][0123456789aAbBcCdDeEfF]|5[0123456789aAcCdDeEfF]|6[0123456789cCdD]|[eE][012]))|[dD](?:[0123456][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|7(?:[0123456789bBdDeE][0123456789aAbBcCdDeEfF]|[aA][0123]|[cC][0123456bBcCdDeEfF]|[fF][0123456789aAbB]))|[fF](?:[9cC][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[aA](?:[012345789aAbBcC][0123456789aAbBcCdDeEfF]|6[0123456789aAbBcCdD]|[dD][0123456789])|[bB](?:0[0123456]|1[34567dDfF]|2[012345678aAbBcCdDeEfF]|3[012345689aAbBcCeE]|4[01346789aAbBcCdDeEfF]|[56789aAeEfF][0123456789aAbBcCdDeEfF]|[bB][01]|[dD][3456789aAbBcCdDeEfF])|[dD](?:[0125678aAbB][0123456789aAbBcCdDeEfF]|3[0123456789aAbBcCdD]|9[23456789aAbBcCdDeEfF]|[cC][01234567]|[fF][0123456789aAbBcC])|[eE](?:3[34]|4[dDeEfF]|69|7[012346789aAbBcCdDeEfF]|[89aAbBcCdDeE][0123456789aAbBcCdDeEfF]|[fF][0123456789aAbBcC])|[fF](?:04|[24][123456789aAbBcCdDeEfF]|3[0123456789aAfF]|5[0123456789aA]|6[6789aAbBcCdDeEfF]|[789aA][0123456789aAbBcCdDeEfF]|[bB][0123456789aAbBcCdDeE]|[cC][234567aAbBcCdDeEfF]|[dD][234567aAbBcC]|[eE][0156])))|\\\\u+[dD]800\\\\u+[dD](?:[cC](?:0[0123456789aAbBdDeEfF]|[189aAbBcCdDeE][0123456789aAbBcCdDeEfF]|2[012345689aAbBcCdDeEfF]|3[0123456789aAcCdDfF]|[45][0123456789aAbBcCdD]|[fF][0123456789aA])|[dD](?:[456][0123456789aAbBcCdDeEfF]|7[01234])|[eE](?:[8aAbBcC][0123456789aAbBcCdDeEfF]|9[0123456789aAbBcC]|[dD]0)|[fF](?:[013568aAbB][0123456789aAbBcCdDeEfF]|2[dDeEfF]|4[0123456789aA]|7[012345]|9[0123456789aAbBcCdD]|[cC][012389aAbBcCdDeEfF]|[dD][12345]))|\\\\u+[dD]801\\\\u+[dD](?:[cC](?:[012345678bBcCeE][0123456789aAbBcCdDeEfF]|9[0123456789aAbBcCdD]|[dD][012389aAbBcCdDeEfF]|[fF][0123456789aAbB])|[dD](?:[01345cCdDeE][0123456789aAbBcCdDeEfF]|2[01234567]|[6fF][0123]|[78][0123456789aAcCdDeEfF]|9[01245789aAbBcCdDeEfF]|[aA][013456789aAbBcCdDeEfF]|[bB][013456789bBcC])|[eE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[01249aA][0123456789aAbBcCdDeEfF]|3[0123456]|5[012345]|6[01234567]|8[012345789aAbBcCdDeEfF]|[bB][023456789aAbBcCdDeEfF]))|\\\\u+[dD]802\\\\u+[dD](?:[cC](?:0[0123458aAbBcCdDeEfF]|[12468eE][0123456789aAbBcCdDeEfF]|3[01234578cCfF]|5[012345]|7[0123456]|9[0123456789aAbBcCdDeE]|[fF][01245])|[dD](?:[02489aA][0123456789aAbBcCdDeEfF]|1[012345]|[35][0123456789]|[bB][01234567eEfF])|[eE](?:00|1[01235679aAbBcCdDeEfF]|[268dD][0123456789aAbBcCdDeEfF]|3[012345]|[79][0123456789aAbBcC]|[cC][012345679aAbBcCdDeEfF]|[eE][01234])|[fF](?:[012468][0123456789aAbBcCdDeEfF]|[35][012345]|7[012]|9[01]))|\\\\u+[dD]803\\\\u+[dD](?:[cC](?:[012389aAcCdDeE][0123456789aAbBcCdDeEfF]|4[012345678]|[bBfF][012])|[dD](?:[0157][0123456789aAbBcCdDeEfF]|2[0123]|4[aAbBcCdDeEfF]|6[012345fF]|8[012345])|[eE](?:[89][0123456789aAbBcCdDeEfF]|[aA][0123456789]|[bB][01]|[cC][234567]|[dD][9aAbBcCdDeEfF]|[eE][0123456789aAbBcCdDeE])|[fF](?:[037bBeE][0123456789aAbBcCdDeEfF]|1[0123456789aAbBcC]|27|4[012345]|8[01]|[cC][01234]|[fF][0123456]))|\\\\u+[dD]804\\\\u+[dD](?:[cC](?:[08][3456789aAbBcCdDeEfF]|[129aAdD][0123456789aAbBcCdDeEfF]|3[01234567]|7[125]|[eE][012345678])|[dD](?:[08][3456789aAbBcCdDeEfF]|[1569aA][0123456789aAbBcCdDeEfF]|2[0123456]|4[47]|7[0126]|[bB][012]|[cC][1234]|[dD][aAcC])|[eE](?:[0bBcC][0123456789aAbBcCdDeEfF]|1[013456789aAbBcCdDeEfF]|2[0123456789aAbB]|3[fF]|40|8[01234568aAbBcCdDfF]|9[0123456789aAbBcCdDfF]|[aA][012345678]|[dD][0123456789aAbBcCdDeE])|[fF](?:0[56789aAbBcCfF]|1[03456789aAbBcCdDeEfF]|2[012345678aAbBcCdDeEfF]|3[02356789dD]|5[0dDeEfF]|6[01]|8[0123456789bBeE]|[9aA][0123456789aAbBcCdDeEfF]|[bB][0123457]|[dD][13]))|\\\\u+[dD]805\\\\u+[dD](?:[cC](?:[01289aA][0123456789aAbBcCdDeEfF]|3[01234]|4[789aA]|5[fF]|6[01]|[cC][457])|[dD](?:[89][0123456789aAbBcCdDeEfF]|[aA][0123456789aAbBcCdDeE]|[dD][89aAbB])|[eE](?:[01289][0123456789aAbBcCdDeEfF]|44|[aA][0123456789aA]|[bB]8)|[fF](?:0[0123456789aAbBcCdDeEfF]|1[0123456789aA]|4[0123456]))|\\\\u+[dD]806\\\\u+[dD](?:[cC](?:[01aAbBcCdD][0123456789aAbBcCdDeEfF]|2[0123456789aAbB]|[fF][fF])|[dD](?:0[01234569cCdDeEfF]|1[01235689aAbBcCdDeEfF]|[2bBcC][0123456789aAbBcCdDeEfF]|3[fF]|41|[aA][01234567aAbBcCdDeEfF]|[dD]0|[eE][13])|[eE](?:0[0bBcCdDeEfF]|[1267bBcCdDeE][0123456789aAbBcCdDeEfF]|3[012aA]|5[0cCdDeEfF]|8[0123456789]|9[dD]|[fF][012345678])|[fF](?:0[aA]|[cCdD][0123456789aAbBcCdDeEfF]|[eE]0))|\\\\u+[dD]807\\\\u+[dD](?:[cC](?:0[012345678aAbBcCdDeEfF]|[18][0123456789aAbBcCdDeEfF]|2[0123456789aAbBcCdDeE]|40|7[23456789aAbBcCdDeEfF])|[dD](?:0[012345689bBcCdDeEfF]|[127bBcC][0123456789aAbBcCdDeEfF]|30|46|6[01234578aAbBcCdDeEfF]|8[0123456789]|98|[dD][0123456789aAbB]|[fF]1)|[eE](?:[eE][0123456789aAbBcCdDeEfF]|[fF][012])|[fF](?:0[2456789aAbBcCdDeEfF]|1[023456789aAbBcCdDeEfF]|2[0123456789aAbBcCdDeEfF]|3[0123]|[bBeE]0|[dD][dDeEfF]))|\\\\u+[dD]808\\\\u+[dD](?:[cCdDeE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[012345678][0123456789aAbBcCdDeEfF]|9[0123456789]))|\\\\u+[dD]809\\\\u+[dD](?:[cC](?:[012345689aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|7[56789aAbBcCdDeEfF])|[dD](?:[012356789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|4[0123])|[eE](?:[01234567][0123456789aAbBcCdDeEfF]|8[0123456]))|\\\\u+[dD]80[bB]\\\\u+[dD][fF](?:[9aAbBcCdDeE][0123456789aAbBcCdDeEfF]|[fF]0)|\\\\u+[dD]8(?:0[cCeEfF]|1[cCdDeEfF]|2[012]|[45][0123456789aAbBcCdDeEfF]|6[012345678aAbBcCdDfF]|7[012456789]|8[012356789aAbBcC]|[bB][456789aAbBcCdDeE])\\\\u+[dD][cCdDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|\\\\u+[dD]80[dD]\\\\u+[dD](?:[cC](?:[0126789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|4[123456])|[dDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|\\\\u+[dD]810\\\\u+[dD](?:[cCdDeE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[0123456789aAbBcCdDeE][0123456789aAbBcCdDeEfF]|[fF][0123456789aA]))|\\\\u+[dD]811\\\\u+[dD](?:[cCdD][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:[0123][0123456789aAbBcCdDeEfF]|4[0123456]))|\\\\u+[dD]818\\\\u+[dD][dD](?:0[0123456789aAbBcCdDeEfF]|1[0123456789aAbBcCdD])|\\\\u+[dD]81[aA]\\\\u+[dD](?:[cCdD][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:[0124789aAdD][0123456789aAbBcCdDeEfF]|3[012345678]|[5bB][0123456789aAbBcCdDeE]|[eE][0123456789aAbBcCdD])|[fF](?:[0128][0123456789aAbBcCdDeEfF]|4[0123]|6[3456789aAbBcCdDeEfF]|7[01234567dDeEfF]))|\\\\u+[dD]81[bB]\\\\u+[dD](?:[dD](?:[45][0123456789aAbBcCdDeEfF]|6[0123456789aAbBcC])|[eE](?:[4567aAcC][0123456789aAbBcCdDeEfF]|[bB][012345678bBcCdDeEfF]|[dD][0123])|[fF](?:[0123][0123456789aAbBcCdDeEfF]|4[0123456789aA]|50|9[3456789aAbBcCdDeEfF]|[eE][013]|[fF][23456]))|\\\\u+[dD]823\\\\u+[dD](?:[cC](?:[0123456789aAbBcC][0123456789aAbBcCdDeEfF]|[dD][0123456789aA]|[fF][fF])|[dD](?:[0189aAbBcCdDeE][0123456789aAbBcCdDeEfF]|20|[fF][012])|[eEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|\\\\u+[dD]824\\\\u+[dD](?:[cC][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[dD](?:[012345678aAbBcC][0123456789aAbBcCdDeEfF]|9[01]|[dD][012]))|\\\\u+[dD]82[bB]\\\\u+[dD][fF][fF][012356789aAbBdDeE]|\\\\u+[dD]82[cC]\\\\u+[dD](?:[cC][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[dD](?:[01789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|2[012345678]|32|5[0125]|6[45678])|[eE](?:[0123456789aAbBcCdDeE][0123456789aAbBcCdDeEfF]|[fF][0123456789aAbB]))|\\\\u+[dD]82[fF]\\\\u+[dD][cC](?:[012345][0123456789aAbBcCdDeEfF]|6[0123456789aA]|7[0123456789aAbBcC]|8[012345678]|9[0123456789])|\\\\u+[dD]835\\\\u+[dD](?:[cC](?:[01234678dDeEfF][0123456789aAbBcCdDeEfF]|5[012346789aAbBcCdDeEfF]|9[0123456789aAbBcCeEfF]|[aA][2569aAbBcCeEfF]|[bB][0123456789bBdDeEfF]|[cC][012356789aAbBcCdDeEfF])|[dD](?:0[012345789aAdDeEfF]|1[012346789aAbBcCeEfF]|[26789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|3[0123456789bBcCdDeE]|4[012346aAbBcCdDeEfF]|5[023456789aAbBcCdDeEfF])|[eE](?:[0123456789bBeE][0123456789aAbBcCdDeEfF]|[aA][012345689aAbBcCdDeEfF]|[cC][023456789aAbBcCdDeEfF]|[dDfF][0123456789aAcCdDeEfF])|[fF](?:[02579bB][0123456789aAbBcCdDeEfF]|[13][012346789aAbBcCdDeEfF]|[46][0123456789aAbBcCdDeE]|[8aA][012345678aAbBcCdDeEfF]|[cC][012456789aAbB]))|\\\\u+[dD]837\\\\u+[dD][fF](?:[01234567dDeEfF][0123456789aAbBcCdDeEfF]|8[01]|9[0123456]|[cC][dDeEfF])|\\\\u+[dD]838\\\\u+[dD](?:[cC](?:[345][0123456789aAbBcCdDeEfF]|6[0123456789aAbBcCdD])|[dD](?:[01][0123456789aAbBcCdDeEfF]|2[0123456789aAbBcC]|3[789aAbBcCdD]|4[eE])|[eE](?:[9cCdD][0123456789aAbBcCdDeEfF]|[aA][0123456789aAbBcCdD]|[eE][0123456789aAbB]|[fF][fF]))|\\\\u+[dD]839\\\\u+[dD](?:[cC](?:[dD][0123456789aAbBcCdDeEfF]|[eE][0123456789aAbB])|[dD](?:[dD][0123456789aAbBcCdDeEfF]|[eE][0123456789aAbBcCdD]|[fF]0)|[eE](?:[cC][0123456789aAbBcCdDeEfF]|[dD][0123456789aAbBcCdDeE]|[eE][01245789aAbBcCdD]|[fF][01234eEfF])|[fF](?:[eE][012345689aAbBdDeE]|[fF][0123456789aAbBcCdDeE]))|\\\\u+[dD]83[aA]\\\\u+[dD](?:[cC](?:[0123456789aAbB][0123456789aAbBcCdDeEfF]|[cC][01234])|[dD](?:[0123][0123456789aAbBcCdDeEfF]|4[0123bB]))|\\\\u+[dD]83[bB]\\\\u+[dD](?:[cC][bB]0|[eE](?:0[012356789aAbBcCdDeEfF]|1[0123456789aAbBcCdDeEfF]|2[12479aAbBcCdDeEfF]|3[01245679bB]|4[279bBdDeEfF]|5[12479bBdDfF]|6[124789aAcCdDeEfF]|7[01245679aAbBcCeE]|8[0123456789bBcCdDeEfF]|[9bB][0123456789aAbB]|[aA][12356789bBcCdDeEfF]))|\\\\u+[dD]869\\\\u+[dD](?:[cCdDfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE][0123456789aAbBcCdD][0123456789aAbBcCdDeEfF])|\\\\u+[dD]86[eE]\\\\u+[dD](?:[cC](?:[023456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|1[0123456789aAbBcCdDeE])|[dDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|\\\\u+[dD]873\\\\u+[dD](?:[cCdDfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:[0123456789bBcCdDeEfF][0123456789aAbBcCdDeEfF]|[aA][0123456789aAbBcCdD]))|\\\\u+[dD]87[aA]\\\\u+[dD](?:[cCdDeE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[0123456789aAbBcCdDfF][0123456789aAbBcCdDeEfF]|[eE]0))|\\\\u+[dD]87[bB]\\\\u+[dD](?:[cCdD][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:[01234][0123456789aAbBcCdDeEfF]|5[0123456789aAbBcCdD]))|\\\\u+[dD]87[eE]\\\\u+[dD](?:[cCdD][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:0[0123456789aAbBcCdDeEfF]|1[0123456789aAbBcCdD]))|\\\\u+[dD]884\\\\u+[dD](?:[cCdDeE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[012356789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|4[0123456789aA]))|\\\\u+[dD]88[dD]\\\\u+[dD][cC](?:[0123456][0123456789aAbBcCdDeEfF]|7[0123456789])|\\\\u+[dD]8[bB][fF]\\\\u+[dD][cC][0123][0123456789aAbBcCdDeEfF])(?:[\\p{L}\\p{Nl}\\p{Sc}\\p{Pc}\\p{Nd}\\p{Mc}\\p{Mn}\\p{Cf}\\u0000-\\u0008\\u000E-\\u001B\\u007F-\\u009F\\u{88F}\\u{C5C}\\u{CDC}\\u{1ACF}-\\u{1ADD}\\u{1AE0}-\\u{1AEB}\\u{20C1}\\u{A7CE}-\\u{A7CF}\\u{A7D2}\\u{A7D4}\\u{A7F1}\\u{10940}-\\u{10959}\\u{10EC5}-\\u{10EC7}\\u{10EFA}-\\u{10EFB}\\u{11B60}-\\u{11B67}\\u{11DB0}-\\u{11DDB}\\u{11DE0}-\\u{11DE9}\\u{16EA0}-\\u{16EB8}\\u{16EBB}-\\u{16ED3}\\u{16FF2}-\\u{16FF6}\\u{187F8}-\\u{187FF}\\u{18D09}-\\u{18D1E}\\u{18D80}-\\u{18DF2}\\u{1E6C0}-\\u{1E6DE}\\u{1E6E0}-\\u{1E6F5}\\u{1E6FE}-\\u{1E6FF}\\u{2B73A}-\\u{2B73F}\\u{2CEA2}-\\u{2CEAD}\\u{323B0}-\\u{33479}]|\\\\u+(?:0(?:0(?:0[012345678eEfF]|1[0123456789aAbB]|24|3[0123456789]|[46][123456789aAbBcCdDeEfF]|[57][0123456789aAfF]|[89cCeE][0123456789aAbBcCdDeEfF]|[aA][2345aAdD]|[bB][5aA]|[dDfF][012345689aAbBcCdDeEfF])|1[0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|2(?:[0123456789aAbB][0123456789aAbBcCdDeEfF]|[cC][016789aAbBcCdDeEfF]|[dD][01]|[eE][01234cCeE])|3(?:[01234569bBcCdDeE][0123456789aAbBcCdDeEfF]|7[0123467aAbBcCdDfF]|8[689aAcCeEfF]|[aA][013456789aAbBcCdDeEfF]|[fF][012345789aAbBcCdDeEfF])|4(?:[012345679aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|8[0134567aAbBcCdDeEfF])|5(?:[012467aAdD][0123456789aAbBcCdDeEfF]|[39][123456789aAbBcCdDeEfF]|5[012345689]|8[012345678bBcCfF]|[bB][0123456789aAbBcCdDfF]|[cC][1245789]|[eE][0123456789aAfF]|[fF][012])|6(?:0[012345bB]|1[0123456789aAcC]|[2345789aAbBcC][0123456789aAbBcCdDeEfF]|6[0123456789eEfF]|[dD][012356789aAbBcCdDfF]|[eE][012345678aAbBcCdDeEfF]|[fF][0123456789aAbBcCfF])|7(?:0[fF]|[12356789aAcCdDeE][0123456789aAbBcCdDeEfF]|4[0123456789aAdDeEfF]|[bB][01]|[fF][012345aAdDeEfF])|8(?:[0147aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|2[0123456789aAbBcCdD]|5[0123456789aAbB]|6[0123456789aA]|8[012345679aAbBcCdDeEfF]|9[01789aAbBcCdDeEfF])|9(?:[012345][0123456789aAbBcCdDeEfF]|[6eE][01236789aAbBcCdDeEfF]|7[123456789aAbBcCdDeEfF]|8[012356789aAbBcCfF]|9[03456789aAbBcCdDeEfF]|[aA][012345678aAbBcCdDeEfF]|[bB][026789cCdDeEfF]|[cC][0123478bBcCdDeE]|[dD][7cCdDfF]|[fF][0123bBcCeE])|[aA](?:0[12356789aAfF]|1[03456789aAbBcCdDeEfF]|[2aA][012345678aAbBcCdDeEfF]|3[0235689cCeEfF]|4[01278bBcCdD]|5[19aAbBcCeE]|6[6789aAbBcCdDeEfF]|7[012345]|8[12356789aAbBcCdDfF]|9[013456789aAbBcCdDeEfF]|[bB][02356789cCdDeEfF]|[cC][012345789bBcCdD]|[dD]0|[eE][01236789aAbBcCdDeEfF]|[fF][19aAbBcCdDeEfF])|[bB](?:0[12356789aAbBcCfF]|1[03456789aAbBcCdDeEfF]|2[012345678aAbBcCdDeEfF]|3[02356789cCdDeEfF]|4[0123478bBcCdD]|5[34567cCdDfF]|6[01236789aAbBcCdDeEfF]|71|8[2356789aAeEfF]|9[023459aAcCeEfF]|[aA][3489aAeEfF]|[bB][0123456789eEfF]|[cC][012678aAbBcCdD]|[dD][07]|[eE][6789aAbBcCdDeEfF]|[fF]9)|[cC](?:0[0123456789aAbBcCeEfF]|[19][023456789aAbBcCdDeEfF]|[2aA][012345678aAbBcCdDeEfF]|3[0123456789cCdDeEfF]|[4cC][01234678aAbBcCdD]|5[5689aAcCdD]|[6eE][01236789aAbBcCdDeEfF]|8[012356789aAbBcCeEfF]|[bB][012356789cCdDeEfF]|[dD][56cCdDeE]|[fF][123])|[dD](?:0[0123456789aAbBcCeEfF]|1[023456789aAbBcCdDeEfF]|[23aA][0123456789aAbBcCdDeEfF]|4[01234678aAbBcCdDeE]|5[4567fF]|6[01236789aAbBcCdDeEfF]|7[aAbBcCdDeEfF]|8[12356789aAbBcCdDeEfF]|9[0123456aAbBcCdDeEfF]|[bB][013456789aAbBdD]|[cC][0123456aAfF]|[dD][01234689aAbBcCdDeEfF]|[eE][6789aAbBcCdDeEfF]|[fF][23])|[eE](?:0[123456789aAbBcCdDeEfF]|[129][0123456789aAbBcCdDeEfF]|3[0123456789aAfF]|4[0123456789aAbBcCdDeE]|5[0123456789]|8[1246789aAcCdDeEfF]|[aA][01235789aAbBcCdDeEfF]|[bB][0123456789aAbBcCdD]|[cC][01234689aAbBcCdDeE]|[dD][0123456789cCdDeEfF])|[fF](?:00|1[89]|2[0123456789]|3[579eEfF]|[49][012345679aAbBcCdDeEfF]|[5aA][0123456789aAbBcCdDeEfF]|[6bB][0123456789aAbBcC]|7[123456789aAbBcCdDeEfF]|8[012346789aAbBcCdDeEfF]|[cC]6))|1(?:0(?:[01235678aAbBdDeE][0123456789aAbBcCdDeEfF]|4[0123456789]|9[0123456789aAbBcCdD]|[cC][0123457dD]|[fF][0123456789aAcCdDeEfF])|[15dDeE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|2(?:[0123679aAeEfF][0123456789aAbBcCdDeEfF]|[48][012345678aAbBcCdD]|5[01234568aAbBcCdD]|[bB][0234589aAbBcCdDeE]|[cC][0234589aAbBcCdDeEfF]|[dD][012345689aAbBcCdDeEfF])|3(?:[02348aAbBcCdDeE][0123456789aAbBcCdDeEfF]|1[0234589aAbBcCdDeEfF]|5[0123456789aAdDeEfF]|[fF][01234589aAbBcCdD])|4(?:0[123456789aAbBcCdDeEfF]|[123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|6(?:[0123457aAbBcCdD][0123456789aAbBcCdDeEfF]|6[0123456789aAbBcCfF]|8[123456789aAbBcCdDeEfF]|9[0123456789aA]|[eE][0123456789aAeEfF]|[fF][012345678])|7(?:[02489aAbBcC][0123456789aAbBcCdDeEfF]|1[012345fF]|3[01234]|5[0123]|6[0123456789aAbBcCeEfF]|7[023]|[dD][01237bBcCdD]|[eE][0123456789])|8(?:0[bBcCdDeEfF]|1[0123456789]|[2345689bBcCdDeE][0123456789aAbBcCdDeEfF]|7[012345678]|[aA][0123456789aA]|[fF][012345])|9(?:[0589bB][0123456789aAbBcCdDeEfF]|1[0123456789aAbBcCdDeE]|[23aA][0123456789aAbB]|4[6789aAbBcCdDeEfF]|6[0123456789aAbBcCdD]|7[01234]|[cCdD][0123456789])|[aA](?:[02346cCdDeE][0123456789aAbBcCdDeEfF]|1[0123456789aAbB]|5[0123456789aAbBcCdDeE]|7[0123456789aAbBcCfF]|[89][0123456789]|[aA]7|[bB][0123456789aAbBcCdDfF]|[fF]0)|[bB](?:[012389aAbBcCdDeE][0123456789aAbBcCdDeEfF]|4[0123456789aAbBcC]|5[0123456789]|6[bBcCdDeEfF]|[7fF][0123])|[cC](?:[012569aAeE][0123456789aAbBcCdDeEfF]|3[01234567]|4[0123456789dDeEfF]|7[0123456789aAbBcCdD]|[8fF][0123456789aA]|[bB][0123456789aAdDeEfF]|[dD][012456789aAbBcCdDeEfF])|[fF](?:[023689aA][0123456789aAbBcCdDeEfF]|[14][01234589aAbBcCdD]|5[012345679bBdDfF]|7[0123456789aAbBcCdD]|[bB][012346789aAbBcCeE]|[cCfF][2346789aAbBcC]|[dD][01236789aAbB]|[eE][0123456789aAbBcC]))|2(?:0(?:0[bBcCdDeEfF]|2[aAbBcCdDeE]|[38][fF]|[4fF]0|54|6[012346789aAbBcCdDeEfF]|7[1fF]|[9aAbB][0123456789aAbBcCdDeEfF]|[cC][01234]|[dD][0123456789aAbBcC]|[eE][156789aAbBcCdDeEfF])|1(?:0[27aAbBcCdDeEfF]|1[012359aAbBcCdD]|2[468aAbBcCdDfF]|3[0123456789cCdDeEfF]|4[56789eE]|[67][0123456789aAbBcCdDeEfF]|8[012345678])|[cC](?:[0123456789aAbBcCdD][0123456789aAbBcCdDeEfF]|[eE][01234bBcCdDeEfF]|[fF][0123])|[dD](?:[013458eEfF][0123456789aAbBcCdDeEfF]|2[0123457dD]|6[01234567fF]|7[fF]|9[0123456]|[aAbBcCdD][012345689aAbBcCdDeE])|[eE]2[fF])|3(?:0(?:0[567]|[24aA][123456789aAbBcCdDeEfF]|3[1234589aAbBcC]|[5678bBcCdDeE][0123456789aAbBcCdDeEfF]|9[01234569aAdDeEfF]|[fF][0123456789aAcCdDeEfF])|1(?:0[56789aAbBcCdDeEfF]|[124567aAbBfF][0123456789aAbBcCdDeEfF]|3[123456789aAbBcCdDeEfF]|8[0123456789aAbBcCdDeE])|[456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|4(?:[0123456789aAbBcCeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[dD][0123456789aAbB][0123456789aAbBcCdDeEfF])|[56789bBcC][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[aA](?:[01235cCdDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|4(?:[01234567dDeE][0123456789aAbBcCdDeEfF]|8[0123456789aAbBcC]|[fF][0123456789aAbBcCdD])|6(?:0[0123456789aAbBcC]|[145689aAbBcCdDeE][0123456789aAbBcCdDeEfF]|2[0123456789aAbB]|7[456789aAbBcCdDfF]|[fF][01])|7(?:1[789aAbBcCdDeEfF]|2[23456789aAbBcCdDeEfF]|[345679aAbBcC][0123456789aAbBcCdDeEfF]|8[012345678bBcCdDeEfF]|[dD][0123456789aAbBcCdD]|[eE]2|[fF][123456789aAbBcCdDeEfF])|8(?:[0145689aAbBeE][0123456789aAbBcCdDeEfF]|2[01234567cC]|38|7[0123]|[cC][012345]|[dD][0123456789]|[fF][01234567bBdDeEfF])|9(?:[0134689aAbBeE][0123456789aAbBcCdDeEfF]|2[0123456789aAbBcCdD]|5[0123]|7[0123456789aAbBcC]|[cC][0fF]|[dD][0123456789]|[fF][0123456789aAbBcCdDeE])|[aA](?:[012689aAbBeE][0123456789aAbBcCdDeEfF]|3[0123456]|4[0123456789aAbBcCdD]|5[0123456789]|7[0123456aAbBcCdDeEfF]|[cC][012]|[dD][bBcCdD]|[fF][23456])|[bB](?:0[1234569aAbBcCdDeE]|1[123456]|2[012345689aAbBcCdDeE]|[34789aAbBcCdD][0123456789aAbBcCdDeEfF]|5[0123456789aAcCdDeEfF]|6[0123456789cCdD]|[eE][0123456789aAcCdD]|[fF][0123456789]))|[dD](?:[0123456][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|7(?:[0123456789bBdDeE][0123456789aAbBcCdDeEfF]|[aA][0123]|[cC][0123456bBcCdDeEfF]|[fF][0123456789aAbB]))|[fF](?:[9cC][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[aA](?:[012345789aAbBcC][0123456789aAbBcCdDeEfF]|6[0123456789aAbBcCdD]|[dD][0123456789])|[bB](?:0[0123456]|1[34567dDeEfF]|2[012345678aAbBcCdDeEfF]|3[012345689aAbBcCeE]|4[01346789aAbBcCdDeEfF]|[56789aAeEfF][0123456789aAbBcCdDeEfF]|[bB][01]|[dD][3456789aAbBcCdDeEfF])|[dD](?:[0125678aAbB][0123456789aAbBcCdDeEfF]|3[0123456789aAbBcCdD]|9[23456789aAbBcCdDeEfF]|[cC][01234567]|[fF][0123456789aAbBcC])|[eE](?:[0289aAbBcCdDeE][0123456789aAbBcCdDeEfF]|3[34]|4[dDeEfF]|69|7[012346789aAbBcCdDeEfF]|[fF][0123456789aAbBcCfF])|[fF](?:04|1[0123456789]|[24][123456789aAbBcCdDeEfF]|3[0123456789aAfF]|5[0123456789aA]|6[6789aAbBcCdDeEfF]|[789aA][0123456789aAbBcCdDeEfF]|[bB][0123456789aAbBcCdDeE]|[cC][234567aAbBcCdDeEfF]|[dD][234567aAbBcC]|[eE][0156]|[fF][9aAbB])))|\\\\u+[dD]800\\\\u+[dD](?:[cC](?:0[0123456789aAbBdDeEfF]|[189aAbBcCdDeE][0123456789aAbBcCdDeEfF]|2[012345689aAbBcCdDeEfF]|3[0123456789aAcCdDfF]|[45][0123456789aAbBcCdD]|[fF][0123456789aA])|[dD](?:[456][0123456789aAbBcCdDeEfF]|7[01234]|[fF][dD])|[eE](?:[8aAbBcC][0123456789aAbBcCdDeEfF]|9[0123456789aAbBcC]|[dDeE]0)|[fF](?:[013568aAbB][0123456789aAbBcCdDeEfF]|2[dDeEfF]|[47][0123456789aA]|9[0123456789aAbBcCdD]|[cC][012389aAbBcCdDeEfF]|[dD][12345]))|\\\\u+[dD]801\\\\u+[dD](?:[cC](?:[012345678bBcCeE][0123456789aAbBcCdDeEfF]|9[0123456789aAbBcCdD]|[aA][0123456789]|[dD][012389aAbBcCdDeEfF]|[fF][0123456789aAbB])|[dD](?:[01345cCdDeE][0123456789aAbBcCdDeEfF]|2[01234567]|[6fF][0123]|[78][0123456789aAcCdDeEfF]|9[01245789aAbBcCdDeEfF]|[aA][013456789aAbBcCdDeEfF]|[bB][013456789bBcC])|[eE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[01249aA][0123456789aAbBcCdDeEfF]|3[0123456]|5[012345]|6[01234567]|8[012345789aAbBcCdDeEfF]|[bB][023456789aAbBcCdDeEfF]))|\\\\u+[dD]802\\\\u+[dD](?:[cC](?:0[0123458aAbBcCdDeEfF]|[12468eE][0123456789aAbBcCdDeEfF]|3[01234578cCfF]|5[012345]|7[0123456]|9[0123456789aAbBcCdDeE]|[fF][01245])|[dD](?:[02489aA][0123456789aAbBcCdDeEfF]|1[012345]|[35][0123456789]|[bB][01234567eEfF])|[eE](?:0[012356cCdDeEfF]|1[01235679aAbBcCdDeEfF]|[268dD][0123456789aAbBcCdDeEfF]|3[01234589aAfF]|[79][0123456789aAbBcC]|[cC][012345679aAbBcCdDeEfF]|[eE][0123456])|[fF](?:[012468][0123456789aAbBcCdDeEfF]|[35][012345]|7[012]|9[01]))|\\\\u+[dD]803\\\\u+[dD](?:[cC](?:[012389aAcCdDeE][0123456789aAbBcCdDeEfF]|4[012345678]|[bBfF][012])|[dD](?:[01457][0123456789aAbBcCdDeEfF]|2[01234567]|3[0123456789]|6[0123459aAbBcCdDfF]|8[012345])|[eE](?:[89fF][0123456789aAbBcCdDeEfF]|[aA][0123456789bBcC]|[bB][01]|[cC][234567bBcCdDeEfF]|[dD][9aAbBcCdDeEfF]|[eE][0123456789aAbBcCdDeE])|[fF](?:[0347bBeE][0123456789aAbBcCdDeEfF]|1[0123456789aAbBcC]|27|50|8[012345]|[cC][01234]|[fF][0123456]))|\\\\u+[dD]804\\\\u+[dD](?:[cC](?:[012389aAdD][0123456789aAbBcCdDeEfF]|4[0123456]|6[6789aAbBcCdDeEfF]|7[012345fF]|[bB][0123456789aAdD]|[cC][2dD]|[eE][012345678]|[fF][0123456789])|[dD](?:[0125689aAbB][0123456789aAbBcCdDeEfF]|3[012346789aAbBcCdDeEfF]|4[4567]|7[01236]|[cC][012349aAbBcCeEfF]|[dD][0123456789aAcC])|[eE](?:[02bBcCdD][0123456789aAbBcCdDeEfF]|1[013456789aAbBcCdDeEfF]|3[01234567eEfF]|4[01]|8[01234568aAbBcCdDfF]|9[0123456789aAbBcCdDfF]|[aA][012345678]|[eE][0123456789aA]|[fF][0123456789])|[fF](?:0[012356789aAbBcCfF]|1[03456789aAbBcCdDeEfF]|2[012345678aAbBcCdDeEfF]|3[02356789bBcCdDeEfF]|4[0123478bBcCdD]|5[07dDeEfF]|6[01236789aAbBcC]|7[01234]|8[0123456789bBeE]|[9aA][0123456789aAbBcCdDeEfF]|[bB][012345789aAbBcCdDeEfF]|[cC][025789aAcCdDeEfF]|[dD][0123]|[eE][12]))|\\\\u+[dD]805\\\\u+[dD](?:[cC](?:[012389aAbB][0123456789aAbBcCdDeEfF]|4[0123456789aA]|5[0123456789eEfF]|6[01]|[cC][0123457]|[dD][0123456789])|[dD](?:[89aA][0123456789aAbBcCdDeEfF]|[bB][01234589aAbBcCdDeEfF]|[cC]0|[dD][89aAbBcCdD])|[eE](?:[012389aAdD][0123456789aAbBcCdDeEfF]|4[04]|[5cC][0123456789]|[bB][012345678]|[eE][0123])|[fF](?:0[0123456789aAbBcCdDeEfF]|1[0123456789aAdDeEfF]|2[0123456789aAbB]|3[0123456789]|4[0123456]))|\\\\u+[dD]806\\\\u+[dD](?:[cC](?:[012aAbBcCdD][0123456789aAbBcCdDeEfF]|3[0123456789aA]|[eE][0123456789]|[fF][fF])|[dD](?:0[01234569cCdDeEfF]|1[01235689aAbBcCdDeEfF]|[2bBcC][0123456789aAbBcCdDeEfF]|3[01234578bBcCdDeEfF]|4[0123]|5[0123456789]|[aAdD][01234567aAbBcCdDeEfF]|[eE][0134])|[eE](?:[0125678bBcCdDeE][0123456789aAbBcCdDeEfF]|3[0123456789aAbBcCdDeE]|47|9[0123456789dD]|[fF][012345678])|[fF](?:0[aA]|6[01234567]|[cCdD][0123456789aAbBcCdDeEfF]|[eE]0|[fF][0123456789]))|\\\\u+[dD]807\\\\u+[dD](?:[cC](?:0[012345678aAbBcCdDeEfF]|[128][0123456789aAbBcCdDeEfF]|3[012345689aAbBcCdDeEfF]|40|5[0123456789]|[79][23456789aAbBcCdDeEfF]|[aA][012345679aAbBcCdDeEfF]|[bB][0123456])|[dD](?:0[012345689bBcCdDeEfF]|[127bBcC][0123456789aAbBcCdDeEfF]|3[0123456aAcCdDfF]|4[01234567]|[5aAeE][0123456789]|6[01234578aAbBcCdDeEfF]|8[0123456789aAbBcCdDeE]|9[01345678]|[dD][0123456789aAbB]|[fF][01])|[eE](?:[eE][0123456789aAbBcCdDeEfF]|[fF][0123456])|[fF](?:[02][0123456789aAbBcCdDeEfF]|1[023456789aAbBcCdDeEfF]|3[0123456789aAeEfF]|4[012]|5[0123456789aA]|[bBeE]0|[dD][dDeEfF]))|\\\\u+[dD]808\\\\u+[dD](?:[cCdDeE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[012345678][0123456789aAbBcCdDeEfF]|9[0123456789]))|\\\\u+[dD]809\\\\u+[dD](?:[cC](?:[012345689aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|7[56789aAbBcCdDeEfF])|[dD](?:[012356789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|4[0123])|[eE](?:[01234567][0123456789aAbBcCdDeEfF]|8[0123456]))|\\\\u+[dD]80[bB]\\\\u+[dD][fF](?:[9aAbBcCdDeE][0123456789aAbBcCdDeEfF]|[fF]0)|\\\\u+[dD]8(?:0[cCeEfF]|1[cCdDeEfF]|2[012]|[45][0123456789aAbBcCdDeEfF]|6[012345678aAbBcCdDfF]|7[012456789]|8[012356789aAbBcC]|[bB][456789aAbBcCdDeE])\\\\u+[dD][cCdDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|\\\\u+[dD]80[dD]\\\\u+[dD](?:[cC](?:[012346789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|5[012345])|[dDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|\\\\u+[dD]810\\\\u+[dD](?:[cCdDeE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[0123456789aAbBcCdDeE][0123456789aAbBcCdDeEfF]|[fF][0123456789aA]))|\\\\u+[dD]811\\\\u+[dD](?:[cCdD][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:[0123][0123456789aAbBcCdDeEfF]|4[0123456]))|\\\\u+[dD]818\\\\u+[dD][dD](?:[012][0123456789aAbBcCdDeEfF]|3[0123456789])|\\\\u+[dD]81[aA]\\\\u+[dD](?:[cCdD][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:[0124789aAdD][0123456789aAbBcCdDeEfF]|3[012345678]|[5bB][0123456789aAbBcCdDeE]|[6cC][0123456789]|[eE][0123456789aAbBcCdD]|[fF][01234])|[fF](?:[0128][0123456789aAbBcCdDeEfF]|3[0123456]|4[0123]|5[0123456789]|6[3456789aAbBcCdDeEfF]|7[01234567dDeEfF]))|\\\\u+[dD]81[bB]\\\\u+[dD](?:[dD](?:[45][0123456789aAbBcCdDeEfF]|6[0123456789aAbBcC]|7[0123456789])|[eE](?:[4567aAcC][0123456789aAbBcCdDeEfF]|[bB][012345678bBcCdDeEfF]|[dD][0123])|[fF](?:[01235679][0123456789aAbBcCdDeEfF]|4[0123456789aAfF]|8[01234567fF]|[eE][0134]|[fF][0123456]))|\\\\u+[dD]823\\\\u+[dD](?:[cC](?:[0123456789aAbBcC][0123456789aAbBcCdDeEfF]|[dD][0123456789aA]|[fF][fF])|[dD](?:[0189aAbBcCdDeE][0123456789aAbBcCdDeEfF]|20|[fF][012])|[eEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|\\\\u+[dD]824\\\\u+[dD](?:[cC][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[dD](?:[012345678aAbBcC][0123456789aAbBcCdDeEfF]|9[01]|[dD][012]))|\\\\u+[dD]82[bB]\\\\u+[dD][fF][fF][012356789aAbBdDeE]|\\\\u+[dD]82[cC]\\\\u+[dD](?:[cC][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[dD](?:[01789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|2[012345678]|32|5[0125]|6[45678])|[eE](?:[0123456789aAbBcCdDeE][0123456789aAbBcCdDeEfF]|[fF][0123456789aAbB]))|\\\\u+[dD]82[fF]\\\\u+[dD][cC](?:[012345][0123456789aAbBcCdDeEfF]|6[0123456789aA]|7[0123456789aAbBcC]|8[012345678]|9[0123456789dDeE]|[aA][0123])|\\\\u+[dD]833\\\\u+[dD](?:[cC][fF][0123456789]|[fF](?:[013][0123456789aAbBcCdDeEfF]|2[0123456789aAbBcCdD]|4[0123456]))|\\\\u+[dD]834\\\\u+[dD](?:[dD](?:2[78]|6[56789dDeEfF]|7[0123456789aAbBcCdDeEfF]|8[01256789aAbB]|[aA][aAbBcCdD])|[eE](?:4[234]|5[012bBcCfF]|8[01]))|\\\\u+[dD]835\\\\u+[dD](?:[cC](?:[01234678dDeEfF][0123456789aAbBcCdDeEfF]|5[012346789aAbBcCdDeEfF]|9[0123456789aAbBcCeEfF]|[aA][2569aAbBcCeEfF]|[bB][0123456789bBdDeEfF]|[cC][012356789aAbBcCdDeEfF])|[dD](?:0[012345789aAdDeEfF]|1[012346789aAbBcCeEfF]|[26789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|3[0123456789bBcCdDeE]|4[012346aAbBcCdDeEfF]|5[023456789aAbBcCdDeEfF])|[eE](?:[0123456789bBeE][0123456789aAbBcCdDeEfF]|[aA][012345689aAbBcCdDeEfF]|[cC][023456789aAbBcCdDeEfF]|[dDfF][0123456789aAcCdDeEfF])|[fF](?:[02579bBdDeEfF][0123456789aAbBcCdDeEfF]|[13][012346789aAbBcCdDeEfF]|[46][0123456789aAbBcCdDeE]|[8aA][012345678aAbBcCdDeEfF]|[cC][012456789aAbBeEfF]))|\\\\u+[dD]836\\\\u+[dD][eE](?:[01245][0123456789aAbBcCdDeEfF]|3[0123456bBcCdDeEfF]|6[0123456789aAbBcC]|75|84|9[bBcCdDeEfF]|[aA][123456789aAbBcCdDeEfF])|\\\\u+[dD]837\\\\u+[dD][fF](?:[01234567dDeEfF][0123456789aAbBcCdDeEfF]|8[01]|9[0123456]|[cC][dDeEfF])|\\\\u+[dD]838\\\\u+[dD](?:[cC](?:0[012345689aAbBcCdDeEfF]|1[012345678bBcCdDeEfF]|2[01346789aA]|[345][0123456789aAbBcCdDeEfF]|6[0123456789aAbBcCdD]|8[fF])|[dD](?:[01][0123456789aAbBcCdDeEfF]|2[0123456789aAbBcC]|3[0123456789aAbBcCdD]|4[0123456789eE])|[eE](?:[9cCdDeE][0123456789aAbBcCdDeEfF]|[aA][0123456789aAbBcCdDeE]|[fF][0123456789fF]))|\\\\u+[dD]839\\\\u+[dD](?:[cC](?:[dDeE][0123456789aAbBcCdDeEfF]|[fF][0123456789])|[dD](?:[dDeE][0123456789aAbBcCdDeEfF]|[fF][0123456789aA])|[eE](?:[cCeE][0123456789aAbBcCdDeEfF]|[dD][0123456789aAbBcCdDeE]|[fF][012345eEfF])|[fF](?:[eE][012345689aAbBdDeE]|[fF][0123456789aAbBcCdDeE]))|\\\\u+[dD]83[aA]\\\\u+[dD](?:[cC](?:[0123456789aAbB][0123456789aAbBcCdDeEfF]|[cC][01234]|[dD][0123456])|[dD](?:[0123][0123456789aAbBcCdDeEfF]|4[0123456789aAbB]|5[0123456789]))|\\\\u+[dD]83[bB]\\\\u+[dD](?:[cC][bB]0|[eE](?:0[012356789aAbBcCdDeEfF]|1[0123456789aAbBcCdDeEfF]|2[12479aAbBcCdDeEfF]|3[01245679bB]|4[279bBdDeEfF]|5[12479bBdDfF]|6[124789aAcCdDeEfF]|7[01245679aAbBcCeE]|8[0123456789bBcCdDeEfF]|[9bB][0123456789aAbB]|[aA][12356789bBcCdDeEfF]))|\\\\u+[dD]83[eE]\\\\u+[dD][fF][fF][0123456789]|\\\\u+[dD]869\\\\u+[dD](?:[cCdDfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE][0123456789aAbBcCdD][0123456789aAbBcCdDeEfF])|\\\\u+[dD]86[eE]\\\\u+[dD](?:[cC](?:[023456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|1[0123456789aAbBcCdDeE])|[dDeEfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF])|\\\\u+[dD]873\\\\u+[dD](?:[cCdDfF][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:[0123456789bBcCdDeEfF][0123456789aAbBcCdDeEfF]|[aA][0123456789aAbBcCdD]))|\\\\u+[dD]87[aA]\\\\u+[dD](?:[cCdDeE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[0123456789aAbBcCdDfF][0123456789aAbBcCdDeEfF]|[eE]0))|\\\\u+[dD]87[bB]\\\\u+[dD](?:[cCdD][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:[01234][0123456789aAbBcCdDeEfF]|5[0123456789aAbBcCdD]))|\\\\u+[dD]87[eE]\\\\u+[dD](?:[cCdD][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[eE](?:0[0123456789aAbBcCdDeEfF]|1[0123456789aAbBcCdD]))|\\\\u+[dD]884\\\\u+[dD](?:[cCdDeE][0123456789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|[fF](?:[012356789aAbBcCdDeEfF][0123456789aAbBcCdDeEfF]|4[0123456789aA]))|\\\\u+[dD]88[dD]\\\\u+[dD][cC](?:[0123456][0123456789aAbBcCdDeEfF]|7[0123456789])|\\\\u+[dD]8[bB][fF]\\\\u+[dD][cC][0123][0123456789aAbBcCdDeEfF]|\\\\u+[dD][bB]40\\\\u+[dD](?:[cC](?:01|[234567][0123456789aAbBcCdDeEfF])|[dD][0123456789aAbBcCdDeE][0123456789aAbBcCdDeEfF]))*",
       "flags": "u"
+    },
+    "line_comment": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_line_comment_body"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_line_comment_end"
+        }
+      ]
+    },
+    "block_comment": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_block_comment_body"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_block_comment_end"
+        }
+      ]
     }
   },
   "extras": [
@@ -10779,11 +11600,19 @@
   "externals": [
     {
       "type": "SYMBOL",
-      "name": "line_comment"
+      "name": "_line_comment_body"
     },
     {
       "type": "SYMBOL",
-      "name": "block_comment"
+      "name": "_line_comment_end"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_block_comment_body"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_block_comment_end"
     },
     {
       "type": "SYMBOL",

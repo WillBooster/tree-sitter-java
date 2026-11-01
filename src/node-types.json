@@ -1006,6 +1006,12 @@
     }
   },
   {
+    "type": "block_comment",
+    "named": true,
+    "extra": true,
+    "fields": {}
+  },
+  {
     "type": "break_statement",
     "named": true,
     "fields": {},
@@ -2500,6 +2506,12 @@
     }
   },
   {
+    "type": "line_comment",
+    "named": true,
+    "extra": true,
+    "fields": {}
+  },
+  {
     "type": "local_variable_declaration",
     "named": true,
     "fields": {
@@ -2824,11 +2836,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "multiline_string_fragment",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "object_creation_expression",
@@ -4400,11 +4407,6 @@
     "named": true
   },
   {
-    "type": "block_comment",
-    "named": true,
-    "extra": true
-  },
-  {
     "type": "boolean_type",
     "named": true
   },
@@ -4533,17 +4535,16 @@
     "named": false
   },
   {
-    "type": "line_comment",
-    "named": true,
-    "extra": true
-  },
-  {
     "type": "long",
     "named": false
   },
   {
     "type": "module",
     "named": false
+  },
+  {
+    "type": "multiline_string_fragment",
+    "named": true
   },
   {
     "type": "native",

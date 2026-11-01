@@ -1714,11 +1714,9 @@ compPass("""
           (multiline_string_fragment)
           (escape_sequence)
           (multiline_string_fragment)
-          (multiline_string_fragment)
           (escape_sequence)
           (multiline_string_fragment)
           (escape_sequence)
-          (multiline_string_fragment)
           (multiline_string_fragment))))))
 
 ================================================================================

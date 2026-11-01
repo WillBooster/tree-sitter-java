@@ -7,6 +7,8 @@ await Parser.init();
 const language = await Language.load(fileURLToPath(new URL('../../tree-sitter-java.wasm', import.meta.url)));
 
 const validSources = [
+  String.raw`class C { String value = "a"\u0020; int after; }`,
+  String.raw`class C { char value = 'a'\u0020; int after; }`,
   String.raw`abs\u0074ract class C { int value = 1; int after; }`,
   String.raw`\u0040Deprecated class C { int value = 1; int after; }`,
   String.raw`class C { int v\u0061r = 1; int after; }`,
@@ -58,7 +60,7 @@ for (const source of validSources) {
       expect(variables).toHaveLength(2);
       expect(variables[1]!.childForFieldName('name')?.text).toBe('after');
       const value = variables[0]!.childForFieldName('value')!;
-      const literal = source.match(/(?:=|\\u003d) ([\s\S]*?)(?:;|\\u003b)/)![1]!;
+      const literal = source.match(/(?:=|\\u003d) ([\s\S]*?)(?:\\u0020)?(?:;|\\u003b)/)![1]!;
       expect(value.text).toBe(literal);
       const start = source.indexOf(literal, variables[0]!.childForFieldName('name')!.endIndex);
       expect(value.startIndex).toBe(start);
