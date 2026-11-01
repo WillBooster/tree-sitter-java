@@ -5600,7 +5600,7 @@
                   "members": [
                     {
                       "type": "SYMBOL",
-                      "name": "_type"
+                      "name": "_reference_type"
                     },
                     {
                       "type": "SYMBOL",
@@ -5630,7 +5630,7 @@
                         "members": [
                           {
                             "type": "SYMBOL",
-                            "name": "_type"
+                            "name": "_reference_type"
                           },
                           {
                             "type": "SYMBOL",
@@ -5718,7 +5718,7 @@
             },
             {
               "type": "SYMBOL",
-              "name": "_type"
+              "name": "_reference_type"
             }
           ]
         },
@@ -5731,7 +5731,7 @@
             },
             {
               "type": "SYMBOL",
-              "name": "_type"
+              "name": "_reference_type"
             }
           ]
         }
@@ -10965,6 +10965,53 @@
         {
           "type": "SYMBOL",
           "name": "annotated_type"
+        }
+      ]
+    },
+    "_reference_type": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_class_type"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "array_type"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_annotated_reference_type"
+          },
+          "named": true,
+          "value": "annotated_type"
+        }
+      ]
+    },
+    "_annotated_reference_type": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_annotation"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_class_type"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "array_type"
+            }
+          ]
         }
       ]
     },

@@ -1,0 +1,170 @@
+{
+  "valid": [
+    {
+      "source": "class C<T> { C<String> value; } class After {}",
+      "type": "C<String>",
+      "arguments": [
+        "<String>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<java.lang.String> value; } class After {}",
+      "type": "C<java.lang.String>",
+      "arguments": [
+        "<java.lang.String>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<T> value; } class After {}",
+      "type": "C<T>",
+      "arguments": [
+        "<T>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<int[]> value; } class After {}",
+      "type": "C<int[]>",
+      "arguments": [
+        "<int[]>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<boolean[][]> value; } class After {}",
+      "type": "C<boolean[][]>",
+      "arguments": [
+        "<boolean[][]>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<?> value; } class After {}",
+      "type": "C<?>",
+      "arguments": [
+        "<?>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<? extends Number> value; } class After {}",
+      "type": "C<? extends Number>",
+      "arguments": [
+        "<? extends Number>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<? super Integer> value; } class After {}",
+      "type": "C<? super Integer>",
+      "arguments": [
+        "<? super Integer>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<? extends int[]> value; } class After {}",
+      "type": "C<? extends int[]>",
+      "arguments": [
+        "<? extends int[]>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<? super boolean[][]> value; } class After {}",
+      "type": "C<? super boolean[][]>",
+      "arguments": [
+        "<? super boolean[][]>"
+      ]
+    },
+    {
+      "source": "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<@A String> value; } class After {}",
+      "type": "C<@A String>",
+      "arguments": [
+        "<@A String>"
+      ]
+    },
+    {
+      "source": "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<@A int[]> value; } class After {}",
+      "type": "C<@A int[]>",
+      "arguments": [
+        "<@A int[]>"
+      ]
+    },
+    {
+      "source": "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<int @A []> value; } class After {}",
+      "type": "C<int @A []>",
+      "arguments": [
+        "<int @A []>"
+      ]
+    },
+    {
+      "source": "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<? extends @A int[]> value; } class After {}",
+      "type": "C<? extends @A int[]>",
+      "arguments": [
+        "<? extends @A int[]>"
+      ]
+    },
+    {
+      "source": "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<@A ? extends @A String> value; } class After {}",
+      "type": "C<@A ? extends @A String>",
+      "arguments": [
+        "<@A ? extends @A String>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<\\u0069nt[]> value; } class After {}",
+      "type": "C<\\u0069nt[]>",
+      "arguments": [
+        "<\\u0069nt[]>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<\\u0053tring> value; } class After {}",
+      "type": "C<\\u0053tring>",
+      "arguments": [
+        "<\\u0053tring>"
+      ]
+    },
+    {
+      "source": "class C<T> { C<java.util.List<int[]>> value; } class After {}",
+      "type": "C<java.util.List<int[]>>",
+      "arguments": [
+        "<java.util.List<int[]>>",
+        "<int[]>"
+      ]
+    },
+    {
+      "source": "class C { java.util.List<int[]> value = java.util.Collections.<int[]>emptyList(); } class After {}",
+      "type": "java.util.List<int[]>",
+      "arguments": [
+        "<int[]>"
+      ],
+      "value": "java.util.Collections.<int[]>emptyList()",
+      "valueType": "method_invocation",
+      "valueArgument": "<int[]>"
+    },
+    {
+      "source": "class C<T> { <U> C() {} C<String> value = new <int[]> C<String>(); } class After {}",
+      "type": "C<String>",
+      "arguments": [
+        "<String>"
+      ],
+      "value": "new <int[]> C<String>()",
+      "valueType": "object_creation_expression",
+      "valueArgument": "<int[]>"
+    }
+  ],
+  "invalid": [
+    "class C<T> { C<boolean> value; } class After {}",
+    "class C<T> { C<byte> value; } class After {}",
+    "class C<T> { C<short> value; } class After {}",
+    "class C<T> { C<char> value; } class After {}",
+    "class C<T> { C<int> value; } class After {}",
+    "class C<T> { C<long> value; } class After {}",
+    "class C<T> { C<float> value; } class After {}",
+    "class C<T> { C<double> value; } class After {}",
+    "class C<T> { C<? extends int> value; } class After {}",
+    "class C<T> { C<? super boolean> value; } class After {}",
+    "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<@A int> value; } class After {}",
+    "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<? extends @A int> value; } class After {}",
+    "class C<T> { C<java.util.List<double>> value; } class After {}",
+    "class C<T> { C<\\u0069nt> value; } class After {}",
+    "class C { Object value = java.util.Collections.<int>emptyList(); } class After {}",
+    "class C { Object value = java.util.Collections.<boolean>emptyList(); } class After {}",
+    "class C<T> { <U> C() {} C<String> value = new <int> C<String>(); } class After {}"
+  ]
+}
