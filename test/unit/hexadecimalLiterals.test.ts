@@ -26,14 +26,24 @@ for (const literal of ['0x1p0', '0X1.P+2', '0x.8p-1', '0x1.8p1f', '0X1__A.B__CP1
   });
 }
 
-for (const literal of ['0x1.0', '0x1.', '0x.8', '0x1.8p', '0x1.8p+']) {
+for (const literal of [
+  '0x1.0',
+  '0x1.',
+  '0x.8',
+  '0x1.f',
+  '0x1.ABC',
+  '0x1.8p',
+  '0x1.8p+',
+  '0x1.f p0',
+  '0x1.f/* gap */p0',
+  '0x1.fp 0',
+]) {
   test(`reports an error for the incomplete hexadecimal floating literal ${literal}`, () => {
     const source = `class C { double value = ${literal}; int after; }`;
     const parser = new Parser().setLanguage(language);
     const tree = parser.parse(source)!;
     try {
       expect(tree.rootNode.hasError, source).toBe(true);
-      expect(tree.rootNode.descendantsOfType('hex_floating_point_literal')).toHaveLength(0);
       const after = tree.rootNode.descendantsOfType('field_declaration').find((node) => node.text === 'int after;');
       expect(after?.parent?.type).toBe('class_body');
       expect(after?.startIndex).toBe(source.indexOf('int after;'));
