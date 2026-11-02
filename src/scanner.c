@@ -105,6 +105,7 @@ static bool identifier_start(int32_t character) {
 
 // Like javac, a keyword comparison skips only the ignorable characters of the Basic Multilingual Plane.
 static bool keyword_ignorable(int32_t character) {
+  if (character < 0) return false;
   if (character < 0x80) return character <= 8 || (character >= 0x0e && character <= 0x1b) || character == 0x7f;
   return character <= 0xffff && set_contains(IDENTIFIER_IGNORABLE, RANGE_COUNT(IDENTIFIER_IGNORABLE), character);
 }

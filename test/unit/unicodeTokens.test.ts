@@ -131,6 +131,8 @@ for (const source of [
   String.raw`class C { int c\u0000onst = 1; }`,
   String.raw`class C { int go\u0000to = 1; }`,
   String.raw`sealed interface A permits C {} non-\u0000sealed class C implements A {}`,
+  String.raw`sealed interface A permits C {} non-sealed\uD800 class C implements A {}`,
+  String.raw`sealed interface A permits C {} non-se\uD800aled class C implements A {}`,
   String.raw`class C { int cl\u0000ass = 1; }`,
   String.raw`class C { int ret\u200burn = 1; }`,
   String.raw`class C { int value = 0\u006f17; }`,
