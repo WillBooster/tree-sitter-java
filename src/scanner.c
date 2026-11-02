@@ -216,7 +216,9 @@ bool tree_sitter_java_external_scanner_scan(void *payload, TSLexer *lexer, const
   int32_t character;
   if (!next_code_point(lexer, &state, &character)) return false;
   if (valid_symbols[JAVA_WHITESPACE] && (whitespace(character) || (character == 0x1a && lexer->eof(lexer)))) return scan_whitespace(lexer, &state);
-  if (identifier_start(character)) return valid_symbols[IDENTIFIER] && scan_identifier(lexer, &state, character);
+  // A word that is no keyword stays one token where no identifier is valid either, so that the generated lexer does
+  // not read a keyword from its start (e.g. `extends` from `extendsα`).
+  if (identifier_start(character)) return scan_identifier(lexer, &state, character);
   if (character != '/' || !next_character(lexer, &state, &character)) return false;
   bool line = character == '/' && valid_symbols[LINE_COMMENT_BODY];
   if (!line && !(character == '*' && valid_symbols[BLOCK_COMMENT_BODY])) return false;

@@ -58,6 +58,10 @@ test('parses Unicode-encoded tokens and comment boundaries in linear time', { ti
   expectLinearParsing(unicodeSource(300), unicodeSource(3000), false);
 });
 
+test('recovers from keywords spelled with Unicode escapes in linear time', { timeout: 60_000 }, () => {
+  expectLinearParsing(escapedKeywordSource(300), escapedKeywordSource(3000));
+});
+
 test('recovers from unterminated Unicode-encoded comments in linear time', { timeout: 60_000 }, () => {
   const opening = String.raw`\u002f\u002a body `;
   expectLinearParsing(opening.repeat(500), opening.repeat(5000));
@@ -65,6 +69,16 @@ test('recovers from unterminated Unicode-encoded comments in linear time', { tim
 
 function malformedRecordSource(count: number): string {
   return `record C(${Array.from({ length: count }, (_, index) => `${index % 20 === 0 ? 'final ' : ''}int value${index}`).join(',')}) {}`;
+}
+
+function escapedKeywordSource(count: number): string {
+  return (
+    String.raw`cl\u0061ss C {` +
+    Array.from({ length: count }, (_, index) => String.raw`\u0069nt field${index} = 1; v\u006fid f${index}() {}`).join(
+      '\n'
+    ) +
+    '}'
+  );
 }
 
 function unicodeSource(count: number): string {

@@ -16,13 +16,12 @@ for (const { source, voidOwners } of sources.valid) {
       expect(tree.rootNode.hasError, source).toBe(false);
       const types = tree.rootNode.descendantsOfType('void_type');
       expect(types.map((node) => node.parent?.type)).toEqual(voidOwners);
-      const spelling = 'void';
       let cursor = 0;
       for (const type of types) {
-        const start = source.indexOf(spelling, cursor);
-        expect(type.text).toBe(spelling);
-        expect([type.startIndex, type.endIndex]).toEqual([start, start + spelling.length]);
-        cursor = start + spelling.length;
+        const start = source.indexOf('void', cursor);
+        expect(type.text).toBe('void');
+        expect([type.startIndex, type.endIndex]).toEqual([start, start + 'void'.length]);
+        cursor = start + 'void'.length;
         if (type.parent!.type === 'method_declaration') {
           expect(type.parent!.childForFieldName('type')?.equals(type)).toBe(true);
           expect(type.parent!.childForFieldName('name')?.text).toBe('run');
