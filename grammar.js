@@ -12,8 +12,10 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const SCANNER_WORDS = scannerWords();
+const SCANNER_KEYWORDS = scannerKeywords();
 const JAVA_WORD = /^[A-Za-z_][A-Za-z0-9_-]*$/;
+// javac skips only the ignorable characters of the Basic Multilingual Plane when it compares a word with the keywords.
+const KEYWORD_IGNORABLE = characterClass(identifierIgnorableRanges().filter(([, end]) => end <= 0xffff));
 
 const DECIMAL_DIGITS = token(sep1(/[0-9]+/, /_+/));
 const DIGITS = token(choice('0', seq(/[1-9]/, optional(seq(optional(/_+/), DECIMAL_DIGITS)))));
@@ -1504,8 +1506,9 @@ module.exports = unicodeGrammar(grammar({
 
     super: _ => 'super',
 
-    // The scanner reads identifiers wherever one is valid; this pattern lets the generator find the keywords.
-    identifier: _ => /[A-Za-z_$][A-Za-z0-9_$]*/,
+    // The scanner reads identifiers and leaves the words that may be keywords to this pattern, which the generator
+    // compares with the keywords.
+    identifier: _ => new RegExp(`[A-Za-z_$](?:[A-Za-z0-9_$]|${KEYWORD_IGNORABLE})*`, 'u'),
     line_comment: $ => seq($._line_comment_body, $._line_comment_end),
     block_comment: $ => seq($._block_comment_body, $._block_comment_end),
   },
@@ -1576,53 +1579,43 @@ function commaSep(rule) {
   return optional(commaSep1(rule));
 }
 
-/** Reads the `{"spelling", reserved}` entries of `WORDS` in src/scanner.c. */
-function scannerWords() {
+/** Reads the ranges of `IDENTIFIER_IGNORABLE` in src/identifierRanges.h. */
+function identifierIgnorableRanges() {
+  const header = fs.readFileSync(path.join(__dirname, 'src/identifierRanges.h'), 'utf8');
+  const body = header.match(/\bIDENTIFIER_IGNORABLE\[\] = \{\n([\s\S]*?)\n\};/)[1];
+  return [...body.matchAll(/\{0x([0-9a-f]+), 0x([0-9a-f]+)\}/g)].map(([, start, end]) => [parseInt(start, 16), parseInt(end, 16)]);
+}
+
+function characterClass(ranges) {
+  return `[${ranges.map(([start, end]) => start === end ? `\\u{${start.toString(16)}}` : `\\u{${start.toString(16)}}-\\u{${end.toString(16)}}`).join('')}]`;
+}
+
+/** Reads the spellings of `KEYWORDS` in src/scanner.c. */
+function scannerKeywords() {
   const scanner = fs.readFileSync(path.join(__dirname, 'src/scanner.c'), 'utf8');
-  const body = scanner.match(/\bWORDS\[\] = \{\n([\s\S]*?)\n\};/)[1];
-  return [...body.matchAll(/\{"([^"]+)", (true|false)\}/g)].map(([, spelling, reserved]) => ({spelling, reserved: reserved === 'true'}));
+  return [...scanner.match(/\bKEYWORDS\[\] = \{([^}]*)\}/)[1].matchAll(/"([^"]+)"/g)].map(([, spelling]) => spelling);
 }
 
 /**
- * Lets a Unicode escape spell each character of the lexical rules, and declares identifiers and keywords as external
- * tokens, which the scanner reads.
+ * Lets a Unicode escape spell each character of the lexical rules except keywords, lets ignorable characters follow
+ * each letter of a keyword, and declares identifiers as an external token, which the scanner reads.
  */
 function unicodeGrammar(result) {
   const {rules, reserved, externals} = result.grammar;
-  const words = keywordTerminals(rules);
-  const reservedWords = new Set(reserved.global.map(word => word.type === 'STRING' ? word.value : rules[word.name].value));
-  const spellings = SCANNER_WORDS.map(({spelling}) => spelling);
-  if (spellings.some((spelling, index) => index > 0 && spellings[index - 1] >= spelling) || spellings.length !== words.size
-    || SCANNER_WORDS.some(({spelling, reserved}) => !words.has(spelling) || reserved !== reservedWords.has(spelling))) {
-    throw new Error(`WORDS in src/scanner.c must list ${[...words.keys()].sort().join(' ')}, sorted, marking ${[...reservedWords].sort().join(' ')} reserved`);
-  }
-  externals.push({type: 'SYMBOL', name: 'identifier'}, ...spellings.map(spelling => words.get(spelling)));
+  const keywords = new Set();
+  for (const rule of Object.values(rules)) collectKeywords(rule, keywords);
+  const sorted = [...keywords].sort();
+  if (sorted.join() !== SCANNER_KEYWORDS.join()) throw new Error(`KEYWORDS in src/scanner.c must list ${sorted.join(' ')}, sorted`);
+  externals.push({type: 'SYMBOL', name: 'identifier'});
   for (const [name, rule] of Object.entries(rules)) {
     if (name !== 'identifier' && !/(string|text_block|escape|character_literal)/.test(name)) {
       rules[name] = expandUnicodeRule(rule, rule.type === 'STRING');
     }
   }
-  return result;
-}
-
-/** Maps each keyword spelling to the terminal that the grammar spells with it. */
-function keywordTerminals(rules) {
-  const words = new Map();
-  for (const [name, rule] of Object.entries(rules)) {
-    if (rule.type === 'STRING' && !name.startsWith('_') && JAVA_WORD.test(rule.value)) {
-      words.set(rule.value, {type: 'SYMBOL', name});
-    } else {
-      collectKeywords(rule, words);
-    }
+  for (const [name, words] of Object.entries(reserved)) {
+    reserved[name] = words.map(word => expandUnicodeRule(word, true));
   }
-  return words;
-}
-
-function collectKeywords(rule, words) {
-  if (rule.type === 'STRING' && JAVA_WORD.test(rule.value)) words.set(rule.value, rule);
-  if (rule.type === 'TOKEN' || rule.type === 'IMMEDIATE_TOKEN') return;
-  if (rule.content) collectKeywords(rule.content, words);
-  rule.members?.forEach(member => collectKeywords(member, words));
+  return result;
 }
 
 /**
@@ -1631,8 +1624,7 @@ function collectKeywords(rule, words) {
  */
 function expandUnicodeRule(rule, lexical = false, token = false) {
   if (rule.type === 'STRING') {
-    if (!token && JAVA_WORD.test(rule.value)) return rule;
-    const content = {type: 'PATTERN', value: [...rule.value].map(unicodeCharacter).join('')};
+    const content = {type: 'PATTERN', value: unicodeSpelling(rule.value, !token && JAVA_WORD.test(rule.value))};
     return lexical ? content : {type: 'ALIAS', named: false, value: rule.value, content: {type: 'TOKEN', content}};
   }
   if (rule.type === 'PATTERN') {
@@ -1648,6 +1640,21 @@ function expandUnicodeRule(rule, lexical = false, token = false) {
   if (rule.content) return {...rule, content: expandUnicodeRule(rule.content, nestedLexical, nestedToken)};
   if (rule.members) return {...rule, members: rule.members.map(member => expandUnicodeRule(member, nestedLexical, nestedToken))};
   return rule;
+}
+
+/** Spells a keyword with ignorable characters after each letter, and any other string with Unicode escapes. */
+function unicodeSpelling(value, keyword) {
+  return [...value].map(character => keyword
+    ? `${character}${character === '-' ? '' : `${KEYWORD_IGNORABLE}*`}`
+    : unicodeCharacter(character)).join('');
+}
+
+/** Collects the spellings of the keywords that the identifier pattern also matches. */
+function collectKeywords(rule, keywords) {
+  if (rule.type === 'STRING' && /^[A-Za-z_][A-Za-z0-9_]*$/.test(rule.value)) keywords.add(rule.value);
+  if (rule.type === 'TOKEN' || rule.type === 'IMMEDIATE_TOKEN') return;
+  if (rule.content) collectKeywords(rule.content, keywords);
+  rule.members?.forEach(member => collectKeywords(member, keywords));
 }
 
 function unicodeCharacter(character) {

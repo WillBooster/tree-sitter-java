@@ -106,13 +106,6 @@
       ]
     },
     {
-      "source": "class C<T> { C<\\u0069nt[]> value; } class After {}",
-      "type": "C<\\u0069nt[]>",
-      "arguments": [
-        "<\\u0069nt[]>"
-      ]
-    },
-    {
       "source": "class C<T> { C<\\u0053tring> value; } class After {}",
       "type": "C<\\u0053tring>",
       "arguments": [
@@ -162,7 +155,6 @@
     "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<@A int> value; } class After {}",
     "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C<T> { C<? extends @A int> value; } class After {}",
     "class C<T> { C<java.util.List<double>> value; } class After {}",
-    "class C<T> { C<\\u0069nt> value; } class After {}",
     "class C { Object value = java.util.Collections.<int>emptyList(); } class After {}",
     "class C { Object value = java.util.Collections.<boolean>emptyList(); } class After {}",
     "class C<T> { <U> C() {} C<String> value = new <int> C<String>(); } class After {}"

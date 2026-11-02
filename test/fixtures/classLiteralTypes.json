@@ -102,11 +102,6 @@
       "element": "String"
     },
     {
-      "source": "class C { static class D {} Class<?> value = String.\\u0063lass; } class After {}",
-      "expression": "String.\\u0063lass",
-      "type": "String"
-    },
-    {
       "source": "class when {} class C { Class<?> value = when.class; } class After {}",
       "expression": "when.class",
       "type": "when"

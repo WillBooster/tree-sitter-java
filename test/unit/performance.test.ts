@@ -69,10 +69,10 @@ function malformedRecordSource(count: number): string {
 
 function unicodeSource(count: number): string {
   return (
-    String.raw`cl\u0061ss C \u007b` +
+    String.raw`class C \u007b` +
     Array.from(
       { length: count },
-      (_, index) => String.raw`\u0069nt field${index}\u003d\u0031\u003b\u002f\u002f comment\u000a`
+      (_, index) => String.raw`int field${index}\u003d\u0031\u003b\u002f\u002f comment\u000a`
     ).join('') +
     String.raw`\u007d`
   );

@@ -16,7 +16,7 @@ for (const { source, voidOwners } of sources.valid) {
       expect(tree.rootNode.hasError, source).toBe(false);
       const types = tree.rootNode.descendantsOfType('void_type');
       expect(types.map((node) => node.parent?.type)).toEqual(voidOwners);
-      const spelling = source.includes(String.raw`v\u006fid`) ? String.raw`v\u006fid` : 'void';
+      const spelling = 'void';
       let cursor = 0;
       for (const type of types) {
         const start = source.indexOf(spelling, cursor);

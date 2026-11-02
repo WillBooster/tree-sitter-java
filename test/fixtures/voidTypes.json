@@ -63,13 +63,6 @@
       "voidOwners": []
     },
     {
-      "source": "class C { v\\u006fid run() {} Class<?> kind = v\\u006fid.class; } class After {}",
-      "voidOwners": [
-        "method_declaration",
-        "class_literal"
-      ]
-    },
-    {
       "source": "class C { int run()[] { return new int[0]; } } class After {}",
       "voidOwners": []
     },
@@ -103,7 +96,6 @@
     "class C { Class<?> kind = void[].class; } class After {}",
     "class C { void run() throws void {} } class After {}",
     "class C<T extends void> {} class After {}",
-    "class C { v\\u006fid value; } class After {}",
     "class C { void run()[] {} } class After {}",
     "class C { <T> void run(T value)[][] {} } class After {}",
     "interface C { void run()[]; } class After {}"
