@@ -9,9 +9,11 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
-const IDENTIFIER_RANGES = require('./src/identifierRanges.json');
-const JAVA_IDENTIFIER_START = characterClass(IDENTIFIER_RANGES.start);
-const JAVA_IDENTIFIER_PART = characterClass(IDENTIFIER_RANGES.part);
+const fs = require('node:fs');
+const path = require('node:path');
+
+const SCANNER_WORDS = scannerWords();
+const JAVA_WORD = /^[A-Za-z_][A-Za-z0-9_-]*$/;
 
 const DECIMAL_DIGITS = token(sep1(/[0-9]+/, /_+/));
 const DIGITS = token(choice('0', seq(/[1-9]/, optional(seq(optional(/_+/), DECIMAL_DIGITS)))));
@@ -64,9 +66,6 @@ const PREC = {
   PARENS: 16,
   CLASS_LITERAL: 17,
 };
-
-const JAVA_KEYWORD_IGNORABLE = new RegExp(characterClass(IDENTIFIER_RANGES.ignorable.filter(([, end]) => end <= 0xffff)), 'u');
-const JAVA_KEYWORD_IGNORABLES = `(?:${JAVA_KEYWORD_IGNORABLE.source}|${encodedCharacters(JAVA_KEYWORD_IGNORABLE, true)})*`;
 
 module.exports = unicodeGrammar(grammar({
   name: 'java',
@@ -1505,7 +1504,8 @@ module.exports = unicodeGrammar(grammar({
 
     super: _ => 'super',
 
-    identifier: _ => new RegExp(`${JAVA_IDENTIFIER_START}${JAVA_IDENTIFIER_PART}*`, 'u'),
+    // The scanner reads identifiers wherever one is valid; this pattern lets the generator find the keywords.
+    identifier: _ => /[A-Za-z_$][A-Za-z0-9_$]*/,
     line_comment: $ => seq($._line_comment_body, $._line_comment_end),
     block_comment: $ => seq($._block_comment_body, $._block_comment_end),
   },
@@ -1576,26 +1576,63 @@ function commaSep(rule) {
   return optional(commaSep1(rule));
 }
 
-function characterClass(ranges) {
-  return `[${ranges.map(([start, end]) => start === end ? `\\u{${start.toString(16)}}` : `\\u{${start.toString(16)}}-\\u{${end.toString(16)}}`).join('')}]`;
+/** Reads the `{"spelling", reserved}` entries of `WORDS` in src/scanner.c. */
+function scannerWords() {
+  const scanner = fs.readFileSync(path.join(__dirname, 'src/scanner.c'), 'utf8');
+  const body = scanner.match(/\bWORDS\[\] = \{\n([\s\S]*?)\n\};/)[1];
+  return [...body.matchAll(/\{"([^"]+)", (true|false)\}/g)].map(([, spelling, reserved]) => ({spelling, reserved: reserved === 'true'}));
 }
 
+/**
+ * Lets a Unicode escape spell each character of the lexical rules, and declares identifiers and keywords as external
+ * tokens, which the scanner reads.
+ */
 function unicodeGrammar(result) {
-  const {rules, reserved} = result.grammar;
-  for (const [name, rule] of Object.entries(rules)) {
-    if (!/(string|text_block|escape|character_literal)/.test(name)) {
-      rules[name] = expandUnicodeRule(rule, name === 'identifier', rule.type === 'STRING');
-    }
+  const {rules, reserved, externals} = result.grammar;
+  const words = keywordTerminals(rules);
+  const reservedWords = new Set(reserved.global.map(word => word.type === 'STRING' ? word.value : rules[word.name].value));
+  const spellings = SCANNER_WORDS.map(({spelling}) => spelling);
+  if (spellings.some((spelling, index) => index > 0 && spellings[index - 1] >= spelling) || spellings.length !== words.size
+    || SCANNER_WORDS.some(({spelling, reserved}) => !words.has(spelling) || reserved !== reservedWords.has(spelling))) {
+    throw new Error(`WORDS in src/scanner.c must list ${[...words.keys()].sort().join(' ')}, sorted, marking ${[...reservedWords].sort().join(' ')} reserved`);
   }
-  for (const [name, words] of Object.entries(reserved)) {
-    reserved[name] = words.map(word => expandUnicodeRule(word, false, true));
+  externals.push({type: 'SYMBOL', name: 'identifier'}, ...spellings.map(spelling => words.get(spelling)));
+  for (const [name, rule] of Object.entries(rules)) {
+    if (name !== 'identifier' && !/(string|text_block|escape|character_literal)/.test(name)) {
+      rules[name] = expandUnicodeRule(rule, rule.type === 'STRING');
+    }
   }
   return result;
 }
 
-function expandUnicodeRule(rule, identifier, lexical = false, keywords = true) {
+/** Maps each keyword spelling to the terminal that the grammar spells with it. */
+function keywordTerminals(rules) {
+  const words = new Map();
+  for (const [name, rule] of Object.entries(rules)) {
+    if (rule.type === 'STRING' && !name.startsWith('_') && JAVA_WORD.test(rule.value)) {
+      words.set(rule.value, {type: 'SYMBOL', name});
+    } else {
+      collectKeywords(rule, words);
+    }
+  }
+  return words;
+}
+
+function collectKeywords(rule, words) {
+  if (rule.type === 'STRING' && JAVA_WORD.test(rule.value)) words.set(rule.value, rule);
+  if (rule.type === 'TOKEN' || rule.type === 'IMMEDIATE_TOKEN') return;
+  if (rule.content) collectKeywords(rule.content, words);
+  rule.members?.forEach(member => collectKeywords(member, words));
+}
+
+/**
+ * @param {boolean} lexical whether the rule is a token's content or an alias's, which an alias must not wrap again
+ * @param {boolean} token whether the rule is a token's content, in which a keyword spelling is no keyword
+ */
+function expandUnicodeRule(rule, lexical = false, token = false) {
   if (rule.type === 'STRING') {
-    const content = {type: 'PATTERN', value: unicodeSpelling(rule.value, keywords)};
+    if (!token && JAVA_WORD.test(rule.value)) return rule;
+    const content = {type: 'PATTERN', value: [...rule.value].map(unicodeCharacter).join('')};
     return lexical ? content : {type: 'ALIAS', named: false, value: rule.value, content: {type: 'TOKEN', content}};
   }
   if (rule.type === 'PATTERN') {
@@ -1603,52 +1640,27 @@ function expandUnicodeRule(rule, identifier, lexical = false, keywords = true) {
     return {...rule, value: atoms.map(atom => {
       if (/^[*+?]$/.test(atom)) return atom;
       const predicate = new RegExp(`^(?:${atom})$`, 'u');
-      return `(?:${atom}|${encodedCharacters(predicate, identifier)})`;
+      return `(?:${atom}|${encodedCharacters(predicate)})`;
     }).join('')};
   }
-  const nestedLexical = lexical || rule.type === 'TOKEN' || rule.type === 'IMMEDIATE_TOKEN' || rule.type === 'ALIAS';
-  const nestedKeywords = keywords && rule.type !== 'TOKEN' && rule.type !== 'IMMEDIATE_TOKEN';
-  if (rule.content) return {...rule, content: expandUnicodeRule(rule.content, identifier, nestedLexical, nestedKeywords)};
-  if (rule.members) return {...rule, members: rule.members.map(member => expandUnicodeRule(member, identifier, nestedLexical, nestedKeywords))};
+  const nestedToken = token || rule.type === 'TOKEN' || rule.type === 'IMMEDIATE_TOKEN';
+  const nestedLexical = lexical || nestedToken || rule.type === 'ALIAS';
+  if (rule.content) return {...rule, content: expandUnicodeRule(rule.content, nestedLexical, nestedToken)};
+  if (rule.members) return {...rule, members: rule.members.map(member => expandUnicodeRule(member, nestedLexical, nestedToken))};
   return rule;
-}
-
-function unicodeSpelling(value, keywords) {
-  const word = keywords && /^[A-Za-z_][A-Za-z0-9_-]*$/.test(value);
-  return [...value].map(character => unicodeCharacter(character) + (word && character !== '-' ? JAVA_KEYWORD_IGNORABLES : '')).join('');
 }
 
 function unicodeCharacter(character) {
   return `(?:${character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}|\\\\u+${hexadecimalPattern([character.charCodeAt(0)])})`;
 }
 
-function encodedCharacters(predicate, identifier) {
-  const bmp = [];
-  const supplementary = new Map();
-  const limit = identifier ? 0x10ffff : 0x7f;
-  for (let code = 0; code <= limit; code++) {
-    if (!predicate.test(String.fromCodePoint(code))) continue;
-    if (code <= 0xffff) {
-      bmp.push(code);
-    } else {
-      const high = 0xd800 + ((code - 0x10000) >> 10);
-      const low = 0xdc00 + ((code - 0x10000) & 0x3ff);
-      const values = supplementary.get(high) ?? [];
-      values.push(low);
-      supplementary.set(high, values);
-    }
+function encodedCharacters(predicate) {
+  const codes = [];
+  for (let code = 0; code <= 0x7f; code++) {
+    if (predicate.test(String.fromCodePoint(code))) codes.push(code);
   }
-  const alternatives = bmp.length ? [`\\\\u+${hexadecimalPattern(bmp)}`] : [];
-  const lowGroups = new Map();
-  for (const [high, low] of supplementary) {
-    const pattern = hexadecimalPattern(low);
-    const values = lowGroups.get(pattern) ?? [];
-    values.push(high);
-    lowGroups.set(pattern, values);
-  }
-  for (const [low, high] of lowGroups) alternatives.push(`\\\\u+${hexadecimalPattern(high)}\\\\u+${low}`);
-  if (!alternatives.length) throw new Error(`No encoded characters for ${predicate}`);
-  return alternatives.join('|');
+  if (!codes.length) throw new Error(`No encoded characters for ${predicate}`);
+  return `\\\\u+${hexadecimalPattern(codes)}`;
 }
 
 function hexadecimalPattern(values, shift = 12) {
