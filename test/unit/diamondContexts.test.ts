@@ -22,14 +22,14 @@ for (const entry of sources.valid) {
       expect(value.text).toBe(expression);
       const start = source.indexOf(expression);
       expect([value.startIndex, value.endIndex]).toEqual([start, start + expression.length]);
-      const argumentOwner = entry.type === undefined ? value : value.childForFieldName('type')!;
+      let argumentOwner = value;
       if (entry.type !== undefined) {
-        const target = argumentOwner;
+        const target = value.childForFieldName('type')!;
         const typeStart = source.indexOf(entry.type, start);
         expect(target.text).toBe(entry.type);
         expect([target.startIndex, target.endIndex]).toEqual([typeStart, typeStart + entry.type.length]);
+        argumentOwner = target;
       }
-      expect(argumentOwner.descendantsOfType('type_arguments').map((node) => node.text)).toEqual(entry.typeArguments);
       if (entry.genericType !== undefined) {
         const genericTypes = value.descendantsOfType('generic_type');
         expect(genericTypes).toHaveLength(1);
@@ -37,6 +37,16 @@ for (const entry of sources.valid) {
         const typeStart = source.indexOf(entry.genericType, start);
         expect(generic.text).toBe(entry.genericType);
         expect([generic.startIndex, generic.endIndex]).toEqual([typeStart, typeStart + entry.genericType.length]);
+        argumentOwner = generic;
+      }
+      const typeArguments = argumentOwner.descendantsOfType('type_arguments');
+      expect(typeArguments.map((node) => node.text)).toEqual(entry.typeArguments);
+      let cursor = argumentOwner.startIndex;
+      for (const [index, argument] of typeArguments.entries()) {
+        const text = entry.typeArguments[index]!;
+        const argumentStart = source.indexOf(text, cursor);
+        expect([argument.startIndex, argument.endIndex]).toEqual([argumentStart, argumentStart + text.length]);
+        cursor = argumentStart + 1;
       }
       expect(value.childForFieldName('type_arguments')?.text).toBe(entry.explicitArguments);
       expect(tree.rootNode.lastNamedChild?.childForFieldName('name')?.text).toBe('After');
