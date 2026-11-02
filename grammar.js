@@ -94,6 +94,7 @@ module.exports = unicodeGrammar(grammar({
     $._name,
     $._simple_type,
     $._class_type,
+    $._generic_type_name,
     $._class_literal_type,
     $._class_body_declaration,
     $._variable_initializer,
@@ -562,7 +563,7 @@ module.exports = unicodeGrammar(grammar({
         ),
         repeat($._annotation),
       ),
-      field('type', $._class_type),
+      field('type', choice($._class_type, alias($._diamond_type, $.generic_type))),
       field('arguments', $.argument_list),
       optional($.class_body),
     )),
@@ -626,7 +627,7 @@ module.exports = unicodeGrammar(grammar({
 
     type_arguments: $ => seq(
       '<',
-      commaSep(choice($._reference_type, $.wildcard)),
+      commaSep1(choice($._reference_type, $.wildcard)),
       '>',
     ),
 
@@ -1361,12 +1362,21 @@ module.exports = unicodeGrammar(grammar({
     ),
 
     generic_type: $ => prec.dynamic(PREC.GENERIC, seq(
-      choice(
-        alias($.identifier, $.type_identifier),
-        $.scoped_type_identifier,
-      ),
+      $._generic_type_name,
       $.type_arguments,
     )),
+
+    _diamond_type: $ => seq(
+      $._generic_type_name,
+      alias($._diamond_type_arguments, $.type_arguments),
+    ),
+
+    _diamond_type_arguments: _ => seq('<', '>'),
+
+    _generic_type_name: $ => choice(
+      alias($.identifier, $.type_identifier),
+      $.scoped_type_identifier,
+    ),
 
     array_type: $ => seq(
       field('element', $._simple_type),
