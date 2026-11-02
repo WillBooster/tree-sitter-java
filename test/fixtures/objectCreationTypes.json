@@ -116,7 +116,6 @@
     "class C { Object value = new <String> int(); } class After {}",
     "import java.lang.annotation.*; @Target(ElementType.TYPE_USE) @interface A {} class C { Object value = new @A int(); } class After {}",
     "class C { Object value = this.new int(); } class After {}",
-    "class C { Object value = new int() {}; } class After {}",
-    "class C { Object value = new \\u0069nt(); } class After {}"
+    "class C { Object value = new int() {}; } class After {}"
   ]
 }

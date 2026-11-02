@@ -4550,10 +4550,6 @@
     "named": false
   },
   {
-    "type": "const",
-    "named": false
-  },
-  {
     "type": "continue",
     "named": false
   },
@@ -4615,10 +4611,6 @@
   },
   {
     "type": "for",
-    "named": false
-  },
-  {
-    "type": "goto",
     "named": false
   },
   {

@@ -13,33 +13,21 @@ enum TokenType {
   BLOCK_COMMENT_END,
   JAVA_WHITESPACE,
   IDENTIFIER,
-  FIRST_WORD,
 };
 
-typedef struct {
-  const char *spelling;
-  bool reserved;
-} Word;
-
-// grammar.js declares an external token for each word, in this order after IDENTIFIER, and fails unless this lists
-// exactly the grammar's keywords, sorted by strcmp, and marks its reserved words.
-static const Word WORDS[] = {
-  {"_", true}, {"abstract", true}, {"assert", true}, {"boolean", true}, {"break", true}, {"byte", true},
-  {"case", true}, {"catch", true}, {"char", true}, {"class", true}, {"const", true}, {"continue", true},
-  {"default", true}, {"do", true}, {"double", true}, {"else", true}, {"enum", true}, {"exports", false},
-  {"extends", true}, {"false", true}, {"final", true}, {"finally", true}, {"float", true}, {"for", true},
-  {"goto", true}, {"if", true}, {"implements", true}, {"import", true}, {"instanceof", true}, {"int", true},
-  {"interface", true}, {"long", true}, {"module", false}, {"native", true}, {"new", true}, {"non-sealed", false},
-  {"null", true}, {"open", false}, {"opens", false}, {"package", true}, {"permits", false}, {"private", true},
-  {"protected", true}, {"provides", false}, {"public", true}, {"record", false}, {"requires", false},
-  {"return", true}, {"sealed", false}, {"short", true}, {"static", true}, {"strictfp", true}, {"super", true},
-  {"switch", true}, {"synchronized", true}, {"this", true}, {"throw", true}, {"throws", true}, {"to", false},
-  {"transient", true}, {"transitive", false}, {"true", true}, {"try", true}, {"uses", false}, {"void", true},
-  {"volatile", true}, {"when", false}, {"while", true}, {"with", false}, {"yield", false},
+// grammar.js fails unless this lists the grammar's keywords that an identifier could spell, sorted by strcmp.
+static const char *const KEYWORDS[] = {
+  "_", "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue",
+  "default", "do", "double", "else", "enum", "exports", "extends", "false", "final", "finally", "float", "for",
+  "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "module", "native", "new", "null",
+  "open", "opens", "package", "permits", "private", "protected", "provides", "public", "record", "requires", "return",
+  "sealed", "short", "static", "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "to",
+  "transient", "transitive", "true", "try", "uses", "void", "volatile", "when", "while", "with", "yield",
 };
 
-#define WORD_COUNT (sizeof(WORDS) / sizeof(WORDS[0]))
-#define LONGEST_WORD sizeof("synchronized")
+#define KEYWORD_COUNT (sizeof(KEYWORDS) / sizeof(KEYWORDS[0]))
+#define LONGEST_KEYWORD sizeof("synchronized")
+
 #define RANGE_COUNT(ranges) (sizeof(ranges) / sizeof(ranges[0]))
 
 typedef struct {
@@ -142,7 +130,7 @@ static bool scan_comment_body(TSLexer *lexer, Translation *state, bool line) {
 }
 
 typedef struct {
-  char text[LONGEST_WORD];
+  char text[LONGEST_KEYWORD];
   unsigned length;
   bool overflow;
 } Spelling;
@@ -150,7 +138,7 @@ typedef struct {
 // Adds a character of an identifier to the spelling that a keyword comparison sees.
 static void spell(Spelling *spelling, int32_t character) {
   if (spelling->length > 0 && keyword_ignorable(character)) return;
-  if (character < 0x80 && spelling->length + 1 < LONGEST_WORD) {
+  if (character < 0x80 && spelling->length + 1 < LONGEST_KEYWORD) {
     spelling->text[spelling->length++] = (char)character;
     spelling->text[spelling->length] = '\0';
   } else {
@@ -158,89 +146,42 @@ static void spell(Spelling *spelling, int32_t character) {
   }
 }
 
-// Reads the identifier characters after the first and ends the token after them. Returns the next character, which
-// the lexer has consumed only when a Unicode escape spells it (-1 for a malformed escape).
-static int32_t scan_identifier_characters(TSLexer *lexer, Translation *state, Spelling *spelling, bool *consumed) {
-  for (;;) {
-    int32_t character = lexer->lookahead;
-    if (character == '\\') {
-      lexer->mark_end(lexer);
-      *consumed = true;
-      if (!next_code_point(lexer, state, &character)) return -1;
-      if (!identifier_part(character)) return character;
-      spell(spelling, character);
-    } else if (identifier_part(character) && !(character == 0 && lexer->eof(lexer))) {
-      lexer->advance(lexer, false);
-      spell(spelling, character);
-    } else {
-      lexer->mark_end(lexer);
-      *consumed = false;
-      return character;
-    }
-  }
-}
-
-static int find_word(const Spelling *spelling) {
-  if (spelling->overflow) return -1;
+static bool is_keyword(const Spelling *spelling) {
+  if (spelling->overflow) return false;
   unsigned low = 0;
-  unsigned high = WORD_COUNT;
+  unsigned high = KEYWORD_COUNT;
   while (low < high) {
     unsigned middle = (low + high) / 2;
-    int order = strcmp(WORDS[middle].spelling, spelling->text);
-    if (order == 0) return (int)middle;
+    int order = strcmp(KEYWORDS[middle], spelling->text);
+    if (order == 0) return true;
     if (order < 0) low = middle + 1;
     else high = middle;
-  }
-  return -1;
-}
-
-static bool any_word_valid(const bool *valid_symbols) {
-  for (unsigned i = IDENTIFIER; i < FIRST_WORD + WORD_COUNT; i++) {
-    if (valid_symbols[i]) return true;
   }
   return false;
 }
 
-// Reads `sealed` after the hyphen of `non-sealed`; ignorable characters may follow each letter.
-static bool scan_sealed(TSLexer *lexer, Translation *state) {
-  const char *const expected = "sealed";
-  const char *next = expected;
-  int32_t character;
-  while (*next) {
-    if (!next_code_point(lexer, state, &character)) return false;
-    if (character == *next) {
-      next++;
-    } else if (next == expected || !keyword_ignorable(character)) {
-      return false;
-    }
-  }
-  for (;;) {
-    lexer->mark_end(lexer);
-    if (!next_code_point(lexer, state, &character) || !keyword_ignorable(character)) return true;
-  }
-}
-
-// Reads identifiers and keywords, which Unicode escapes may spell and in which a keyword comparison skips ignorable
-// characters, choosing between a keyword and an identifier as the generated lexer does for its word token.
-static bool scan_word(TSLexer *lexer, Translation *state, const bool *valid_symbols, int32_t character) {
+// Reads an identifier, but leaves a word that may be a keyword, including the `non` of `non-sealed`, to the generated
+// lexer, which knows where each keyword is valid. A keyword spelled with a Unicode escape is an identifier here.
+static bool scan_identifier(TSLexer *lexer, Translation *state, int32_t character) {
+  bool encoded = state->encoded;
   Spelling spelling = {.length = 0};
   spell(&spelling, character);
-  bool consumed;
-  character = scan_identifier_characters(lexer, state, &spelling, &consumed);
-  if (character == '-' && !spelling.overflow && strcmp(spelling.text, "non") == 0) {
-    unsigned non_sealed = FIRST_WORD + find_word(&(Spelling){.text = "non-sealed"});
-    if (valid_symbols[non_sealed]) {
-      if (!consumed) lexer->advance(lexer, false);
-      if (scan_sealed(lexer, state)) {
-        lexer->result_symbol = non_sealed;
-        return true;
-      }
+  for (;;) {
+    character = lexer->lookahead;
+    if (character == '\\') {
+      lexer->mark_end(lexer);
+      if (!next_code_point(lexer, state, &character) || !identifier_part(character)) break;
+      encoded = true;
+    } else if (identifier_part(character) && !(character == 0 && lexer->eof(lexer))) {
+      lexer->advance(lexer, false);
+    } else {
+      lexer->mark_end(lexer);
+      break;
     }
+    spell(&spelling, character);
   }
-  int word = find_word(&spelling);
-  bool keyword = word >= 0 && (valid_symbols[FIRST_WORD + word] || WORDS[word].reserved);
-  lexer->result_symbol = keyword ? FIRST_WORD + word : IDENTIFIER;
-  return true;
+  lexer->result_symbol = IDENTIFIER;
+  return encoded || !(is_keyword(&spelling) || (character == '-' && !spelling.overflow && strcmp(spelling.text, "non") == 0));
 }
 
 void *tree_sitter_java_external_scanner_create(void) { return NULL; }
@@ -275,7 +216,9 @@ bool tree_sitter_java_external_scanner_scan(void *payload, TSLexer *lexer, const
   int32_t character;
   if (!next_code_point(lexer, &state, &character)) return false;
   if (valid_symbols[JAVA_WHITESPACE] && (whitespace(character) || (character == 0x1a && lexer->eof(lexer)))) return scan_whitespace(lexer, &state);
-  if (identifier_start(character)) return any_word_valid(valid_symbols) && scan_word(lexer, &state, valid_symbols, character);
+  // A word that is no keyword stays one token where no identifier is valid either, so that the generated lexer does
+  // not read a keyword from its start (e.g. `extends` from `extendsα`).
+  if (identifier_start(character)) return scan_identifier(lexer, &state, character);
   if (character != '/' || !next_character(lexer, &state, &character)) return false;
   bool line = character == '/' && valid_symbols[LINE_COMMENT_BODY];
   if (!line && !(character == '*' && valid_symbols[BLOCK_COMMENT_BODY])) return false;
