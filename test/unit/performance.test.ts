@@ -72,6 +72,21 @@ test('recovers from an unterminated string literal on each line in linear time',
   expectLinearParsing(`class C { void f() {\n${line.repeat(2000)}`, `class C { void f() {\n${line.repeat(20_000)}`);
 });
 
+test('parses long string literals and text blocks in linear time', { timeout: 60_000 }, () => {
+  expectLinearParsing(longLiteralSource(100_000), longLiteralSource(1_000_000), false);
+});
+
+test('recovers from an unterminated long text block in linear time', { timeout: 60_000 }, () => {
+  expectLinearParsing(
+    `class C { String text = """\n${'a'.repeat(100_000)}`,
+    `class C { String text = """\n${'a'.repeat(1_000_000)}`
+  );
+});
+
+function longLiteralSource(length: number): string {
+  return `class C { String text = "${'a'.repeat(length)}"; String block = """\n${`${'b'.repeat(99)}\n`.repeat(length / 100)}"""; }`;
+}
+
 function malformedRecordSource(count: number): string {
   return `record C(${Array.from({ length: count }, (_, index) => `${index % 20 === 0 ? 'final ' : ''}int value${index}`).join(',')}) {}`;
 }

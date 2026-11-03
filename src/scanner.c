@@ -20,9 +20,6 @@ enum TokenType {
   IDENTIFIER,
 };
 
-// Bounds the characters that a string fragment reads after any leading quotes.
-#define MAX_FRAGMENT_LENGTH 256
-
 // grammar.js fails unless this lists the grammar's keywords that an identifier could spell, sorted by strcmp.
 static const char *const KEYWORDS[] = {
   "_", "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue",
@@ -194,16 +191,16 @@ static bool scan_identifier(TSLexer *lexer, Translation *state, int32_t characte
 
 // Reads the characters of a fragment, which excludes quotes, backslashes, and, outside text blocks, line terminators,
 // and marks its end.
-static unsigned scan_fragment_characters(TSLexer *lexer, bool multiline) {
-  unsigned length = 0;
-  while (length < MAX_FRAGMENT_LENGTH && !lexer->eof(lexer)) {
+static bool scan_fragment_characters(TSLexer *lexer, bool multiline) {
+  bool read = false;
+  while (!lexer->eof(lexer)) {
     int32_t character = lexer->lookahead;
     if (character == '"' || character == '\\' || (!multiline && (character == '\r' || character == '\n'))) break;
     lexer->advance(lexer, false);
-    lexer->mark_end(lexer);
-    length++;
+    read = true;
   }
-  return length;
+  lexer->mark_end(lexer);
+  return read;
 }
 
 // Reads the content of a string literal up to its next quote or backslash; `non_u` refuses a leading `u`. Before a line
@@ -220,7 +217,7 @@ static bool scan_string_fragment(TSLexer *lexer, bool non_u) {
   }
   if (non_u && lexer->lookahead == 'u') return false;
   lexer->result_symbol = non_u ? NON_U_STRING_FRAGMENT : STRING_FRAGMENT;
-  return scan_fragment_characters(lexer, false) > 0;
+  return scan_fragment_characters(lexer, false);
 }
 
 // Reads one quote, raw or encoded as `\u0022`.
@@ -249,7 +246,7 @@ static bool scan_multiline_string_fragment(TSLexer *lexer, bool non_u) {
   lexer->result_symbol = non_u ? NON_U_MULTILINE_STRING_FRAGMENT : MULTILINE_STRING_FRAGMENT;
   if (lexer->lookahead != '"' && lexer->lookahead != '\\') {
     if (non_u && lexer->lookahead == 'u') return false;
-    return scan_fragment_characters(lexer, true) > 0;
+    return scan_fragment_characters(lexer, true);
   }
   if (!scan_quote(lexer)) return false;
   lexer->mark_end(lexer);
