@@ -20,7 +20,7 @@ enum TokenType {
   IDENTIFIER,
 };
 
-// Bounds each string fragment so that a token never spans more of the input than this many characters.
+// Bounds the characters that a string fragment reads after any leading quotes.
 #define MAX_FRAGMENT_LENGTH 256
 
 // grammar.js fails unless this lists the grammar's keywords that an identifier could spell, sorted by strcmp.
