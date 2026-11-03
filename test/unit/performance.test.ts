@@ -67,6 +67,11 @@ test('recovers from unterminated Unicode-encoded comments in linear time', { tim
   expectLinearParsing(opening.repeat(500), opening.repeat(5000));
 });
 
+test('recovers from an unterminated string literal on each line in linear time', { timeout: 60_000 }, () => {
+  const line = 'String text = "a } b;\n';
+  expectLinearParsing(`class C { void f() {\n${line.repeat(2000)}`, `class C { void f() {\n${line.repeat(20_000)}`);
+});
+
 function malformedRecordSource(count: number): string {
   return `record C(${Array.from({ length: count }, (_, index) => `${index % 20 === 0 ? 'final ' : ''}int value${index}`).join(',')}) {}`;
 }

@@ -75,10 +75,23 @@ module.exports = unicodeGrammar(grammar({
   extras: $ => [
     $.line_comment,
     $.block_comment,
+    // Raw whitespace is padding, which the generated lexer skips here and the scanner before its own tokens.
+    /[ \t\f\r\n]/,
     $._java_whitespace,
   ],
 
-  externals: $ => [$._line_comment_body, $._line_comment_end, $._block_comment_body, $._block_comment_end, $._java_whitespace],
+  externals: $ => [
+    $._line_comment_body,
+    $._line_comment_end,
+    $._block_comment_body,
+    $._block_comment_end,
+    $._java_whitespace,
+    $.string_fragment,
+    $._non_u_string_fragment,
+    $._multiline_string_fragment,
+    $._non_u_multiline_string_fragment,
+    $._error_sentinel,
+  ],
 
   supertypes: $ => [
     $.expression,
@@ -310,25 +323,10 @@ module.exports = unicodeGrammar(grammar({
       JAVA_LINE_TERMINATOR,
     ))),
     _text_block_close: _ => token.immediate(prec(3, seq(JAVA_QUOTE, JAVA_QUOTE, JAVA_QUOTE))),
-    string_fragment: _ => token.immediate(prec(1, /[^"\\\r\n]{1,256}/)),
-    _non_u_string_fragment: _ => token.immediate(prec(1, /[^u"\\\r\n][^"\\\r\n]{0,255}/)),
-    _non_u_multiline_string_fragment: _ => token.immediate(prec(1, choice(
-      /[^u"\\][^"\\]{0,255}/,
-      seq(JAVA_QUOTE, /[^"\\]{0,256}/),
-      seq(JAVA_QUOTE, JAVA_QUOTE, /[^"\\]{0,256}/),
-    ))),
     _encoded_backslash_escape: _ => token.immediate(seq(JAVA_ENCODED_BACKSLASH, '\\')),
-    _multiline_string_fragment: _ => token.immediate(prec(1, choice(
-      /[^"\\]{1,256}/,
-      seq(JAVA_QUOTE, /[^"\\]{0,256}/),
-      seq(JAVA_QUOTE, JAVA_QUOTE, /[^"\\]{0,256}/),
-    ))),
-
-    string_interpolation: $ => seq(
-      alias(token.immediate(choice('\\{', seq(JAVA_ENCODED_BACKSLASH, choice('{', /\\u+007[bB]/)))), '\\{'),
-      $.expression,
-      alias(token(choice('}', /\\u+007[dD]/)), '}'),
-    ),
+    // The closing brace is the one that closes blocks, so that error recovery sees one token where either is expected.
+    string_interpolation: $ => seq(alias($._string_interpolation_open, '\\{'), $.expression, '}'),
+    _string_interpolation_open: _ => token.immediate(choice('\\{', seq(JAVA_ENCODED_BACKSLASH, choice('{', /\\u+007[bB]/)))),
 
     escape_sequence: _ => javaStringEscape(false),
     _text_block_escape_sequence: _ => javaStringEscape(true),
@@ -1608,7 +1606,7 @@ function unicodeGrammar(result) {
   if (sorted.join() !== SCANNER_KEYWORDS.join()) throw new Error(`KEYWORDS in src/scanner.c must list ${sorted.join(' ')}, sorted`);
   externals.push({type: 'SYMBOL', name: 'identifier'});
   for (const [name, rule] of Object.entries(rules)) {
-    if (name !== 'identifier' && !/(string|text_block|escape|character_literal)/.test(name)) {
+    if (name !== 'identifier' && (name === 'string_interpolation' || !/(string|text_block|escape|character_literal)/.test(name))) {
       rules[name] = expandUnicodeRule(rule, rule.type === 'STRING');
     }
   }
