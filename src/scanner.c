@@ -12,8 +12,16 @@ enum TokenType {
   BLOCK_COMMENT_BODY,
   BLOCK_COMMENT_END,
   JAVA_WHITESPACE,
+  STRING_FRAGMENT,
+  NON_U_STRING_FRAGMENT,
+  MULTILINE_STRING_FRAGMENT,
+  NON_U_MULTILINE_STRING_FRAGMENT,
+  ERROR_SENTINEL,
   IDENTIFIER,
 };
+
+// Bounds each string fragment so that a token never spans more of the input than this many characters.
+#define MAX_FRAGMENT_LENGTH 256
 
 // grammar.js fails unless this lists the grammar's keywords that an identifier could spell, sorted by strcmp.
 static const char *const KEYWORDS[] = {
@@ -184,6 +192,78 @@ static bool scan_identifier(TSLexer *lexer, Translation *state, int32_t characte
   return encoded || !(is_keyword(&spelling) || (character == '-' && !spelling.overflow && strcmp(spelling.text, "non") == 0));
 }
 
+// Reads the characters of a fragment, which excludes quotes, backslashes, and, outside text blocks, line terminators,
+// and marks its end.
+static unsigned scan_fragment_characters(TSLexer *lexer, bool multiline) {
+  unsigned length = 0;
+  while (length < MAX_FRAGMENT_LENGTH && !lexer->eof(lexer)) {
+    int32_t character = lexer->lookahead;
+    if (character == '"' || character == '\\' || (!multiline && (character == '\r' || character == '\n'))) break;
+    lexer->advance(lexer, false);
+    lexer->mark_end(lexer);
+    length++;
+  }
+  return length;
+}
+
+// Reads the content of a string literal up to its next quote or backslash; `non_u` refuses a leading `u`. Before a line
+// terminator, raw or encoded, it yields an empty ERROR_SENTINEL, which no rule accepts, so that the parser detects the
+// unterminated literal there; otherwise, the fallback lexing of error recovery would read the line terminator as
+// whitespace, which is valid between any two tokens, and continue the literal on the next line.
+static bool scan_string_fragment(TSLexer *lexer, bool non_u) {
+  if (lexer->lookahead == '\\' || lexer->lookahead == '\r' || lexer->lookahead == '\n') {
+    Translation state = {false, false};
+    int32_t character;
+    lexer->result_symbol = ERROR_SENTINEL;
+    lexer->mark_end(lexer);
+    return next_character(lexer, &state, &character) && (character == '\r' || character == '\n');
+  }
+  if (non_u && lexer->lookahead == 'u') return false;
+  lexer->result_symbol = non_u ? NON_U_STRING_FRAGMENT : STRING_FRAGMENT;
+  return scan_fragment_characters(lexer, false) > 0;
+}
+
+// Reads one quote, raw or encoded as `\u0022`.
+static bool scan_quote(TSLexer *lexer) {
+  if (lexer->eof(lexer)) return false;
+  if (lexer->lookahead == '"') {
+    lexer->advance(lexer, false);
+    return true;
+  }
+  if (lexer->lookahead != '\\') return false;
+  lexer->advance(lexer, false);
+  if (lexer->lookahead != 'u') return false;
+  do {
+    lexer->advance(lexer, false);
+  } while (lexer->lookahead == 'u');
+  for (const char *digit = "0022"; *digit; digit++) {
+    if (lexer->lookahead != *digit || lexer->eof(lexer)) return false;
+    lexer->advance(lexer, false);
+  }
+  return true;
+}
+
+// Reads the content of a text block up to its next quote or backslash; `non_u` refuses a leading `u`. One or two leading
+// quotes, raw or encoded, belong to the fragment, but three close the text block and are left to the generated lexer.
+static bool scan_multiline_string_fragment(TSLexer *lexer, bool non_u) {
+  lexer->result_symbol = non_u ? NON_U_MULTILINE_STRING_FRAGMENT : MULTILINE_STRING_FRAGMENT;
+  if (lexer->lookahead != '"' && lexer->lookahead != '\\') {
+    if (non_u && lexer->lookahead == 'u') return false;
+    return scan_fragment_characters(lexer, true) > 0;
+  }
+  if (!scan_quote(lexer)) return false;
+  lexer->mark_end(lexer);
+  if (lexer->lookahead == '"' || lexer->lookahead == '\\') {
+    if (!scan_quote(lexer)) return true;
+    lexer->mark_end(lexer);
+    if (lexer->lookahead == '"' || lexer->lookahead == '\\') {
+      return !scan_quote(lexer);
+    }
+  }
+  scan_fragment_characters(lexer, true);
+  return true;
+}
+
 void *tree_sitter_java_external_scanner_create(void) { return NULL; }
 void tree_sitter_java_external_scanner_destroy(void *payload) { (void)payload; }
 unsigned tree_sitter_java_external_scanner_serialize(void *payload, char *buffer) {
@@ -198,7 +278,6 @@ void tree_sitter_java_external_scanner_deserialize(void *payload, const char *bu
 }
 
 static bool scan_comment_end(TSLexer *lexer, const bool *valid_symbols) {
-  if (valid_symbols[LINE_COMMENT_END] && valid_symbols[BLOCK_COMMENT_END]) return false;
   lexer->result_symbol = valid_symbols[LINE_COMMENT_END] ? LINE_COMMENT_END : BLOCK_COMMENT_END;
   if (valid_symbols[LINE_COMMENT_END]) lexer->mark_end(lexer);
   if (valid_symbols[LINE_COMMENT_END] && lexer->eof(lexer)) return true;
@@ -209,9 +288,8 @@ static bool scan_comment_end(TSLexer *lexer, const bool *valid_symbols) {
   return character == '/';
 }
 
-bool tree_sitter_java_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
-  (void)payload;
-  if (valid_symbols[LINE_COMMENT_END] || valid_symbols[BLOCK_COMMENT_END]) return scan_comment_end(lexer, valid_symbols);
+// Reads Java whitespace, an identifier, or, outside error recovery, a comment body.
+static bool scan_token(TSLexer *lexer, const bool *valid_symbols, bool recovery) {
   Translation state = {false, false};
   int32_t character;
   if (!next_code_point(lexer, &state, &character)) return false;
@@ -219,8 +297,30 @@ bool tree_sitter_java_external_scanner_scan(void *payload, TSLexer *lexer, const
   // A word that is no keyword stays one token where no identifier is valid either, so that the generated lexer does
   // not read a keyword from its start (e.g. `extends` from `extendsα`).
   if (identifier_start(character)) return scan_identifier(lexer, &state, character);
-  if (character != '/' || !next_character(lexer, &state, &character)) return false;
+  if (recovery || character != '/' || !next_character(lexer, &state, &character)) return false;
   bool line = character == '/' && valid_symbols[LINE_COMMENT_BODY];
   if (!line && !(character == '*' && valid_symbols[BLOCK_COMMENT_BODY])) return false;
   return scan_comment_body(lexer, &state, line);
+}
+
+bool tree_sitter_java_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
+  (void)payload;
+  // Error recovery makes every external symbol valid, including ERROR_SENTINEL, which no rule accepts. There, reading a
+  // string fragment would swallow ordinary code, such as a closing brace, and a comment end could not tell a line
+  // comment from a block comment. Raw whitespace stays a token there, which lets recovery resume in any state after
+  // skipping an unrecognized character.
+  if (valid_symbols[ERROR_SENTINEL]) return scan_token(lexer, valid_symbols, true);
+  if (valid_symbols[STRING_FRAGMENT] || valid_symbols[NON_U_STRING_FRAGMENT]) {
+    return scan_string_fragment(lexer, !valid_symbols[STRING_FRAGMENT]);
+  }
+  if (valid_symbols[MULTILINE_STRING_FRAGMENT] || valid_symbols[NON_U_MULTILINE_STRING_FRAGMENT]) {
+    return scan_multiline_string_fragment(lexer, !valid_symbols[MULTILINE_STRING_FRAGMENT]);
+  }
+  if (valid_symbols[LINE_COMMENT_END] || valid_symbols[BLOCK_COMMENT_END]) return scan_comment_end(lexer, valid_symbols);
+  if (valid_symbols[JAVA_WHITESPACE]) {
+    // Raw whitespace becomes the padding of the next token, which places a missing token that error recovery inserts
+    // right after the preceding token instead of on the line of the next one.
+    while (!lexer->eof(lexer) && whitespace(lexer->lookahead)) lexer->advance(lexer, true);
+  }
+  return scan_token(lexer, valid_symbols, false);
 }
