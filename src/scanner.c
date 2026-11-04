@@ -47,8 +47,9 @@ static int hex_value(int32_t character) {
   return -1;
 }
 
+// The lookahead is 0 at the end of the input, so only a 0 needs the call of `eof`.
 static bool next_character(TSLexer *lexer, Translation *state, int32_t *character) {
-  if (lexer->eof(lexer)) return false;
+  if (lexer->lookahead == 0 && lexer->eof(lexer)) return false;
   *character = lexer->lookahead;
   lexer->advance(lexer, false);
   bool eligible = state->encoded || !state->odd_backslashes;
@@ -59,7 +60,7 @@ static bool next_character(TSLexer *lexer, Translation *state, int32_t *characte
     *character = 0;
     for (unsigned i = 0; i < 4; i++) {
       int digit = hex_value(lexer->lookahead);
-      if (digit < 0 || lexer->eof(lexer)) return false;
+      if (digit < 0) return false;
       *character = (*character << 4) | digit;
       lexer->advance(lexer, false);
     }
@@ -88,25 +89,31 @@ static bool whitespace(int32_t character) {
   return character == ' ' || character == '\t' || character == '\f' || character == '\r' || character == '\n';
 }
 
+static bool ascii_identifier_start(int32_t character) {
+  return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || character == '_' ||
+         character == '$';
+}
+
 static bool identifier_start(int32_t character) {
-  if (character < 0x80) {
-    return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || character == '_' ||
-           character == '$';
-  }
+  if (character < 0x80) return ascii_identifier_start(character);
   return set_contains(IDENTIFIER_START, RANGE_COUNT(IDENTIFIER_START), character);
+}
+
+static bool ascii_ignorable(int32_t character) {
+  return character <= 8 || (character >= 0x0e && character <= 0x1b) || character == 0x7f;
 }
 
 // Like javac, a keyword comparison skips only the ignorable characters of the Basic Multilingual Plane.
 static bool keyword_ignorable(int32_t character) {
   if (character < 0) return false;
-  if (character < 0x80) return character <= 8 || (character >= 0x0e && character <= 0x1b) || character == 0x7f;
+  if (character < 0x80) return ascii_ignorable(character);
   return character <= 0xffff && set_contains(IDENTIFIER_IGNORABLE, RANGE_COUNT(IDENTIFIER_IGNORABLE), character);
 }
 
 static bool identifier_part(int32_t character) {
   if (character < 0) return false;
   if (character < 0x80) {
-    return identifier_start(character) || (character >= '0' && character <= '9') || keyword_ignorable(character);
+    return ascii_identifier_start(character) || (character >= '0' && character <= '9') || ascii_ignorable(character);
   }
   return set_contains(IDENTIFIER_PART, RANGE_COUNT(IDENTIFIER_PART), character);
 }
@@ -120,18 +127,28 @@ static bool scan_whitespace(TSLexer *lexer, Translation *state) {
   return true;
 }
 
-static bool scan_comment_body(TSLexer *lexer, Translation *state, bool line) {
-  int32_t character;
-  int32_t previous = 0;
-  lexer->result_symbol = line ? LINE_COMMENT_BODY : BLOCK_COMMENT_BODY;
-  lexer->mark_end(lexer);
-  while (next_character(lexer, state, &character)) {
-    if (line && (character == '\r' || character == '\n')) return true;
-    if (!line && previous == '*' && character == '/') return true;
-    lexer->mark_end(lexer);
-    previous = character;
+// Reads the characters before which a comment body cannot end, which exclude the start of a line terminator or a `/`,
+// raw or encoded, and the end of the input, and returns the last one, or `previous` if it reads none.
+static int32_t skip_comment_characters(TSLexer *lexer, Translation *state, int32_t previous) {
+  for (;;) {
+    int32_t next = lexer->lookahead;
+    if (next == '\\' || next == '\r' || next == '\n' || next == '/' || next == 0) return previous;
+    lexer->advance(lexer, false);
+    state->encoded = false;
+    state->odd_backslashes = false;
+    previous = next;
   }
-  return true;
+}
+
+static bool scan_comment_body(TSLexer *lexer, Translation *state, bool line) {
+  int32_t character = 0;
+  lexer->result_symbol = line ? LINE_COMMENT_BODY : BLOCK_COMMENT_BODY;
+  for (;;) {
+    int32_t previous = skip_comment_characters(lexer, state, character);
+    lexer->mark_end(lexer);
+    if (!next_character(lexer, state, &character)) return true;
+    if (line ? (character == '\r' || character == '\n') : (previous == '*' && character == '/')) return true;
+  }
 }
 
 typedef struct {
@@ -142,6 +159,7 @@ typedef struct {
 
 // Adds a character of an identifier to the spelling that a keyword comparison sees.
 static void spell(Spelling *spelling, int32_t character) {
+  if (spelling->overflow) return;
   if (spelling->length > 0 && keyword_ignorable(character)) return;
   if (character < 0x80 && spelling->length + 1 < LONGEST_KEYWORD) {
     spelling->text[spelling->length++] = (char)character;
@@ -157,7 +175,8 @@ static bool is_keyword(const Spelling *spelling) {
   unsigned high = KEYWORD_COUNT;
   while (low < high) {
     unsigned middle = (low + high) / 2;
-    int order = strcmp(KEYWORDS[middle], spelling->text);
+    int order = (unsigned char)KEYWORDS[middle][0] - (unsigned char)spelling->text[0];
+    if (order == 0) order = strcmp(KEYWORDS[middle], spelling->text);
     if (order == 0) return true;
     if (order < 0) low = middle + 1;
     else high = middle;
@@ -165,26 +184,35 @@ static bool is_keyword(const Spelling *spelling) {
   return false;
 }
 
+// Reads the next character of an identifier, or marks the end of the identifier before it and returns false;
+// `character` is then the character that ends it, if it could be read.
+static bool next_identifier_part(TSLexer *lexer, Translation *state, int32_t *character, bool *encoded) {
+  bool escaped = lexer->lookahead == '\\';
+  if (escaped) {
+    lexer->mark_end(lexer);
+    if (!next_code_point(lexer, state, character)) return false;
+  } else {
+    *character = lexer->lookahead;
+  }
+  bool part = identifier_part(*character) && (escaped || *character != 0 || !lexer->eof(lexer));
+  if (escaped) {
+    *encoded |= part;
+  } else if (part) {
+    lexer->advance(lexer, false);
+  } else {
+    lexer->mark_end(lexer);
+  }
+  return part;
+}
+
 // Reads an identifier, but leaves a word that may be a keyword, including the `non` of `non-sealed`, to the generated
 // lexer, which knows where each keyword is valid. A keyword spelled with a Unicode escape is an identifier here.
 static bool scan_identifier(TSLexer *lexer, Translation *state, int32_t character) {
   bool encoded = state->encoded;
   Spelling spelling = {.length = 0};
-  spell(&spelling, character);
-  for (;;) {
-    character = lexer->lookahead;
-    if (character == '\\') {
-      lexer->mark_end(lexer);
-      if (!next_code_point(lexer, state, &character) || !identifier_part(character)) break;
-      encoded = true;
-    } else if (identifier_part(character) && !(character == 0 && lexer->eof(lexer))) {
-      lexer->advance(lexer, false);
-    } else {
-      lexer->mark_end(lexer);
-      break;
-    }
+  do {
     spell(&spelling, character);
-  }
+  } while (next_identifier_part(lexer, state, &character, &encoded));
   lexer->result_symbol = IDENTIFIER;
   return encoded || !(is_keyword(&spelling) || (character == '-' && !spelling.overflow && strcmp(spelling.text, "non") == 0));
 }
@@ -193,9 +221,12 @@ static bool scan_identifier(TSLexer *lexer, Translation *state, int32_t characte
 // and marks its end.
 static bool scan_fragment_characters(TSLexer *lexer, bool multiline) {
   bool read = false;
-  while (!lexer->eof(lexer)) {
+  for (;;) {
     int32_t character = lexer->lookahead;
-    if (character == '"' || character == '\\' || (!multiline && (character == '\r' || character == '\n'))) break;
+    if ((character == 0 && lexer->eof(lexer)) || character == '"' || character == '\\' ||
+        (!multiline && (character == '\r' || character == '\n'))) {
+      break;
+    }
     lexer->advance(lexer, false);
     read = true;
   }
@@ -288,7 +319,15 @@ static bool scan_comment_end(TSLexer *lexer, const bool *valid_symbols) {
 // Reads Java whitespace, an identifier, or, outside error recovery, a comment body.
 static bool scan_token(TSLexer *lexer, const bool *valid_symbols, bool recovery) {
   Translation state = {false, false};
-  int32_t character;
+  int32_t character = lexer->lookahead;
+  // An ASCII character other than a backslash needs no decoding, and only the ones checked here start a token below.
+  if (ascii_identifier_start(character)) {
+    lexer->advance(lexer, false);
+    return scan_identifier(lexer, &state, character);
+  }
+  if (character < 0x80 && character != '\\' && character != '/' && character != 0x1a && !whitespace(character)) {
+    return false;
+  }
   if (!next_code_point(lexer, &state, &character)) return false;
   if (valid_symbols[JAVA_WHITESPACE] && (whitespace(character) || (character == 0x1a && lexer->eof(lexer)))) return scan_whitespace(lexer, &state);
   // A word that is no keyword stays one token where no identifier is valid either, so that the generated lexer does
@@ -317,7 +356,7 @@ bool tree_sitter_java_external_scanner_scan(void *payload, TSLexer *lexer, const
   if (valid_symbols[JAVA_WHITESPACE]) {
     // Raw whitespace becomes the padding of the next token, which places a missing token that error recovery inserts
     // right after the preceding token instead of on the line of the next one.
-    while (!lexer->eof(lexer) && whitespace(lexer->lookahead)) lexer->advance(lexer, true);
+    while (whitespace(lexer->lookahead)) lexer->advance(lexer, true);
   }
   return scan_token(lexer, valid_symbols, false);
 }
