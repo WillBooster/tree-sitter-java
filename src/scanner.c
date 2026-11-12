@@ -3,8 +3,8 @@
 #include "identifierRanges.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 enum TokenType {
   LINE_COMMENT_BODY,
@@ -20,7 +20,7 @@ enum TokenType {
   IDENTIFIER,
 };
 
-// grammar.js fails unless this lists the grammar's keywords that an identifier could spell, sorted by strcmp.
+// grammar.js fails unless this lists the grammar's keywords that an identifier could spell, sorted in ASCII order.
 static const char *const KEYWORDS[] = {
   "_", "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue",
   "default", "do", "double", "else", "enum", "exports", "extends", "false", "final", "finally", "float", "for",
@@ -31,7 +31,8 @@ static const char *const KEYWORDS[] = {
 };
 
 #define KEYWORD_COUNT (sizeof(KEYWORDS) / sizeof(KEYWORDS[0]))
-#define LONGEST_KEYWORD sizeof("synchronized")
+#define MAX_KEYWORD_LENGTH (sizeof("synchronized") - 1)
+#define SPELLING_OVERFLOW (MAX_KEYWORD_LENGTH + 1)
 
 #define RANGE_COUNT(ranges) (sizeof(ranges) / sizeof(ranges[0]))
 
@@ -94,6 +95,10 @@ static bool ascii_identifier_start(int32_t character) {
          character == '$';
 }
 
+static bool ascii_identifier_part(int32_t character) {
+  return ascii_identifier_start(character) || (character >= '0' && character <= '9');
+}
+
 static bool identifier_start(int32_t character) {
   if (character < 0x80) return ascii_identifier_start(character);
   return set_contains(IDENTIFIER_START, RANGE_COUNT(IDENTIFIER_START), character);
@@ -112,15 +117,18 @@ static bool keyword_ignorable(int32_t character) {
 
 static bool identifier_part(int32_t character) {
   if (character < 0) return false;
-  if (character < 0x80) {
-    return ascii_identifier_start(character) || (character >= '0' && character <= '9') || ascii_ignorable(character);
-  }
+  if (character < 0x80) return ascii_identifier_part(character) || ascii_ignorable(character);
   return set_contains(IDENTIFIER_PART, RANGE_COUNT(IDENTIFIER_PART), character);
 }
 
 static bool scan_whitespace(TSLexer *lexer, Translation *state) {
   int32_t character;
   do {
+    while (whitespace(lexer->lookahead)) {
+      lexer->advance(lexer, false);
+      state->encoded = false;
+      state->odd_backslashes = false;
+    }
     lexer->mark_end(lexer);
   } while (next_character(lexer, state, &character) && whitespace(character));
   lexer->result_symbol = JAVA_WHITESPACE;
@@ -152,31 +160,46 @@ static bool scan_comment_body(TSLexer *lexer, Translation *state, bool line) {
 }
 
 typedef struct {
-  char text[LONGEST_KEYWORD];
+  char text[MAX_KEYWORD_LENGTH];
   unsigned length;
-  bool overflow;
 } Spelling;
 
-// Adds a character of an identifier to the spelling that a keyword comparison sees.
-static void spell(Spelling *spelling, int32_t character) {
-  if (spelling->overflow) return;
-  if (spelling->length > 0 && keyword_ignorable(character)) return;
-  if (character < 0x80 && spelling->length + 1 < LONGEST_KEYWORD) {
+static void spell_ascii(Spelling *spelling, int32_t character) {
+  if (spelling->length < MAX_KEYWORD_LENGTH) {
     spelling->text[spelling->length++] = (char)character;
-    spelling->text[spelling->length] = '\0';
   } else {
-    spelling->overflow = true;
+    spelling->length = SPELLING_OVERFLOW;
   }
 }
 
+// Adds a character of an identifier to the spelling that a keyword comparison sees.
+static void spell(Spelling *spelling, int32_t character) {
+  if (spelling->length > MAX_KEYWORD_LENGTH) return;
+  if (spelling->length > 0 && keyword_ignorable(character)) return;
+  if (character >= 0 && character < 0x80) {
+    spell_ascii(spelling, character);
+  } else {
+    spelling->length = SPELLING_OVERFLOW;
+  }
+}
+
+static int compare_keyword(const char *keyword, const Spelling *spelling) {
+  for (unsigned i = 0; i < spelling->length; i++) {
+    int order = (unsigned char)keyword[i] - (unsigned char)spelling->text[i];
+    if (order != 0) return order;
+  }
+  return (unsigned char)keyword[spelling->length];
+}
+
 static bool is_keyword(const Spelling *spelling) {
-  if (spelling->overflow) return false;
+  if (spelling->length == 0 || spelling->length > MAX_KEYWORD_LENGTH) return false;
+  unsigned char first = (unsigned char)spelling->text[0];
+  if (first < (unsigned char)KEYWORDS[0][0] || first > (unsigned char)KEYWORDS[KEYWORD_COUNT - 1][0]) return false;
   unsigned low = 0;
   unsigned high = KEYWORD_COUNT;
   while (low < high) {
     unsigned middle = (low + high) / 2;
-    int order = (unsigned char)KEYWORDS[middle][0] - (unsigned char)spelling->text[0];
-    if (order == 0) order = strcmp(KEYWORDS[middle], spelling->text);
+    int order = compare_keyword(KEYWORDS[middle], spelling);
     if (order == 0) return true;
     if (order < 0) low = middle + 1;
     else high = middle;
@@ -209,12 +232,21 @@ static bool next_identifier_part(TSLexer *lexer, Translation *state, int32_t *ch
 // lexer, which knows where each keyword is valid. A keyword spelled with a Unicode escape is an identifier here.
 static bool scan_identifier(TSLexer *lexer, Translation *state, int32_t character) {
   bool encoded = state->encoded;
-  Spelling spelling = {.length = 0};
-  do {
+  Spelling spelling;
+  spelling.length = 0;
+  for (;;) {
     spell(&spelling, character);
-  } while (next_identifier_part(lexer, state, &character, &encoded));
+    while (ascii_identifier_part(lexer->lookahead)) {
+      spell_ascii(&spelling, lexer->lookahead);
+      lexer->advance(lexer, false);
+    }
+    if (!next_identifier_part(lexer, state, &character, &encoded)) break;
+  }
   lexer->result_symbol = IDENTIFIER;
-  return encoded || !(is_keyword(&spelling) || (character == '-' && !spelling.overflow && strcmp(spelling.text, "non") == 0));
+  return encoded ||
+         !(is_keyword(&spelling) ||
+           (character == '-' && spelling.length == 3 && spelling.text[0] == 'n' && spelling.text[1] == 'o' &&
+            spelling.text[2] == 'n'));
 }
 
 // Reads the characters of a fragment, which excludes quotes, backslashes, and, outside text blocks, line terminators,
@@ -253,7 +285,6 @@ static bool scan_string_fragment(TSLexer *lexer, bool non_u) {
 
 // Reads one quote, raw or encoded as `\u0022`.
 static bool scan_quote(TSLexer *lexer) {
-  if (lexer->eof(lexer)) return false;
   if (lexer->lookahead == '"') {
     lexer->advance(lexer, false);
     return true;
@@ -265,7 +296,7 @@ static bool scan_quote(TSLexer *lexer) {
     lexer->advance(lexer, false);
   } while (lexer->lookahead == 'u');
   for (const char *digit = "0022"; *digit; digit++) {
-    if (lexer->lookahead != *digit || lexer->eof(lexer)) return false;
+    if (lexer->lookahead != *digit) return false;
     lexer->advance(lexer, false);
   }
   return true;
