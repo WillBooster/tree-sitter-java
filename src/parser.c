@@ -3995,45 +3995,6 @@ static const TSSymbol ts_alias_sequences[210] = {
   [199] = anon_alias_sym_when,
 };
 
-static const uint16_t ts_non_terminal_alias_map[] = {
-  sym__unary_complement_expression, 2,
-    sym__unary_complement_expression,
-    sym_unary_expression,
-  sym__postfix_update_expression, 2,
-    sym__postfix_update_expression,
-    sym_update_expression,
-  aux_sym__class_literal_array_type_repeat1, 2,
-    aux_sym__class_literal_array_type_repeat1,
-    sym_dimensions,
-  0,
-};
-
-static const uint8_t ts_primary_state_bitmap[] = {
-  255, 255, 255, 255, 255, 255, 207, 126, 141, 255, 255, 238, 255, 127, 255, 255, 
-  119, 255, 255, 215, 100, 123, 255, 231, 223, 255, 255, 255, 255, 111, 255, 135, 
-  231, 231, 123, 255, 189, 127, 95, 223, 63, 127, 253, 244, 191, 15, 119, 124, 
-  191, 95, 125, 237, 251, 189, 223, 218, 253, 240, 253, 253, 143, 191, 223, 127, 
-  124, 225, 249, 239, 255, 237, 81, 255, 31, 126, 252, 1, 190, 128, 111, 252, 
-  255, 251, 255, 255, 253, 29, 101, 188, 225, 255, 255, 121, 68, 247, 250, 57, 
-  207, 119, 93, 204, 251, 223, 247, 251, 250, 255, 227, 158, 255, 255, 220, 254, 
-  254, 255, 1, 0, 0, 0, 0, 0, 0, 0, 138, 39, 104, 65, 9, 5, 
-  32, 0, 224, 3, 16, 32, 1, 0, 0, 0, 0, 240, 241, 255, 255, 255, 
-  255, 255, 255, 255, 255, 255, 255, 15, 48, 132, 12, 2, 0, 68, 72, 4, 
-  0, 0, 0, 0, 1, 128, 124, 24, 80, 57, 209, 215, 255, 251, 130, 26, 
-  1, 0, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 
-  0, 0, 0, 252, 0, 0, 0, 16, 4, 0, 0, 0, 0, 0, 0, 0, 
-  0, 0, 0, 0, 0, 0, 0, 122, 68, 0, 128, 0, 96, 69, 112, 65, 
-  1, 0, 2, 32, 1, 0, 33, 8, 32, 0, 0, 3, 95, 0, 97, 17, 
-  16, 128, 10, 10, 132, 70, 20, 128, 14, 22, 26, 128, 243, 33, 161, 0, 
-  7, 10, 128, 222, 121, 177, 26, 8, 7, 1, 72, 8, 96, 0, 0, 0, 
-  72, 0, 91, 104, 209, 184, 173, 27, 107, 64, 8, 128, 29, 153, 253, 175, 
-  106, 0, 64, 84, 16, 138, 248, 213, 0, 25, 65, 2, 8, 134, 144, 245, 
-  133, 244, 72, 68, 206, 0, 18, 129, 64, 4, 148, 2, 40, 16, 200, 107, 
-  21, 46, 140, 8, 16, 0, 4, 4, 8, 64, 20, 0, 16, 0, 3, 0, 
-  1, 96, 68, 96, 40, 152, 42, 11, 15, 0, 131, 128, 24, 89, 0, 32, 
-  0, 0, 
-};
-
 static const TSSymbol ts_supertype_symbols[SUPERTYPE_COUNT] = {
   sym__literal,
   sym__type,
@@ -35511,7 +35472,6 @@ TS_PUBLIC const TSLanguage *tree_sitter_java(void) {
     .supertype_symbols = ts_supertype_symbols,
     .symbol_metadata = ts_symbol_metadata,
     .public_symbol_map = ts_symbol_map,
-    .alias_map = ts_non_terminal_alias_map,
     .alias_sequences = ts_alias_sequences,
     .alias_sequence_offsets = ts_alias_sequence_offsets,
     .alias_sequence_count = 210,
@@ -35530,7 +35490,6 @@ TS_PUBLIC const TSLanguage *tree_sitter_java(void) {
       tree_sitter_java_external_scanner_serialize,
       tree_sitter_java_external_scanner_deserialize,
     },
-    .primary_state_bitmap = ts_primary_state_bitmap,
     .name = "java",
     .reserved_words = ts_reserved_words,
     .reserved_word_slices = ts_reserved_word_slices,
