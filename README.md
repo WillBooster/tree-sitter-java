@@ -19,23 +19,26 @@ pattern variables use `underscore_pattern` nodes. Binding annotations are direct
 annotations inside the `right` field's `annotated_type` node.
 
 Annotation interface declarations expose separate `@` and `interface` tokens.
+Within a declaration's `modifiers`, access keywords are named `visibility` nodes and other modifier keywords are
+named `modifier` nodes; annotations retain their own nodes.
 Postfix updates appear inside surrounding cast or unary nodes. An `update_expression` has a primary expression as its operand.
 
 The parser ships as compact tables under the [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter)
-fork's ABI (`0x5742000c`). This package is tested with runtime 19.1.1. Runtimes with a different ABI, including
+fork's ABI (`0x5742000c`). This package is tested with runtime 20.0.0. Runtimes with a different ABI, including
 upstream's tree-sitter, reject the parser.
 
 ## Support Scope
 
-This fork maintains only full parsing: valid input yields a correct tree, and invalid input yields `ERROR` or `MISSING`
-nodes without crashing, hanging, or taking more than linear time. Incremental parsing works as in upstream tree-sitter
-but is not tested here, and no queries (highlights, locals, injections, tags) are shipped. Node types, field names, and
-the trees that error recovery produces may change; such changes are released as new major versions.
+This fork maintains only full parsing: valid input (except keywords spelled with Unicode escapes, such as `\u0063lass`)
+yields a correct tree, and invalid input yields `ERROR` or `MISSING` nodes without crashing, hanging, or taking more
+than linear time. Incremental parsing and tree queries (including highlights, locals, injections, and tags) are not
+supported. Node types, field names, and the trees that error recovery produces may change; such changes are released as
+new major versions.
 
 ## Usage
 
 The npm package ships `tree-sitter-java.wasm` for
-[@willbooster/web-tree-sitter](https://www.npmjs.com/package/@willbooster/web-tree-sitter) version 19.1.1 or later within major version 19, which runs in Node.js, Bun, browsers, and Cloudflare Workers. In Node.js and Bun, load the grammar from its path:
+[@willbooster/web-tree-sitter](https://www.npmjs.com/package/@willbooster/web-tree-sitter) version 20.0.0 or later within major version 20, which runs in Node.js, Bun, browsers, and Cloudflare Workers. In Node.js and Bun, load the grammar from its path:
 
 ```js
 import { fileURLToPath } from 'node:url';
@@ -77,63 +80,6 @@ parser.setLanguage(await Language.load(java));
 
 The package also ships `grammar.js` and the node types in `src/node-types.json`.
 
-### Queries
-
-Query patterns use the node types and fields in `src/node-types.json`. A label after `@` names a capture chosen by the
-query author; `name:` selects the declaration's name field. See the [query syntax guide](https://tree-sitter.github.io/tree-sitter/using-parsers/queries/1-syntax.html)
-for the general syntax.
-
-Using `language` and `tree` from the Node.js example, capture class names with the runtime's query API:
-
-```js
-import { Query } from '@willbooster/web-tree-sitter';
-
-const query = new Query(language, '(class_declaration name: (identifier) @class.name)');
-for (const { name, node } of query.captures(tree.rootNode)) {
-  console.log(name, node.text);
-}
-query.delete();
-```
-
-The following patterns capture names of classes, interfaces, enums, records and annotation interfaces:
-
-```scheme
-[
-  (class_declaration name: (identifier) @type.name)
-  (interface_declaration name: (identifier) @type.name)
-  (enum_declaration name: (identifier) @type.name)
-  (record_declaration name: (identifier) @type.name)
-  (annotation_type_declaration name: (identifier) @type.name)
-]
-```
-
-Capture method names with:
-
-```scheme
-(method_declaration name: (identifier) @method.name)
-```
-
-Annotations with and without arguments use different node types. The wildcard captures both simple and qualified
-annotation names:
-
-```scheme
-[
-  (marker_annotation name: (_) @annotation.name)
-  (annotation name: (_) @annotation.name)
-]
-```
-
-Filter a captured name by its text with `#eq?`:
-
-```scheme
-(class_declaration
-  name: (identifier) @class.name
-  (#eq? @class.name "Main"))
-```
-
-Within a declaration's `modifiers`, access keywords are named `visibility` nodes and other modifier keywords are
-named `modifier` nodes. Annotations retain their own nodes.
-
 ### Rust
 
 In Rust, depend on the [crate](https://crates.io/crates/willbooster-tree-sitter-java) and on
@@ -141,62 +87,40 @@ In Rust, depend on the [crate](https://crates.io/crates/willbooster-tree-sitter-
 fuzzed with:
 
 ```sh
-cargo add willbooster-tree-sitter@19.1.1 --rename tree-sitter
+cargo add willbooster-tree-sitter@20.0.0 --rename tree-sitter
 cargo add willbooster-tree-sitter-java --rename tree-sitter-java
 ```
 
 ```rust
 let mut parser = tree_sitter::Parser::new();
 parser.set_language(&tree_sitter_java::LANGUAGE.into())?;
+let tree = parser.parse("class Main { int answer() { return 42; } }\n").unwrap();
 ```
 
 ## Development
 
+Install [mise](https://mise.jdx.dev/getting-started.html), [rustup](https://rustup.rs/), and a C compiler. From a fresh checkout, run:
+
 ```sh
 mise install
 bun install --frozen-lockfile
-bun run test/ci-setup # installs Chromium for the browser test
+bun run test/ci-setup
 bun run build/ci
+bun run verify
 bun run test
-script/parse-examples
-cargo test
+cargo test --locked
 ```
 
-The scripts and tests generate, build, test, and parse with `script/tree-sitter`, the tree-sitter CLI of the
-WillBooster/tree-sitter runtime version locked in `Cargo.lock`, since the generator and the runtime of upstream's CLI are
-not the ones this package ships with. Its first run downloads that CLI from the runtime's GitHub Release, or builds it
-with `cargo` (whose build runs the CMake that `mise.toml` pins) when the download fails or the release has no binary that runs here. Run other CLI commands through it as
-well (e.g. `script/tree-sitter parse File.java`).
+Run Tree-sitter CLI commands through `script/tree-sitter`.
 
-`grammar.js` keeps upstream's code layout so changes can be compared with upstream's grammar; the linter and formatter
-skip it.
+`grammar.js` keeps upstream's code layout so changes can be compared with upstream's grammar.
 
-`bun run generate` records a fresh generation profile from the applicable `test/corpus` cases and any Git-tracked
-files in `examples/`, then generates compact parser tables. The parser also embeds metadata from `tree-sitter.json`. After changing a grammar,
-`tree-sitter.json`, a corpus case, a tracked example, or the `willbooster-tree-sitter` version in `Cargo.lock` (whose
-CLI generates the parser),
-regenerate and commit `src/`. Stage added or removed examples with `git add -A examples` before generation so the profile uses the intended file list.
-Profiles in `.tmp/generation-profiles/` are temporary and must not be committed. `bun run build-wasm`, `bun run build/ci`,
-and the release build regenerate the parsers before compiling them.
+Run `bun run build/ci` and commit the updated `src/` files after changing any of:
 
-`bun run test` runs:
+- `grammar.js`
+- `tree-sitter.json`
+- `test/corpus/`
+- Git-tracked files in `examples/` — stage additions or removals with `git add -A examples` before regenerating
+- `willbooster-tree-sitter` in `Cargo.lock` — keep `@willbooster/web-tree-sitter` in `package.json` at the same version
 
-- the corpus in `test/corpus`, with the native build and with the Wasm build (the first run downloads the WASI SDK);
-- a check that the real-world Java files of the repositories cloned into `examples/` fail to parse exactly as listed in
-  `script/known-failures.txt`. The first run clones the repositories. The example
-  repositories are pinned to commits in `script/parse-examples`. After a grammar change or a moved pin alters that
-  list, `script/parse-examples` rewrites it; review its diff before committing;
-- a performance check (`test/unit/performance.test.ts`) that recovering from an error on each line takes linear
-  time, since consumers parse files while they are being edited. It loads the Wasm build through
-  @willbooster/web-tree-sitter, which `bun run build/ci` rebuilds after regenerating the parser;
-- a check (`test/unit/runtimeVersion.test.ts`) that `@willbooster/web-tree-sitter` in `package.json` and
-  `willbooster-tree-sitter` in `Cargo.lock` are the same version, since the Wasm tests run on the former and the Rust
-  tests, the fuzzer, and the CLI on the latter;
-- tests that load the Wasm build with @willbooster/web-tree-sitter in Chromium (`test/e2e/browser.test.ts`) and in
-  Cloudflare Workers with and without Node.js compatibility (`test/e2e/workers.test.ts`).
-
-The tests and `script/parse-examples` compile the parser into `.tmp/tree-sitter-lib` rather than the CLI's cache shared
-by every checkout.
-
-CI also runs these tests on Linux arm64 and macOS, where the CLI compiles the parser with each platform's C compiler,
-and fuzzes the parser with libFuzzer and sanitizers (`.github/workflows/robustness.yml`).
+Run `script/parse-examples` to update `script/known-failures.txt` when a grammar change or a moved commit pin in `script/parse-examples` changes which real-world Java files fail to parse.
