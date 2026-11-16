@@ -34,6 +34,12 @@ static const char *const KEYWORDS[] = {
 #define MAX_KEYWORD_LENGTH (sizeof("synchronized") - 1)
 #define SPELLING_OVERFLOW (MAX_KEYWORD_LENGTH + 1)
 
+// Offsets into KEYWORDS for first byte '_' (0x5f) through 'y' (0x79), plus trailing KEYWORD_COUNT sentinel.
+static const uint8_t KEYWORD_FIRST_CHAR_OFFSET[] = {
+  0, 1, 1, 3, 6, 12, 15, 19, 24, 25, 25, 31, 31, 31, 32, 33, 36, 38, 44, 44, 47, 54, 62, 63, 65, 68, 68, 69,
+};
+_Static_assert(sizeof(KEYWORD_FIRST_CHAR_OFFSET) == ('y' - '_') + 2, "KEYWORD_FIRST_CHAR_OFFSET size");
+
 #define RANGE_COUNT(ranges) (sizeof(ranges) / sizeof(ranges[0]))
 
 typedef struct {
@@ -42,10 +48,10 @@ typedef struct {
 } Translation;
 
 static int hex_value(int32_t character) {
-  if (character >= '0' && character <= '9') return character - '0';
-  if (character >= 'a' && character <= 'f') return character - 'a' + 10;
-  if (character >= 'A' && character <= 'F') return character - 'A' + 10;
-  return -1;
+  uint32_t digit = (uint32_t)character - '0';
+  if (digit < 10) return (int)digit;
+  uint32_t hex = ((uint32_t)character | 32u) - 'a';
+  return hex < 6 ? (int)(hex + 10) : -1;
 }
 
 // The lookahead is 0 at the end of the input, so only a 0 needs the call of `eof`.
@@ -91,12 +97,12 @@ static bool whitespace(int32_t character) {
 }
 
 static bool ascii_identifier_start(int32_t character) {
-  return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || character == '_' ||
-         character == '$';
+  return (((uint32_t)character | 32u) - 'a') < 26 || character == '_' || character == '$';
 }
 
 static bool ascii_identifier_part(int32_t character) {
-  return ascii_identifier_start(character) || (character >= '0' && character <= '9');
+  return (((uint32_t)character | 32u) - 'a') < 26 || ((uint32_t)character - '0') < 10 || character == '_' ||
+         character == '$';
 }
 
 static bool identifier_start(int32_t character) {
@@ -184,7 +190,7 @@ static void spell(Spelling *spelling, int32_t character) {
 }
 
 static int compare_keyword(const char *keyword, const Spelling *spelling) {
-  for (unsigned i = 0; i < spelling->length; i++) {
+  for (unsigned i = 1; i < spelling->length; i++) {
     int order = (unsigned char)keyword[i] - (unsigned char)spelling->text[i];
     if (order != 0) return order;
   }
@@ -193,10 +199,10 @@ static int compare_keyword(const char *keyword, const Spelling *spelling) {
 
 static bool is_keyword(const Spelling *spelling) {
   if (spelling->length == 0 || spelling->length > MAX_KEYWORD_LENGTH) return false;
-  unsigned char first = (unsigned char)spelling->text[0];
-  if (first < (unsigned char)KEYWORDS[0][0] || first > (unsigned char)KEYWORDS[KEYWORD_COUNT - 1][0]) return false;
-  unsigned low = 0;
-  unsigned high = KEYWORD_COUNT;
+  unsigned bucket = (unsigned)(unsigned char)spelling->text[0] - '_';
+  if (bucket > ('y' - '_')) return false;
+  unsigned low = KEYWORD_FIRST_CHAR_OFFSET[bucket];
+  unsigned high = KEYWORD_FIRST_CHAR_OFFSET[bucket + 1];
   while (low < high) {
     unsigned middle = (low + high) / 2;
     int order = compare_keyword(KEYWORDS[middle], spelling);
@@ -228,18 +234,26 @@ static bool next_identifier_part(TSLexer *lexer, Translation *state, int32_t *ch
   return part;
 }
 
+static void scan_ascii_identifier_run(TSLexer *lexer, Spelling *spelling) {
+  if (spelling->length > MAX_KEYWORD_LENGTH) {
+    while (ascii_identifier_part(lexer->lookahead)) lexer->advance(lexer, false);
+    return;
+  }
+  while (ascii_identifier_part(lexer->lookahead)) {
+    spell_ascii(spelling, lexer->lookahead);
+    lexer->advance(lexer, false);
+  }
+}
+
 // Reads an identifier, but leaves a word that may be a keyword, including the `non` of `non-sealed`, to the generated
 // lexer, which knows where each keyword is valid. A keyword spelled with a Unicode escape is an identifier here.
 static bool scan_identifier(TSLexer *lexer, Translation *state, int32_t character) {
   bool encoded = state->encoded;
   Spelling spelling;
-  spelling.length = 0;
+  spelling.length = character < '_' ? SPELLING_OVERFLOW : 0;
   for (;;) {
     spell(&spelling, character);
-    while (ascii_identifier_part(lexer->lookahead)) {
-      spell_ascii(&spelling, lexer->lookahead);
-      lexer->advance(lexer, false);
-    }
+    scan_ascii_identifier_run(lexer, &spelling);
     if (!next_identifier_part(lexer, state, &character, &encoded)) break;
   }
   lexer->result_symbol = IDENTIFIER;
