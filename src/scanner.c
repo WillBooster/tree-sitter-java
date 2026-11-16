@@ -234,8 +234,6 @@ static bool next_identifier_part(TSLexer *lexer, Translation *state, int32_t *ch
   return part;
 }
 
-// Reads an identifier, but leaves a word that may be a keyword, including the `non` of `non-sealed`, to the generated
-// lexer, which knows where each keyword is valid. A keyword spelled with a Unicode escape is an identifier here.
 static void scan_ascii_identifier_run(TSLexer *lexer, Spelling *spelling) {
   if (spelling->length > MAX_KEYWORD_LENGTH) {
     while (ascii_identifier_part(lexer->lookahead)) lexer->advance(lexer, false);
@@ -247,6 +245,8 @@ static void scan_ascii_identifier_run(TSLexer *lexer, Spelling *spelling) {
   }
 }
 
+// Reads an identifier, but leaves a word that may be a keyword, including the `non` of `non-sealed`, to the generated
+// lexer, which knows where each keyword is valid. A keyword spelled with a Unicode escape is an identifier here.
 static bool scan_identifier(TSLexer *lexer, Translation *state, int32_t character) {
   bool encoded = state->encoded;
   Spelling spelling;
