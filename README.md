@@ -24,7 +24,7 @@ named `modifier` nodes; annotations retain their own nodes.
 Postfix updates appear inside surrounding cast or unary nodes. An `update_expression` has a primary expression as its operand.
 
 The parser ships as compact tables under the [WillBooster/tree-sitter](https://github.com/WillBooster/tree-sitter)
-fork's ABI (`0x5742000d`). This package is tested with runtime 23.0.0. Runtimes that do not support that ABI, including
+fork's ABI (`0x5742000d`). This package is tested with runtime 23.0.2. Runtimes that do not support that ABI, including
 upstream's tree-sitter and WillBooster runtimes prior to 22.0.0, reject the parser.
 
 ## Support Scope
@@ -87,7 +87,7 @@ In Rust, depend on the [crate](https://crates.io/crates/willbooster-tree-sitter-
 fuzzed with:
 
 ```sh
-cargo add willbooster-tree-sitter@23.0.0 --rename tree-sitter
+cargo add willbooster-tree-sitter@23.0.2 --rename tree-sitter
 cargo add willbooster-tree-sitter-java --rename tree-sitter-java
 ```
 
